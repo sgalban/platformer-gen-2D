@@ -29,7 +29,7 @@ class OpenGLRenderer {
     
         prog.setCameraPos(camera.controls.eye);
         mat4.identity(model);
-        mat4.multiply(viewProj, camera.projectionMatrix, camera.viewMatrix);
+        mat4.ortho(viewProj, 0, 80, 60, 0, -1, 1);
         prog.setModelMatrix(model);
         prog.setViewProjMatrix(viewProj);
     

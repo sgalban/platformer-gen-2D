@@ -1,22 +1,13 @@
-var CameraControls = require('3d-view-controls');
-import {vec3, mat4} from 'gl-matrix';
+import {vec2, mat4} from 'gl-matrix';
 
 class Camera {
   controls: any;
   projectionMatrix: mat4 = mat4.create();
   viewMatrix: mat4 = mat4.create();
-  fovy: number = 45;
   aspectRatio: number = 1;
-  near: number = 0.1;
-  far: number = 1000;
-  position: vec3 = vec3.create();
-  direction: vec3 = vec3.create();
-  target: vec3 = vec3.create();
-  up: vec3 = vec3.create();
-  right: vec3 = vec3.create();
-  forward: vec3 = vec3.create();
+  position: vec2 = vec2.create();
 
-  constructor(position: vec3, target: vec3) {
+  constructor(position: vec2) {
     const canvas = <HTMLCanvasElement> document.getElementById('canvas');
 
     this.controls = CameraControls(canvas, {

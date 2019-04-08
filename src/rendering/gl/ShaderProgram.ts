@@ -91,10 +91,10 @@ class ShaderProgram {
     }
   
     setViewProjMatrix(vp: mat4) {
-      this.use();
-      if (this.unifViewProj !== -1) {
-        gl.uniformMatrix4fv(this.unifViewProj, false, vp);
-      }
+        this.use();
+        if (this.unifViewProj !== -1) {
+            gl.uniformMatrix4fv(this.unifViewProj, false, vp);
+        }
     }
   
     setTime(t: number) {
@@ -109,7 +109,7 @@ class ShaderProgram {
     
         if (this.attrPos != -1 && d.bindPos()) {
             gl.enableVertexAttribArray(this.attrPos);
-            gl.vertexAttribPointer(this.attrPos, 4, gl.FLOAT, false, 0, 0);
+            gl.vertexAttribPointer(this.attrPos, 2, gl.FLOAT, false, 0, 0);
             gl.vertexAttribDivisor(this.attrPos, 0); // Advance 1 index in pos VBO for each vertex
         }
     
@@ -120,9 +120,9 @@ class ShaderProgram {
         }
 
         if (this.attrOff != -1 && d.bindOff()) {
-            gl.enableVertexAttribArray(this.attrUV);
-            gl.vertexAttribPointer(this.attrUV, 2, gl.FLOAT, false, 0, 0);
-            gl.vertexAttribDivisor(this.attrUV, 0); // Advance 1 index in pos VBO for each vertex
+            gl.enableVertexAttribArray(this.attrOff);
+            gl.vertexAttribPointer(this.attrOff, 2, gl.FLOAT, false, 0, 0);
+            gl.vertexAttribDivisor(this.attrOff, 0); // Advance 1 index in pos VBO for each vertex
         }
         
         d.bindIdx();
