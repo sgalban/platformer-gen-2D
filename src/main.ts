@@ -3,6 +3,7 @@ import {setGL} from './globals';
 import OpenGLRenderer from './rendering/gl/OpenGLRenderer';
 import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
 import Camera from './Camera';
+import GameEngine from './engine/GameEngine';
 
 import Tile from './geometry/Tile';
 
@@ -66,6 +67,7 @@ function main() {
     camera.updateProjectionMatrix();
 
     // Start the render loop
+    GameEngine.getEngine().startGame();
     tick();
 }
 

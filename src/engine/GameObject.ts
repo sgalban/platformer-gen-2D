@@ -1,5 +1,6 @@
 import {vec2} from 'gl-matrix';
 import Drawable from './../rendering/gl/Drawable';
+import GameEngine from './GameEngine';
 
 abstract class GameObject {
     private drawable: Drawable;
@@ -7,15 +8,14 @@ abstract class GameObject {
     private velocity: vec2;
     private passive: boolean;
 
-    private static gameObjects: GameObject[];
-
     constructor(_drawable: Drawable = null) {
         this.drawable = _drawable;
-        GameObject.gameObjects.push(this);
+
+        GameEngine.getEngine().addGameObject(this);
     }
 
     destroy(): void {
-        GameObject.gameObjects.splice(GameObject.gameObjects.indexOf(this), 1);
+        GameEngine.getEngine().destroyGameObject(this);
         this.drawable = null;
     }
 
