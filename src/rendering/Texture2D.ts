@@ -1,7 +1,6 @@
 class Texture2D {
     
     constructor() {
-    
     }
 }
 

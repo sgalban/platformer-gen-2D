@@ -10,6 +10,9 @@ abstract class GameObject {
 
     constructor(_drawable: Drawable = null) {
         this.drawable = _drawable;
+        this.passive = false;
+        this.position = vec2.fromValues(0, 0);
+        this.velocity = vec2.fromValues(0, 0);
 
         GameEngine.getEngine().addGameObject(this);
     }
@@ -40,7 +43,9 @@ abstract class GameObject {
         return vec2.fromValues(this.velocity[0], this.velocity[1]);
     }
 
-    abstract update(delta: number): void;
+    abstract onUpdate(delta: number): void;
+
+    abstract onKeyPress(key: string): void;
 }
 
 export default GameObject;
