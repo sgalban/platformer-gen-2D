@@ -27,12 +27,12 @@ class OpenGLRenderer {
         let viewProj = mat4.create();
         let color = vec4.fromValues(1, 0, 0, 1);
     
-        prog.setCameraPos(camera.controls.eye);
+        prog.setCameraPos(camera.position);
         mat4.identity(model);
-        mat4.ortho(viewProj, 0, 80, 60, 0, -1, 1);
+        mat4.multiply(viewProj, camera.projectionMatrix, camera.viewMatrix);
         prog.setModelMatrix(model);
         prog.setViewProjMatrix(viewProj);
-    
+
         for (let drawable of drawables) {
             prog.draw(drawable);
         }

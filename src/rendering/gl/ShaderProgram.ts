@@ -44,15 +44,15 @@ class ShaderProgram {
         }
     
         this.attrPos = gl.getAttribLocation(this.prog, "vs_Pos");
-        this.attrUV = gl.getAttribLocation(this.prog, "vs_UV");
+        this.attrUV  = gl.getAttribLocation(this.prog, "vs_UV");
         this.attrOff = gl.getAttribLocation(this.prog, "vs_Offset");
     
         this.unifModel      = gl.getUniformLocation(this.prog, "u_Model");
         this.unifModelInvTr = gl.getUniformLocation(this.prog, "u_ModelInvTr");
         this.unifViewProj   = gl.getUniformLocation(this.prog, "u_ViewProj");
-        this.unifDimensions      = gl.getUniformLocation(this.prog, "u_Dimensions");
-        this.unifTime      = gl.getUniformLocation(this.prog, "u_Time");
-        this.unifCam   = gl.getUniformLocation(this.prog, "u_CameraPos");
+        this.unifDimensions = gl.getUniformLocation(this.prog, "u_Dimensions");
+        this.unifTime       = gl.getUniformLocation(this.prog, "u_Time");
+        this.unifCam        = gl.getUniformLocation(this.prog, "u_CameraPos");
     }
   
     use() {
@@ -77,17 +77,17 @@ class ShaderProgram {
     }
   
     setModelMatrix(model: mat4) {
-      this.use();
-      if (this.unifModel !== -1) {
-        gl.uniformMatrix4fv(this.unifModel, false, model);
-      }
-  
-      if (this.unifModelInvTr !== -1) {
-        let modelinvtr: mat4 = mat4.create();
-        mat4.transpose(modelinvtr, model);
-        mat4.invert(modelinvtr, modelinvtr);
-        gl.uniformMatrix4fv(this.unifModelInvTr, false, modelinvtr);
-      }
+        this.use();
+        if (this.unifModel !== -1) {
+           gl.uniformMatrix4fv(this.unifModel, false, model);
+        }
+    
+        if (this.unifModelInvTr !== -1) {
+            let modelinvtr: mat4 = mat4.create();
+            mat4.transpose(modelinvtr, model);
+            mat4.invert(modelinvtr, modelinvtr);
+            gl.uniformMatrix4fv(this.unifModelInvTr, false, modelinvtr);
+        }
     }
   
     setViewProjMatrix(vp: mat4) {
@@ -122,7 +122,7 @@ class ShaderProgram {
         if (this.attrOff != -1 && d.bindOff()) {
             gl.enableVertexAttribArray(this.attrOff);
             gl.vertexAttribPointer(this.attrOff, 2, gl.FLOAT, false, 0, 0);
-            gl.vertexAttribDivisor(this.attrOff, 0); // Advance 1 index in pos VBO for each vertex
+            gl.vertexAttribDivisor(this.attrOff, 1); // Advance 1 index in pos VBO for each vertex
         }
         
         d.bindIdx();
