@@ -1,5 +1,6 @@
 import {vec2} from 'gl-matrix';
 import GameObject from './GameObject';
+import Terrain from '../scene/Terrain';
 import Tile from '../geometry/Tile';
 import {gl} from '../globals';
 import Camera from '../Camera';
@@ -23,6 +24,8 @@ class GameEngine {
     }
 
     private gameObjects: GameObject[];
+    terrainObjects: Terrain[];
+    private collidableObjects: GameObject[];
     private lastTick: number;
     private tile: Tile;
     private spriteShader: ShaderProgram;
@@ -32,6 +35,8 @@ class GameEngine {
 
     private constructor(_tile: Tile) {
         this.gameObjects = [];
+        this.terrainObjects = [];
+        this.collidableObjects = [];
         this.tile = _tile;
         this.camera = new Camera(vec2.fromValues(0, 0));
         this.downkeys = new Set();
@@ -46,10 +51,20 @@ class GameEngine {
         window.addEventListener("keyup", (keyEvent) => {
             this.downkeys.delete(keyEvent.key);
         });
+
+        let terrain: Terrain = new Terrain();
+        for (let i = -2; i < 3; i++) {
+            terrain.setTileAt(i, -3);
+        }
+        this.setTerrain(terrain);
     }
 
     setRenderer(renderer: OpenGlRenderer) {
         this.renderer = renderer;
+    }
+
+    setTerrain(terrain: Terrain) {
+        this.terrainObjects.push(terrain);
     }
 
     getCamera(): Camera {
@@ -57,13 +72,21 @@ class GameEngine {
     }
 
     drawGameObjects() {
-        let goPositions: vec2[] = [];
+        let tilePositions: vec2[] = [];
         for (let go of this.gameObjects) {
-            goPositions.push(go.getPosition());
+            tilePositions.push(go.getPosition());
+        }
+        for (let ter of this.terrainObjects) {
+            for (let x of ter.tiles.keys()) {
+                for (let y of ter.tiles.get(x)) {
+                    tilePositions.push(vec2.fromValues(x, y));
+                }
+            }
         }
 
-        this.tile.setInstanceVBOs(goPositions, goPositions);
-        this.tile.setNumInstances(this.gameObjects.length);
+        let totalPositions: vec2
+        this.tile.setInstanceVBOs(tilePositions, tilePositions);
+        this.tile.setNumInstances(tilePositions.length);
 
         this.renderer.render(this.camera, this.spriteShader, [this.tile]);
     }
@@ -86,6 +109,7 @@ class GameEngine {
     private updateGameObjects(deltaTime: number) {
 
         for (let go of this.gameObjects) {
+            go.physicsUpdate(deltaTime);
             for (let key of this.downkeys) {
                 go.onKeyPress(key);
             }

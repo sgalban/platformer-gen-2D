@@ -1,4 +1,5 @@
 import {vec2, vec3} from 'gl-matrix';
+
 import {setGL} from './globals';
 import OpenGLRenderer from './rendering/gl/OpenGLRenderer';
 import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
