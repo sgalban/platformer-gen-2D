@@ -56,6 +56,10 @@ class GameEngine {
         for (let i = -2; i < 3; i++) {
             terrain.setTileAt(i, -3);
         }
+        terrain.setTileAt(7, -3);
+        terrain.setTileAt(8, -3);
+        terrain.setTileAt(9, -3);
+        terrain.setTileAt(9, 0);
         this.setTerrain(terrain);
     }
 
@@ -115,6 +119,7 @@ class GameEngine {
             }
             go.onUpdate(deltaTime);
         }
+        this.camera.update();
     }
 
     startGame() {

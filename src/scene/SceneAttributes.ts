@@ -1,7 +1,7 @@
 let sceneAttributes = {
-    gravity: 0.4,
-    playerSpeed: 4,
-    playerJump: 10
+    gravity: 0.5,
+    playerSpeed: 6.5,
+    playerJump: 15
 }
 
 export default sceneAttributes

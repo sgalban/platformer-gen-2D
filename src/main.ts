@@ -34,7 +34,9 @@ function main() {
     const renderer = new OpenGLRenderer(canvas);
     renderer.setClearColor(0.9, 0.9, 0.9, 1);
     engine.setRenderer(renderer);
-    engine.addGameObject(new Player());
+    let player: Player = new Player();
+    engine.addGameObject(player);
+    camera.makeParent(player);
 
     // This function will be called every frame
     function tick() {

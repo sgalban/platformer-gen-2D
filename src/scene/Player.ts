@@ -17,11 +17,12 @@ class Player extends GameObject {
     }
 
     onKeyPress(key: string) {
+        let playerMovement = this.isGrounded ? sceneAttributes.playerSpeed : sceneAttributes.playerSpeed;
         if (key === "a") {
-            vec2.add(this.inputVelocity, this.inputVelocity, vec2.fromValues(-sceneAttributes.playerSpeed, 0));
+            vec2.add(this.inputVelocity, this.inputVelocity, vec2.fromValues(-playerMovement, 0));
         }
         else if (key === "d") {
-            vec2.add(this.inputVelocity, this.inputVelocity, vec2.fromValues(sceneAttributes.playerSpeed, 0));
+            vec2.add(this.inputVelocity, this.inputVelocity, vec2.fromValues(playerMovement, 0));
         }
         else if (key === "w" && this.isGrounded) {
             vec2.add(this.inputVelocity, this.inputVelocity, vec2.fromValues(0, sceneAttributes.playerJump));
