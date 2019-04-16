@@ -9,6 +9,8 @@ import GameObject from './engine/GameObject';
 
 import Player from './scene/Player';
 
+import RhythmGropuGenerator from './LevelGenerator/RhythmGroupGenerator';
+
 import Tile from './geometry/Tile';
 
 let time: number = 0.0;
@@ -37,6 +39,7 @@ function main() {
     let player: Player = new Player();
     engine.addGameObject(player);
     camera.makeParent(player);
+    new RhythmGropuGenerator(20, 20, 0.5, 0.6, [1, 0, 0]).generateRhythmGroup();
 
     // This function will be called every frame
     function tick() {

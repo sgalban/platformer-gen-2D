@@ -36,7 +36,6 @@ class Camera {
     }
 
     update(): void {
-        console.log(this.position[0]);
         if (this.child) {
             this.setPosition([-this.child.getPosition()[0], this.position[1]]);
         }
