@@ -16,6 +16,8 @@ class Player extends GameObject {
 
     aPressed: boolean;
     dPressed: boolean;
+    sPressed: boolean;
+
 
     constructor() {
         super(true);
@@ -81,6 +83,9 @@ class Player extends GameObject {
         else if (key === 'd') {
             this.dPressed = true;
         }
+        else if (key === 's') {
+            this.sPressed = true;
+        }
     }
 
     onKeyUp(key: string) {
@@ -94,6 +99,9 @@ class Player extends GameObject {
         else if (key === 'd') {
             this.dPressed = false;
         }
+        else if (key === 's') {
+            this.sPressed = false;
+        }
     }
 
     getSpriteUv() {
@@ -102,7 +110,9 @@ class Player extends GameObject {
         }
         else if (this.moving) {
             return vec2.fromValues(this.walkFrame % WALK_CYCLE_LENGTH < WALK_CYCLE_LENGTH / 2 ? 2 : 3, 7);
-
+        }
+        else if (this.sPressed) {
+            return vec2.fromValues(4, 7);
         }
         return vec2.fromValues(0, 7);
     }
