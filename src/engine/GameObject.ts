@@ -168,9 +168,13 @@ abstract class GameObject {
         return false;
     }
 
-    abstract onUpdate(delta: number): void;
+    onUpdate(delta: number): void {/* Please implement me*/};
 
-    abstract onKeyPress(key: string): void;
+    onKeyPress(key: string): void {/* Or don't */};
+
+    onKeyDown(key: string): void {/* I don't really care too much at this point */};
+
+    onKeyUp(key: string): void {/* I'm just holding out til graduation at this point */}
 }
 
 export default GameObject;

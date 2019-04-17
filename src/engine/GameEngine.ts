@@ -48,10 +48,14 @@ class GameEngine {
         this.spriteShader.setSpriteTex(new Texture2D("../../assets/sprites.png"));
 
         window.addEventListener("keydown", (keyEvent) => {
+            if (!this.downkeys.has(keyEvent.key)) {
+                this.gameObjects.forEach((go: GameObject) => {go.onKeyDown(keyEvent.key)});
+            }
             this.downkeys.add(keyEvent.key);
         });
         window.addEventListener("keyup", (keyEvent) => {
             this.downkeys.delete(keyEvent.key);
+            this.gameObjects.forEach((go: GameObject) => {go.onKeyUp(keyEvent.key)});
         });
 
         let terrain: Terrain = new Terrain();
@@ -88,7 +92,7 @@ class GameEngine {
             for (let x of ter.tiles.keys()) {
                 for (let y of ter.tiles.get(x)) {
                     tilePositions.push(vec2.fromValues(x, y));
-                    tileUvs.push(vec2.fromValues(1, 0));
+                    tileUvs.push(ter.getSpritePosition(x, y));
                 }
             }
         }
