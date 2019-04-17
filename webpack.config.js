@@ -8,7 +8,7 @@ module.exports = {
     publicPath: 'dist/',
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.ts$/,
         use: 'ts-loader',

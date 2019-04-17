@@ -2,6 +2,8 @@ import {vec2, vec3} from 'gl-matrix';
 import GameObject from '../engine/GameObject';
 import sceneAttributes from './SceneAttributes';
 
+const WALK_CYCLE_LENGTH: number = 10;
+
 class Player extends GameObject {
 
     playerVelocity: vec2;
@@ -99,7 +101,7 @@ class Player extends GameObject {
             return vec2.fromValues(1, 7);
         }
         else if (this.moving) {
-            return vec2.fromValues(this.walkFrame % 10 < 5 ? 2 : 3, 7);
+            return vec2.fromValues(this.walkFrame % WALK_CYCLE_LENGTH < WALK_CYCLE_LENGTH / 2 ? 2 : 3, 7);
 
         }
         return vec2.fromValues(0, 7);
