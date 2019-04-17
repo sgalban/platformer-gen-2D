@@ -7,11 +7,13 @@ abstract class Drawable {
     bufPos: WebGLBuffer;
     bufOff: WebGLBuffer;
     bufUV: WebGLBuffer;
+    bufMir: WebGLBuffer;
   
     idxGenerated: boolean = false;
     posGenerated: boolean = false;
     uvGenerated: boolean = false;
     offGenerated: boolean = false;
+    mirGenerated: boolean = false;
   
     numInstances: number = 0; // How many instances of this Drawable the shader program should draw
   
@@ -22,6 +24,7 @@ abstract class Drawable {
         gl.deleteBuffer(this.bufPos);
         gl.deleteBuffer(this.bufOff);
         gl.deleteBuffer(this.bufUV);
+        gl.deleteBuffer(this.bufMir);
     }
   
     generateIdx() {
@@ -42,6 +45,11 @@ abstract class Drawable {
     generateOff() {
         this.offGenerated = true;
         this.bufOff = gl.createBuffer();
+    }
+
+    generateMir() {
+        this.mirGenerated = true;
+        this.bufMir = gl.createBuffer();
     }
   
     bindIdx(): boolean {
@@ -70,6 +78,13 @@ abstract class Drawable {
             gl.bindBuffer(gl.ARRAY_BUFFER, this.bufOff);
         }
         return this.offGenerated;
+    }
+
+    bindMir(): boolean {
+        if (this.mirGenerated) {
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.bufMir);
+        }
+        return this.mirGenerated;
     }
   
     elemCount(): number {

@@ -59,6 +59,12 @@ class Terrain {
         else if (!tr && !tc && !cr) {
             return vec2.fromValues(2, 0);
         }
+        else if (!br && !bc && !cr) {
+            return vec2.fromValues(2, 2);
+        }
+        else if (!bl && !bc && !cl) {
+            return vec2.fromValues(0, 2);
+        }
         else {
             return vec2.fromValues(1, 1);
         }

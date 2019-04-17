@@ -61,10 +61,14 @@ class GameEngine {
         let terrain: Terrain = new Terrain();
         for (let i = -2; i < 3; i++) {
             terrain.setTileAt(i, -3);
+            terrain.setTileAt(i, -4);
         }
         terrain.setTileAt(7, -3);
         terrain.setTileAt(8, -3);
         terrain.setTileAt(9, -3);
+        terrain.setTileAt(7, -4);
+        terrain.setTileAt(8, -4);
+        terrain.setTileAt(9, -4);
         terrain.setTileAt(9, 0);
         this.setTerrain(terrain);
     }
@@ -84,21 +88,24 @@ class GameEngine {
     drawGameObjects() {
         let tilePositions: vec2[] = [];
         let tileUvs: vec2[] = [];
+        let tileMirrors: boolean[] = [];
         for (let go of this.gameObjects) {
             tilePositions.push(go.getPosition());
             tileUvs.push(go.getSpriteUv());
+            tileMirrors.push(go.facingLeft());
         }
         for (let ter of this.terrainObjects) {
             for (let x of ter.tiles.keys()) {
                 for (let y of ter.tiles.get(x)) {
                     tilePositions.push(vec2.fromValues(x, y));
                     tileUvs.push(ter.getSpritePosition(x, y));
+                    tileMirrors.push(false);
                 }
             }
         }
 
         let totalPositions: vec2
-        this.tile.setInstanceVBOs(tilePositions, tileUvs);
+        this.tile.setInstanceVBOs(tilePositions, tileUvs, tileMirrors);
         this.tile.setNumInstances(tilePositions.length);
 
         this.renderer.render(this.camera, this.spriteShader, [this.tile]);

@@ -25,6 +25,7 @@ class ShaderProgram {
     attrPos: number;
     attrUV: number;
     attrOff: number;
+    attrMir: number;
   
     unifModel: WebGLUniformLocation;
     unifModelInvTr: WebGLUniformLocation;
@@ -48,6 +49,7 @@ class ShaderProgram {
         this.attrPos = gl.getAttribLocation(this.prog, "vs_Pos");
         this.attrUV  = gl.getAttribLocation(this.prog, "vs_UV");
         this.attrOff = gl.getAttribLocation(this.prog, "vs_Offset");
+        this.attrMir = gl.getAttribLocation(this.prog, "vs_MirrorUv");
     
         this.unifModel      = gl.getUniformLocation(this.prog, "u_Model");
         this.unifModelInvTr = gl.getUniformLocation(this.prog, "u_ModelInvTr");
@@ -134,6 +136,12 @@ class ShaderProgram {
             gl.enableVertexAttribArray(this.attrOff);
             gl.vertexAttribPointer(this.attrOff, 2, gl.FLOAT, false, 0, 0);
             gl.vertexAttribDivisor(this.attrOff, 1); // Advance 1 index in pos VBO for each vertex
+        }
+
+        if (this.attrMir != -1 && d.bindMir()) {
+            gl.enableVertexAttribArray(this.attrMir);
+            gl.vertexAttribIPointer(this.attrMir, 1, gl.INT, 0, 0);
+            gl.vertexAttribDivisor(this.attrMir, 1);
         }
         
         d.bindIdx();

@@ -4,7 +4,7 @@ let sceneAttributes = {
     playerJump: 6.2,
     maxJumpHold: 0.3,
     jumpFalloff: 0.78, 
-    maxObjectSpeed: 10,
+    maxObjectSpeed: 5.0,
 }
 
 export default sceneAttributes

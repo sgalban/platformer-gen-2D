@@ -8,12 +8,22 @@ class Player extends GameObject {
     jumping: boolean;
     jumpTime: number;
     groundedImmunity: boolean;
+    direction: number;
+    walkFrame: number;
+    moving: boolean;
+
+    aPressed: boolean;
+    dPressed: boolean;
 
     constructor() {
         super(true);
         this.playerVelocity = vec2.fromValues(0, 0);
         this.jumping = false;
         this.groundedImmunity = false;
+        this.walkFrame = 0;
+        this.moving = false;
+        this.aPressed = false;
+        this.dPressed = false;
     }
 
     onUpdate(delta: number) {
@@ -30,15 +40,30 @@ class Player extends GameObject {
             this.jumping = false;
         }
         this.groundedImmunity = false;
+
+        if (!this.aPressed && !this.dPressed || (this.aPressed && this.dPressed)) {
+            this.moving = false;
+        } 
+
+        if (this.moving) {
+            this.walkFrame++;
+        }
+        else {
+            this.walkFrame = 0
+        };
     }
 
     onKeyPress(key: string) {
         let playerMovement = this.isGrounded ? sceneAttributes.playerSpeed : sceneAttributes.playerSpeed;
         if (key === "a") {
             vec2.add(this.inputVelocity, this.inputVelocity, vec2.fromValues(-playerMovement, 0));
+            this.direction = -1;
+            this.moving = true;
         }
         else if (key === "d") {
             vec2.add(this.inputVelocity, this.inputVelocity, vec2.fromValues(playerMovement, 0));
+            this.direction = 1;
+            this.moving = true;
         }
     }
 
@@ -48,6 +73,12 @@ class Player extends GameObject {
             this.jumpTime = 0;
             this.groundedImmunity = true;
         }
+        else if (key === 'a') {
+            this.aPressed = true;
+        }
+        else if (key === 'd') {
+            this.dPressed = true;
+        }
     }
 
     onKeyUp(key: string) {
@@ -55,9 +86,22 @@ class Player extends GameObject {
             this.jumping = false;
             this.jumpTime = 0;
         }
+        else if (key === 'a') {
+            this.aPressed = false;
+        }
+        else if (key === 'd') {
+            this.dPressed = false;
+        }
     }
 
     getSpriteUv() {
+        if (!this.isGrounded) {
+            return vec2.fromValues(1, 7);
+        }
+        else if (this.moving) {
+            return vec2.fromValues(this.walkFrame % 10 < 5 ? 2 : 3, 7);
+
+        }
         return vec2.fromValues(0, 7);
     }
 }

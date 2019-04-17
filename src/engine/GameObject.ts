@@ -12,6 +12,7 @@ abstract class GameObject {
     private passive: boolean;
     private dynamic: boolean;
     private grounded: boolean;
+    protected direction: number;
     protected get isGrounded() : boolean {
         return this.grounded;
     }
@@ -22,6 +23,7 @@ abstract class GameObject {
         this.position = vec2.fromValues(0, 0);
         this.velocity = vec2.fromValues(0, 0);
         this.inputVelocity = vec2.fromValues(0, 0);
+        this.direction = 1;
 
         GameEngine.getEngine().addGameObject(this);
     }
@@ -33,6 +35,10 @@ abstract class GameObject {
 
     isPassive(): boolean {
         return this.passive;
+    }
+
+    facingLeft(): boolean {
+        return this.direction === -1;
     }
 
     getPosition(): vec2 {
@@ -69,6 +75,12 @@ abstract class GameObject {
 
         // Apply non-physical motion
         vec2.add(this.velocity, this.velocity, this.inputVelocity);
+
+        // Scale back velocity if it's too high
+        let speed: number = this.velocity.length;
+        if (speed > sceneAttributes.maxObjectSpeed) {
+            vec2.scale(this.velocity, this.velocity, sceneAttributes.maxObjectSpeed / speed);
+        }
 
         // Update the object position, accounting for collisions
         // We assume that before applying any motion this frame, the object is not intersecting anything

@@ -1,4 +1,5 @@
 import {vec2, vec3} from 'gl-matrix';
+import * as Stats from 'stats-js';
 
 import {setGL} from './globals';
 import OpenGLRenderer from './rendering/gl/OpenGLRenderer';
@@ -30,6 +31,14 @@ function main() {
     setGL(gl);
     loadScene();
 
+    // Initial display for framerate
+    const stats = Stats();
+    stats.setMode(0);
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.left = '0px';
+    stats.domElement.style.top = '0px';
+    document.body.appendChild(stats.domElement);
+
     let engine: GameEngine = GameEngine.getEngine();
     const camera: Camera = engine.getCamera();
 
@@ -43,6 +52,7 @@ function main() {
 
     // This function will be called every frame
     function tick() {
+        stats.begin();
         time++;
 
         gl.viewport(0, 0, window.innerWidth, window.innerHeight);
@@ -50,6 +60,7 @@ function main() {
         GameEngine.getEngine().drawGameObjects();
     
         // Tell the browser to call `tick` again whenever it renders a new frame
+        stats.end();
         requestAnimationFrame(tick);
     }
   
