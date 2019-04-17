@@ -28,6 +28,10 @@ class Player extends GameObject {
             vec2.add(this.inputVelocity, this.inputVelocity, vec2.fromValues(0, sceneAttributes.playerJump));
         }
     }
+
+    getSpriteUv() {
+        return vec2.fromValues(0, 7);
+    }
 }
 
 export default Player;

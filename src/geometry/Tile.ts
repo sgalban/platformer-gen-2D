@@ -35,19 +35,23 @@ class Tile extends Drawable {
     
         gl.bindBuffer(gl.ARRAY_BUFFER, this.bufPos);
         gl.bufferData(gl.ARRAY_BUFFER, this.positions, gl.STATIC_DRAW);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.bufUV);
-        gl.bufferData(gl.ARRAY_BUFFER, this.uvs, gl.STATIC_DRAW);
     }
 
     setInstanceVBOs(posOffsets: vec2[], uvOffsets: vec2[]) {
         let posOffsetArray = [];
+        let uvOffsetArray = [];
         for (let posOffset of posOffsets) {
             posOffsetArray.push(posOffset[0], posOffset[1]);
         }
+        for (let uvOffset of uvOffsets) {
+            uvOffsetArray.push(uvOffset[0], uvOffset[1]);
+        }
         this.offsets = new Float32Array(posOffsetArray);
+        this.uvs = new Float32Array(uvOffsetArray);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.bufOff);
         gl.bufferData(gl.ARRAY_BUFFER, this.offsets, gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.bufUV);
+        gl.bufferData(gl.ARRAY_BUFFER, this.uvs, gl.STATIC_DRAW);
     }
 }
 

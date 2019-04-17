@@ -44,6 +44,8 @@ abstract class GameObject {
         this.position[1] = newPosition[1];
     }
 
+    abstract getSpriteUv(): vec2;
+
     translate(amount: vec2): void {
         vec2.add(this.position, this.position, amount);
     }

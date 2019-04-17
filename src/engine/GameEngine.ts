@@ -6,6 +6,7 @@ import {gl} from '../globals';
 import Camera from '../Camera';
 import OpenGlRenderer from '../rendering/gl/OpenGLRenderer';
 import ShaderProgram, {Shader} from '../rendering/gl/ShaderProgram';
+import Texture2D from '../rendering/Texture2D';
 
 class GameEngine {
 
@@ -44,6 +45,7 @@ class GameEngine {
             new Shader(gl.VERTEX_SHADER, require('../shaders/tile-vert.glsl')),
             new Shader(gl.FRAGMENT_SHADER, require('../shaders/tile-frag.glsl')),
         ]);
+        this.spriteShader.setSpriteTex(new Texture2D("../../assets/sprites.png"));
 
         window.addEventListener("keydown", (keyEvent) => {
             this.downkeys.add(keyEvent.key);
@@ -77,19 +79,22 @@ class GameEngine {
 
     drawGameObjects() {
         let tilePositions: vec2[] = [];
+        let tileUvs: vec2[] = [];
         for (let go of this.gameObjects) {
             tilePositions.push(go.getPosition());
+            tileUvs.push(go.getSpriteUv());
         }
         for (let ter of this.terrainObjects) {
             for (let x of ter.tiles.keys()) {
                 for (let y of ter.tiles.get(x)) {
                     tilePositions.push(vec2.fromValues(x, y));
+                    tileUvs.push(vec2.fromValues(1, 0));
                 }
             }
         }
 
         let totalPositions: vec2
-        this.tile.setInstanceVBOs(tilePositions, tilePositions);
+        this.tile.setInstanceVBOs(tilePositions, tileUvs);
         this.tile.setNumInstances(tilePositions.length);
 
         this.renderer.render(this.camera, this.spriteShader, [this.tile]);

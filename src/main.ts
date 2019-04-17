@@ -39,7 +39,7 @@ function main() {
     let player: Player = new Player();
     engine.addGameObject(player);
     camera.makeParent(player);
-    new RhythmGropuGenerator(20, 20, 0.5, 0.6, [1, 0, 0]).generateRhythmGroup();
+    //new RhythmGropuGenerator(20, 20, 0.5, 0.6, [1, 0, 0]).generateRhythmGroup();
 
     // This function will be called every frame
     function tick() {

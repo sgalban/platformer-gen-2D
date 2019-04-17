@@ -1,5 +1,6 @@
 import {vec2, vec4, mat4, mat3} from 'gl-matrix';
 import Drawable from './Drawable';
+import Texture2D from '../Texture2D';
 import {gl} from '../../globals';
 
 var activeProgram: WebGLProgram = null;
@@ -31,6 +32,7 @@ class ShaderProgram {
     unifTime: WebGLUniformLocation;
     unifCam: WebGLUniformLocation;
     unifDimensions: WebGLUniformLocation;
+    unifSpriteTex: WebGLUniformLocation;
   
     constructor(shaders: Array<Shader>) {
         this.prog = gl.createProgram();
@@ -53,6 +55,7 @@ class ShaderProgram {
         this.unifDimensions = gl.getUniformLocation(this.prog, "u_Dimensions");
         this.unifTime       = gl.getUniformLocation(this.prog, "u_Time");
         this.unifCam        = gl.getUniformLocation(this.prog, "u_CameraPos");
+        this.unifSpriteTex  = gl.getUniformLocation(this.prog, "u_SpriteTex");
     }
   
     use() {
@@ -103,6 +106,14 @@ class ShaderProgram {
             gl.uniform1f(this.unifTime, t);
         }
     }
+
+    setSpriteTex(tex: Texture2D) {
+        this.use();
+        if (this.unifSpriteTex !== -1) {
+            tex.loadTexture();
+            gl.uniform1i(this.unifSpriteTex, tex.slot);
+        }
+    }
   
     draw(d: Drawable) {
         this.use();
@@ -116,7 +127,7 @@ class ShaderProgram {
         if (this.attrUV != -1 && d.bindUV()) {
             gl.enableVertexAttribArray(this.attrUV);
             gl.vertexAttribPointer(this.attrUV, 2, gl.FLOAT, false, 0, 0);
-            gl.vertexAttribDivisor(this.attrUV, 0); // Advance 1 index in pos VBO for each vertex
+            gl.vertexAttribDivisor(this.attrUV, 1); // Advance 1 index in pos VBO for each vertex
         }
 
         if (this.attrOff != -1 && d.bindOff()) {
