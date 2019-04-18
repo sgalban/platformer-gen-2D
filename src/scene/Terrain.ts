@@ -1,5 +1,6 @@
 import {vec2, vec3} from 'gl-matrix';
 import GameObject from '../engine/GameObject';
+import sceneAttributes from '../scene/SceneAttributes';
 
 class Terrain {
 
@@ -47,6 +48,12 @@ class Terrain {
         }
         else {
             this.tiles.set(x, new Set([y]));
+        }
+    }
+
+    setColumnAt(x: number, y: number) {
+        for (let i = sceneAttributes.deathHeight - 1; i <= y; i++) {
+            this.setTileAt(x, i);
         }
     }
 

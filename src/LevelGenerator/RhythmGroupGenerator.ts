@@ -37,7 +37,7 @@ class RhythmGroupGenerator {
     private getBeatTimes(groupDuration: number, pattern: BeatPattern): number[] {
         let out: number[] = [];
         let amount = Math.floor(groupDuration * this.density);
-        console.log(amount);
+        //console.log(amount);
 
         for (let i = 0; i < amount; i++) {
             if (pattern === BeatPattern.REGULAR) {

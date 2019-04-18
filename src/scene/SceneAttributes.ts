@@ -1,10 +1,11 @@
 let sceneAttributes = {
     gravity: 1.5,
-    playerSpeed: 7.0,
-    playerJump: 6.2,
-    maxJumpHold: 0.3,
-    jumpFalloff: 0.78, 
-    maxObjectSpeed: 5.0,
+    playerSpeed: 7.5,
+    playerJump: 5.5,
+    maxJumpHold: 0.4,
+    jumpFalloff: 0.85, 
+    maxObjectSpeed: 7.5,
+    deathHeight: -15
 }
 
 export default sceneAttributes

@@ -6,12 +6,22 @@ const WALK_CYCLE_LENGTH: number = 10;
 
 class Player extends GameObject {
 
-    playerVelocity: vec2;
+    // Whether or not the player is affecting their jump by holding the jump button
     jumping: boolean;
+
+    // The amount of time the player has been holding the jump button
     jumpTime: number;
+
+    // Prevents the player from regrounding the frist frame of a jump
     groundedImmunity: boolean;
+
+    // The direction the player is currently facing: 1 for right, -1 for left
     direction: number;
+
+    // The current frame of the player's walk cycle
     walkFrame: number;
+
+    // Wheher or not the player is moving horizontally
     moving: boolean;
 
     aPressed: boolean;
@@ -21,24 +31,24 @@ class Player extends GameObject {
 
     constructor() {
         super(true);
-        this.playerVelocity = vec2.fromValues(0, 0);
         this.jumping = false;
         this.groundedImmunity = false;
+        this.direction = 1;
         this.walkFrame = 0;
         this.moving = false;
         this.aPressed = false;
         this.dPressed = false;
+        this.sPressed = false;
         this.setPosition([0, 0]);
     }
 
     onUpdate(delta: number) {
-        this.translate(vec2.scale(this.playerVelocity, this.playerVelocity, delta * 4));
-        this.playerVelocity = vec2.fromValues(0, 0);
         if (this.jumping) {
             let jumpDecay = Math.pow(sceneAttributes.jumpFalloff, this.jumpTime * 50);
             let jumpAmount = sceneAttributes.playerJump * jumpDecay;
             vec2.add(this.inputVelocity, this.inputVelocity, vec2.fromValues(0, jumpAmount));
             this.jumpTime += delta;
+            console.log(this.getVelocity()[1]);
         }
         if (this.jumpTime > sceneAttributes.maxJumpHold || (this.isGrounded && !this.groundedImmunity)) {
             this.jumping = false;
@@ -56,7 +66,7 @@ class Player extends GameObject {
             this.walkFrame = 0
         };
 
-        if (this.getPosition()[1] < -15) {
+        if (this.getPosition()[1] < sceneAttributes.deathHeight) {
             this.setPosition([0, 0]);
         }
     }

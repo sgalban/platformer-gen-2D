@@ -40,7 +40,7 @@ class GameEngine {
         this.terrainObjects = [];
         this.collidableObjects = [];
         this.tile = _tile;
-        this.camera = new Camera(vec2.fromValues(0, 0));
+        this.camera = new Camera(vec2.fromValues(0, -3));
         this.downkeys = new Set();
         this.spriteShader = new ShaderProgram([
             new Shader(gl.VERTEX_SHADER, require('../shaders/tile-vert.glsl')),
@@ -63,7 +63,7 @@ class GameEngine {
         let terrain: Terrain = new Terrain();
         this.setTerrain(terrain);
 
-        let levelGen = new LevelGenerator(3, terrain, 15, 15, 5, 0.7, [1, 0, 0]);
+        let levelGen = new LevelGenerator(3, terrain, 15, 15, 1, 0.7, [1, 0, 0]);
         levelGen.generateRhythms();
         levelGen.generateGeometry();
     }
@@ -133,6 +133,7 @@ class GameEngine {
         this.camera.update();
     }
 
+    // Maybe integrate this with the main tick()
     startGame() {
         this.lastTick = Date.now();
 
