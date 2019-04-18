@@ -18,6 +18,11 @@ module.exports = {
         test: /\.glsl$/,
         loader: 'webpack-glsl-loader'
       },
+      {
+        test: /\.(jpg|png)$/,
+        use: "url-loader",
+        exclude: /node_modules/
+      },
     ]
   },
   resolve: {

@@ -8392,15 +8392,13 @@ __webpack_require__.r(__webpack_exports__);
 // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
 class Texture2D {
     constructor(path, slot = 0) {
-        console.log(path);
         this.loaded = false;
         this.image = new Image();
-        this.image.onload = () => { this.loaded = true; console.log("loaded"); };
+        this.image.onload = () => { this.loaded = true; };
         this.image.src = path;
         this.slot = slot;
     }
     loadTextureCallback(texture) {
-        console.log("loaded");
         this.loaded = true;
         _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].activeTexture(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE0 + this.slot);
         _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].bindTexture(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_2D, texture);
@@ -8468,7 +8466,6 @@ class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] 
             let jumpAmount = _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerJump * jumpDecay;
             gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(this.inputVelocity, this.inputVelocity, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, jumpAmount));
             this.jumpTime += delta;
-            console.log("jumping");
         }
         if (this.jumpTime > _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].maxJumpHold || (this.isGrounded && !this.groundedImmunity)) {
             this.jumping = false;
