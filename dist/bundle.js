@@ -36,12 +36,32 @@
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
 /******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -59,8 +79,9 @@
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "dist/";
 /******/
+/******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -68,12 +89,187 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return EPSILON; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ARRAY_TYPE; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return RANDOM; });
-/* unused harmony export setMatrixArrayType */
-/* unused harmony export toRadian */
-/* unused harmony export equals */
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var stats_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
+/* harmony import */ var stats_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(stats_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+/* harmony import */ var _rendering_gl_OpenGLRenderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
+/* harmony import */ var _engine_GameEngine__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(15);
+/* harmony import */ var _scene_Player__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(24);
+
+
+
+
+
+let time = 0.0;
+function loadScene() {
+}
+function main() {
+    // get canvas and webgl context
+    const canvas = document.getElementById('canvas');
+    const gl = canvas.getContext('webgl2');
+    if (!gl) {
+        alert('WebGL 2 not supported!');
+    }
+    Object(_globals__WEBPACK_IMPORTED_MODULE_1__["setGL"])(gl);
+    loadScene();
+    // Initial display for framerate
+    const stats = stats_js__WEBPACK_IMPORTED_MODULE_0__();
+    stats.setMode(0);
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.left = '0px';
+    stats.domElement.style.top = '0px';
+    document.body.appendChild(stats.domElement);
+    let engine = _engine_GameEngine__WEBPACK_IMPORTED_MODULE_3__["default"].getEngine();
+    const camera = engine.getCamera();
+    const renderer = new _rendering_gl_OpenGLRenderer__WEBPACK_IMPORTED_MODULE_2__["default"](canvas);
+    renderer.setClearColor(0.9, 0.9, 0.9, 1);
+    engine.setRenderer(renderer);
+    let player = new _scene_Player__WEBPACK_IMPORTED_MODULE_4__["default"]();
+    engine.addGameObject(player);
+    camera.makeParent(player);
+    //new RhythmGropuGenerator(20, 20, 0.5, 0.6, [1, 0, 0]).generateRhythmGroup();
+    // This function will be called every frame
+    function tick() {
+        stats.begin();
+        time++;
+        gl.viewport(0, 0, window.innerWidth, window.innerHeight);
+        renderer.clear();
+        _engine_GameEngine__WEBPACK_IMPORTED_MODULE_3__["default"].getEngine().drawGameObjects();
+        // Tell the browser to call `tick` again whenever it renders a new frame
+        stats.end();
+        requestAnimationFrame(tick);
+    }
+    window.addEventListener('resize', function () {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.setAspectRatio(window.innerWidth / window.innerHeight);
+        camera.updateProjectionMatrix();
+    }, false);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.setAspectRatio(window.innerWidth / window.innerHeight);
+    camera.updateProjectionMatrix();
+    // Start the render loop
+    engine.startGame();
+    tick();
+}
+main();
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+!function(e,t){ true?module.exports=t():undefined}(this,function(){"use strict";var c=function(){var n=0,l=document.createElement("div");function e(e){return l.appendChild(e.dom),e}function t(e){for(var t=0;t<l.children.length;t++)l.children[t].style.display=t===e?"block":"none";n=e}l.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000",l.addEventListener("click",function(e){e.preventDefault(),t(++n%l.children.length)},!1);var i=(performance||Date).now(),a=i,o=0,f=e(new c.Panel("FPS","#0ff","#002")),r=e(new c.Panel("MS","#0f0","#020"));if(self.performance&&self.performance.memory)var d=e(new c.Panel("MB","#f08","#201"));return t(0),{REVISION:16,dom:l,addPanel:e,showPanel:t,begin:function(){i=(performance||Date).now()},end:function(){o++;var e=(performance||Date).now();if(r.update(e-i,200),a+1e3<=e&&(f.update(1e3*o/(e-a),100),a=e,o=0,d)){var t=performance.memory;d.update(t.usedJSHeapSize/1048576,t.jsHeapSizeLimit/1048576)}return e},update:function(){i=this.end()},domElement:l,setMode:t}};return c.Panel=function(n,l,i){var a=1/0,o=0,f=Math.round,r=f(window.devicePixelRatio||1),d=80*r,e=48*r,c=3*r,p=2*r,u=3*r,s=15*r,m=74*r,h=30*r,y=document.createElement("canvas");y.width=d,y.height=e,y.style.cssText="width:80px;height:48px";var v=y.getContext("2d");return v.font="bold "+9*r+"px Helvetica,Arial,sans-serif",v.textBaseline="top",v.fillStyle=i,v.fillRect(0,0,d,e),v.fillStyle=l,v.fillText(n,c,p),v.fillRect(u,s,m,h),v.fillStyle=i,v.globalAlpha=.9,v.fillRect(u,s,m,h),{dom:y,update:function(e,t){a=Math.min(a,e),o=Math.max(o,e),v.fillStyle=i,v.globalAlpha=1,v.fillRect(0,0,d,s),v.fillStyle=l,v.fillText(f(e)+" "+n+" ("+f(a)+"-"+f(o)+")",c,p),v.drawImage(y,u+r,s,m-r,h,u,s,m-r,h),v.fillRect(u+m-r,s,r,h),v.fillStyle=i,v.globalAlpha=.9,v.fillRect(u+m-r,s,r,f((1-e/t)*h))}}},c});
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "gl", function() { return gl; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setGL", function() { return setGL; });
+var gl;
+function setGL(_gl) {
+    gl = _gl;
+}
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+
+
+// In this file, `gl` is accessible because it is imported above
+class OpenGLRenderer {
+    constructor(canvas) {
+        this.canvas = canvas;
+    }
+    setClearColor(r, g, b, a) {
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].clearColor(r, g, b, a);
+    }
+    setSize(width, height) {
+        this.canvas.width = width;
+        this.canvas.height = height;
+    }
+    clear() {
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].clear(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].COLOR_BUFFER_BIT | _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].DEPTH_BUFFER_BIT);
+    }
+    render(camera, prog, drawables) {
+        let model = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+        let viewProj = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+        let color = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 0, 0, 1);
+        prog.setCameraPos(camera.position);
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(model);
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(viewProj, camera.projectionMatrix, camera.viewMatrix);
+        prog.setModelMatrix(model);
+        prog.setViewProjMatrix(viewProj);
+        for (let drawable of drawables) {
+            prog.draw(drawable);
+        }
+    }
+}
+;
+/* harmony default export */ __webpack_exports__["default"] = (OpenGLRenderer);
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _gl_matrix_common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "glMatrix", function() { return _gl_matrix_common_js__WEBPACK_IMPORTED_MODULE_0__; });
+/* harmony import */ var _gl_matrix_mat2_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(6);
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "mat2", function() { return _gl_matrix_mat2_js__WEBPACK_IMPORTED_MODULE_1__; });
+/* harmony import */ var _gl_matrix_mat2d_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7);
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "mat2d", function() { return _gl_matrix_mat2d_js__WEBPACK_IMPORTED_MODULE_2__; });
+/* harmony import */ var _gl_matrix_mat3_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8);
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "mat3", function() { return _gl_matrix_mat3_js__WEBPACK_IMPORTED_MODULE_3__; });
+/* harmony import */ var _gl_matrix_mat4_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(9);
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "mat4", function() { return _gl_matrix_mat4_js__WEBPACK_IMPORTED_MODULE_4__; });
+/* harmony import */ var _gl_matrix_quat_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(10);
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "quat", function() { return _gl_matrix_quat_js__WEBPACK_IMPORTED_MODULE_5__; });
+/* harmony import */ var _gl_matrix_quat2_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(13);
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "quat2", function() { return _gl_matrix_quat2_js__WEBPACK_IMPORTED_MODULE_6__; });
+/* harmony import */ var _gl_matrix_vec2_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(14);
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "vec2", function() { return _gl_matrix_vec2_js__WEBPACK_IMPORTED_MODULE_7__; });
+/* harmony import */ var _gl_matrix_vec3_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(11);
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "vec3", function() { return _gl_matrix_vec3_js__WEBPACK_IMPORTED_MODULE_8__; });
+/* harmony import */ var _gl_matrix_vec4_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(12);
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "vec4", function() { return _gl_matrix_vec4_js__WEBPACK_IMPORTED_MODULE_9__; });
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EPSILON", function() { return EPSILON; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ARRAY_TYPE", function() { return ARRAY_TYPE; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RANDOM", function() { return RANDOM; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setMatrixArrayType", function() { return setMatrixArrayType; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "toRadian", function() { return toRadian; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
 /**
  * Common utilities
  * @module glMatrix
@@ -118,94 +314,1029 @@ function equals(a, b) {
 }
 
 /***/ }),
-/* 1 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return gl; });
-/* harmony export (immutable) */ __webpack_exports__["b"] = setGL;
-var gl;
-function setGL(_gl) {
-    gl = _gl;
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clone", function() { return clone; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "copy", function() { return copy; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "identity", function() { return identity; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromValues", function() { return fromValues; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transpose", function() { return transpose; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "invert", function() { return invert; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "adjoint", function() { return adjoint; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "determinant", function() { return determinant; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiply", function() { return multiply; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotate", function() { return rotate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scale", function() { return scale; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromRotation", function() { return fromRotation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromScaling", function() { return fromScaling; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "str", function() { return str; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "frob", function() { return frob; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LDU", function() { return LDU; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "add", function() { return add; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "subtract", function() { return subtract; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "exactEquals", function() { return exactEquals; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiplyScalar", function() { return multiplyScalar; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiplyScalarAndAdd", function() { return multiplyScalarAndAdd; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mul", function() { return mul; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sub", function() { return sub; });
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
+
+
+/**
+ * 2x2 Matrix
+ * @module mat2
+ */
+
+/**
+ * Creates a new identity mat2
+ *
+ * @returns {mat2} a new 2x2 matrix
+ */
+function create() {
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
+  if (_common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"] != Float32Array) {
+    out[1] = 0;
+    out[2] = 0;
+  }
+  out[0] = 1;
+  out[3] = 1;
+  return out;
 }
 
+/**
+ * Creates a new mat2 initialized with values from an existing matrix
+ *
+ * @param {mat2} a matrix to clone
+ * @returns {mat2} a new 2x2 matrix
+ */
+function clone(a) {
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  out[3] = a[3];
+  return out;
+}
+
+/**
+ * Copy the values from one mat2 to another
+ *
+ * @param {mat2} out the receiving matrix
+ * @param {mat2} a the source matrix
+ * @returns {mat2} out
+ */
+function copy(out, a) {
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  out[3] = a[3];
+  return out;
+}
+
+/**
+ * Set a mat2 to the identity matrix
+ *
+ * @param {mat2} out the receiving matrix
+ * @returns {mat2} out
+ */
+function identity(out) {
+  out[0] = 1;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 1;
+  return out;
+}
+
+/**
+ * Create a new mat2 with the given values
+ *
+ * @param {Number} m00 Component in column 0, row 0 position (index 0)
+ * @param {Number} m01 Component in column 0, row 1 position (index 1)
+ * @param {Number} m10 Component in column 1, row 0 position (index 2)
+ * @param {Number} m11 Component in column 1, row 1 position (index 3)
+ * @returns {mat2} out A new 2x2 matrix
+ */
+function fromValues(m00, m01, m10, m11) {
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
+  out[0] = m00;
+  out[1] = m01;
+  out[2] = m10;
+  out[3] = m11;
+  return out;
+}
+
+/**
+ * Set the components of a mat2 to the given values
+ *
+ * @param {mat2} out the receiving matrix
+ * @param {Number} m00 Component in column 0, row 0 position (index 0)
+ * @param {Number} m01 Component in column 0, row 1 position (index 1)
+ * @param {Number} m10 Component in column 1, row 0 position (index 2)
+ * @param {Number} m11 Component in column 1, row 1 position (index 3)
+ * @returns {mat2} out
+ */
+function set(out, m00, m01, m10, m11) {
+  out[0] = m00;
+  out[1] = m01;
+  out[2] = m10;
+  out[3] = m11;
+  return out;
+}
+
+/**
+ * Transpose the values of a mat2
+ *
+ * @param {mat2} out the receiving matrix
+ * @param {mat2} a the source matrix
+ * @returns {mat2} out
+ */
+function transpose(out, a) {
+  // If we are transposing ourselves we can skip a few steps but have to cache
+  // some values
+  if (out === a) {
+    var a1 = a[1];
+    out[1] = a[2];
+    out[2] = a1;
+  } else {
+    out[0] = a[0];
+    out[1] = a[2];
+    out[2] = a[1];
+    out[3] = a[3];
+  }
+
+  return out;
+}
+
+/**
+ * Inverts a mat2
+ *
+ * @param {mat2} out the receiving matrix
+ * @param {mat2} a the source matrix
+ * @returns {mat2} out
+ */
+function invert(out, a) {
+  var a0 = a[0],
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3];
+
+  // Calculate the determinant
+  var det = a0 * a3 - a2 * a1;
+
+  if (!det) {
+    return null;
+  }
+  det = 1.0 / det;
+
+  out[0] = a3 * det;
+  out[1] = -a1 * det;
+  out[2] = -a2 * det;
+  out[3] = a0 * det;
+
+  return out;
+}
+
+/**
+ * Calculates the adjugate of a mat2
+ *
+ * @param {mat2} out the receiving matrix
+ * @param {mat2} a the source matrix
+ * @returns {mat2} out
+ */
+function adjoint(out, a) {
+  // Caching this value is nessecary if out == a
+  var a0 = a[0];
+  out[0] = a[3];
+  out[1] = -a[1];
+  out[2] = -a[2];
+  out[3] = a0;
+
+  return out;
+}
+
+/**
+ * Calculates the determinant of a mat2
+ *
+ * @param {mat2} a the source matrix
+ * @returns {Number} determinant of a
+ */
+function determinant(a) {
+  return a[0] * a[3] - a[2] * a[1];
+}
+
+/**
+ * Multiplies two mat2's
+ *
+ * @param {mat2} out the receiving matrix
+ * @param {mat2} a the first operand
+ * @param {mat2} b the second operand
+ * @returns {mat2} out
+ */
+function multiply(out, a, b) {
+  var a0 = a[0],
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3];
+  var b0 = b[0],
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3];
+  out[0] = a0 * b0 + a2 * b1;
+  out[1] = a1 * b0 + a3 * b1;
+  out[2] = a0 * b2 + a2 * b3;
+  out[3] = a1 * b2 + a3 * b3;
+  return out;
+}
+
+/**
+ * Rotates a mat2 by the given angle
+ *
+ * @param {mat2} out the receiving matrix
+ * @param {mat2} a the matrix to rotate
+ * @param {Number} rad the angle to rotate the matrix by
+ * @returns {mat2} out
+ */
+function rotate(out, a, rad) {
+  var a0 = a[0],
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3];
+  var s = Math.sin(rad);
+  var c = Math.cos(rad);
+  out[0] = a0 * c + a2 * s;
+  out[1] = a1 * c + a3 * s;
+  out[2] = a0 * -s + a2 * c;
+  out[3] = a1 * -s + a3 * c;
+  return out;
+}
+
+/**
+ * Scales the mat2 by the dimensions in the given vec2
+ *
+ * @param {mat2} out the receiving matrix
+ * @param {mat2} a the matrix to rotate
+ * @param {vec2} v the vec2 to scale the matrix by
+ * @returns {mat2} out
+ **/
+function scale(out, a, v) {
+  var a0 = a[0],
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3];
+  var v0 = v[0],
+      v1 = v[1];
+  out[0] = a0 * v0;
+  out[1] = a1 * v0;
+  out[2] = a2 * v1;
+  out[3] = a3 * v1;
+  return out;
+}
+
+/**
+ * Creates a matrix from a given angle
+ * This is equivalent to (but much faster than):
+ *
+ *     mat2.identity(dest);
+ *     mat2.rotate(dest, dest, rad);
+ *
+ * @param {mat2} out mat2 receiving operation result
+ * @param {Number} rad the angle to rotate the matrix by
+ * @returns {mat2} out
+ */
+function fromRotation(out, rad) {
+  var s = Math.sin(rad);
+  var c = Math.cos(rad);
+  out[0] = c;
+  out[1] = s;
+  out[2] = -s;
+  out[3] = c;
+  return out;
+}
+
+/**
+ * Creates a matrix from a vector scaling
+ * This is equivalent to (but much faster than):
+ *
+ *     mat2.identity(dest);
+ *     mat2.scale(dest, dest, vec);
+ *
+ * @param {mat2} out mat2 receiving operation result
+ * @param {vec2} v Scaling vector
+ * @returns {mat2} out
+ */
+function fromScaling(out, v) {
+  out[0] = v[0];
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = v[1];
+  return out;
+}
+
+/**
+ * Returns a string representation of a mat2
+ *
+ * @param {mat2} a matrix to represent as a string
+ * @returns {String} string representation of the matrix
+ */
+function str(a) {
+  return 'mat2(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ')';
+}
+
+/**
+ * Returns Frobenius norm of a mat2
+ *
+ * @param {mat2} a the matrix to calculate Frobenius norm of
+ * @returns {Number} Frobenius norm
+ */
+function frob(a) {
+  return Math.sqrt(Math.pow(a[0], 2) + Math.pow(a[1], 2) + Math.pow(a[2], 2) + Math.pow(a[3], 2));
+}
+
+/**
+ * Returns L, D and U matrices (Lower triangular, Diagonal and Upper triangular) by factorizing the input matrix
+ * @param {mat2} L the lower triangular matrix
+ * @param {mat2} D the diagonal matrix
+ * @param {mat2} U the upper triangular matrix
+ * @param {mat2} a the input matrix to factorize
+ */
+
+function LDU(L, D, U, a) {
+  L[2] = a[2] / a[0];
+  U[0] = a[0];
+  U[1] = a[1];
+  U[3] = a[3] - L[2] * U[1];
+  return [L, D, U];
+}
+
+/**
+ * Adds two mat2's
+ *
+ * @param {mat2} out the receiving matrix
+ * @param {mat2} a the first operand
+ * @param {mat2} b the second operand
+ * @returns {mat2} out
+ */
+function add(out, a, b) {
+  out[0] = a[0] + b[0];
+  out[1] = a[1] + b[1];
+  out[2] = a[2] + b[2];
+  out[3] = a[3] + b[3];
+  return out;
+}
+
+/**
+ * Subtracts matrix b from matrix a
+ *
+ * @param {mat2} out the receiving matrix
+ * @param {mat2} a the first operand
+ * @param {mat2} b the second operand
+ * @returns {mat2} out
+ */
+function subtract(out, a, b) {
+  out[0] = a[0] - b[0];
+  out[1] = a[1] - b[1];
+  out[2] = a[2] - b[2];
+  out[3] = a[3] - b[3];
+  return out;
+}
+
+/**
+ * Returns whether or not the matrices have exactly the same elements in the same position (when compared with ===)
+ *
+ * @param {mat2} a The first matrix.
+ * @param {mat2} b The second matrix.
+ * @returns {Boolean} True if the matrices are equal, false otherwise.
+ */
+function exactEquals(a, b) {
+  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
+}
+
+/**
+ * Returns whether or not the matrices have approximately the same elements in the same position.
+ *
+ * @param {mat2} a The first matrix.
+ * @param {mat2} b The second matrix.
+ * @returns {Boolean} True if the matrices are equal, false otherwise.
+ */
+function equals(a, b) {
+  var a0 = a[0],
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3];
+  var b0 = b[0],
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3];
+  return Math.abs(a0 - b0) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a3), Math.abs(b3));
+}
+
+/**
+ * Multiply each element of the matrix by a scalar.
+ *
+ * @param {mat2} out the receiving matrix
+ * @param {mat2} a the matrix to scale
+ * @param {Number} b amount to scale the matrix's elements by
+ * @returns {mat2} out
+ */
+function multiplyScalar(out, a, b) {
+  out[0] = a[0] * b;
+  out[1] = a[1] * b;
+  out[2] = a[2] * b;
+  out[3] = a[3] * b;
+  return out;
+}
+
+/**
+ * Adds two mat2's after multiplying each element of the second operand by a scalar value.
+ *
+ * @param {mat2} out the receiving vector
+ * @param {mat2} a the first operand
+ * @param {mat2} b the second operand
+ * @param {Number} scale the amount to scale b's elements by before adding
+ * @returns {mat2} out
+ */
+function multiplyScalarAndAdd(out, a, b, scale) {
+  out[0] = a[0] + b[0] * scale;
+  out[1] = a[1] + b[1] * scale;
+  out[2] = a[2] + b[2] * scale;
+  out[3] = a[3] + b[3] * scale;
+  return out;
+}
+
+/**
+ * Alias for {@link mat2.multiply}
+ * @function
+ */
+var mul = multiply;
+
+/**
+ * Alias for {@link mat2.subtract}
+ * @function
+ */
+var sub = subtract;
 
 /***/ }),
-/* 2 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__gl_matrix_common_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__gl_matrix_mat2_js__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__gl_matrix_mat2d_js__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__gl_matrix_mat3_js__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__gl_matrix_mat4_js__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__gl_matrix_quat_js__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__gl_matrix_quat2_js__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__gl_matrix_vec2_js__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__gl_matrix_vec3_js__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__gl_matrix_vec4_js__ = __webpack_require__(7);
-/* unused harmony reexport glMatrix */
-/* unused harmony reexport mat2 */
-/* unused harmony reexport mat2d */
-/* unused harmony reexport mat3 */
-/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_4__gl_matrix_mat4_js__; });
-/* unused harmony reexport quat */
-/* unused harmony reexport quat2 */
-/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_7__gl_matrix_vec2_js__; });
-/* unused harmony reexport vec3 */
-/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_9__gl_matrix_vec4_js__; });
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clone", function() { return clone; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "copy", function() { return copy; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "identity", function() { return identity; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromValues", function() { return fromValues; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "invert", function() { return invert; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "determinant", function() { return determinant; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiply", function() { return multiply; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotate", function() { return rotate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scale", function() { return scale; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "translate", function() { return translate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromRotation", function() { return fromRotation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromScaling", function() { return fromScaling; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromTranslation", function() { return fromTranslation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "str", function() { return str; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "frob", function() { return frob; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "add", function() { return add; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "subtract", function() { return subtract; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiplyScalar", function() { return multiplyScalar; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiplyScalarAndAdd", function() { return multiplyScalarAndAdd; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "exactEquals", function() { return exactEquals; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mul", function() { return mul; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sub", function() { return sub; });
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
 
 
+/**
+ * 2x3 Matrix
+ * @module mat2d
+ *
+ * @description
+ * A mat2d contains six elements defined as:
+ * <pre>
+ * [a, c, tx,
+ *  b, d, ty]
+ * </pre>
+ * This is a short form for the 3x3 matrix:
+ * <pre>
+ * [a, c, tx,
+ *  b, d, ty,
+ *  0, 0, 1]
+ * </pre>
+ * The last row is ignored so the array is shorter and operations are faster.
+ */
 
+/**
+ * Creates a new identity mat2d
+ *
+ * @returns {mat2d} a new 2x3 matrix
+ */
+function create() {
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](6);
+  if (_common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"] != Float32Array) {
+    out[1] = 0;
+    out[2] = 0;
+    out[4] = 0;
+    out[5] = 0;
+  }
+  out[0] = 1;
+  out[3] = 1;
+  return out;
+}
 
+/**
+ * Creates a new mat2d initialized with values from an existing matrix
+ *
+ * @param {mat2d} a matrix to clone
+ * @returns {mat2d} a new 2x3 matrix
+ */
+function clone(a) {
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](6);
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  out[3] = a[3];
+  out[4] = a[4];
+  out[5] = a[5];
+  return out;
+}
 
+/**
+ * Copy the values from one mat2d to another
+ *
+ * @param {mat2d} out the receiving matrix
+ * @param {mat2d} a the source matrix
+ * @returns {mat2d} out
+ */
+function copy(out, a) {
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  out[3] = a[3];
+  out[4] = a[4];
+  out[5] = a[5];
+  return out;
+}
 
+/**
+ * Set a mat2d to the identity matrix
+ *
+ * @param {mat2d} out the receiving matrix
+ * @returns {mat2d} out
+ */
+function identity(out) {
+  out[0] = 1;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 1;
+  out[4] = 0;
+  out[5] = 0;
+  return out;
+}
 
+/**
+ * Create a new mat2d with the given values
+ *
+ * @param {Number} a Component A (index 0)
+ * @param {Number} b Component B (index 1)
+ * @param {Number} c Component C (index 2)
+ * @param {Number} d Component D (index 3)
+ * @param {Number} tx Component TX (index 4)
+ * @param {Number} ty Component TY (index 5)
+ * @returns {mat2d} A new mat2d
+ */
+function fromValues(a, b, c, d, tx, ty) {
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](6);
+  out[0] = a;
+  out[1] = b;
+  out[2] = c;
+  out[3] = d;
+  out[4] = tx;
+  out[5] = ty;
+  return out;
+}
 
+/**
+ * Set the components of a mat2d to the given values
+ *
+ * @param {mat2d} out the receiving matrix
+ * @param {Number} a Component A (index 0)
+ * @param {Number} b Component B (index 1)
+ * @param {Number} c Component C (index 2)
+ * @param {Number} d Component D (index 3)
+ * @param {Number} tx Component TX (index 4)
+ * @param {Number} ty Component TY (index 5)
+ * @returns {mat2d} out
+ */
+function set(out, a, b, c, d, tx, ty) {
+  out[0] = a;
+  out[1] = b;
+  out[2] = c;
+  out[3] = d;
+  out[4] = tx;
+  out[5] = ty;
+  return out;
+}
 
+/**
+ * Inverts a mat2d
+ *
+ * @param {mat2d} out the receiving matrix
+ * @param {mat2d} a the source matrix
+ * @returns {mat2d} out
+ */
+function invert(out, a) {
+  var aa = a[0],
+      ab = a[1],
+      ac = a[2],
+      ad = a[3];
+  var atx = a[4],
+      aty = a[5];
 
+  var det = aa * ad - ab * ac;
+  if (!det) {
+    return null;
+  }
+  det = 1.0 / det;
 
+  out[0] = ad * det;
+  out[1] = -ab * det;
+  out[2] = -ac * det;
+  out[3] = aa * det;
+  out[4] = (ac * aty - ad * atx) * det;
+  out[5] = (ab * atx - aa * aty) * det;
+  return out;
+}
 
+/**
+ * Calculates the determinant of a mat2d
+ *
+ * @param {mat2d} a the source matrix
+ * @returns {Number} determinant of a
+ */
+function determinant(a) {
+  return a[0] * a[3] - a[1] * a[2];
+}
+
+/**
+ * Multiplies two mat2d's
+ *
+ * @param {mat2d} out the receiving matrix
+ * @param {mat2d} a the first operand
+ * @param {mat2d} b the second operand
+ * @returns {mat2d} out
+ */
+function multiply(out, a, b) {
+  var a0 = a[0],
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3],
+      a4 = a[4],
+      a5 = a[5];
+  var b0 = b[0],
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3],
+      b4 = b[4],
+      b5 = b[5];
+  out[0] = a0 * b0 + a2 * b1;
+  out[1] = a1 * b0 + a3 * b1;
+  out[2] = a0 * b2 + a2 * b3;
+  out[3] = a1 * b2 + a3 * b3;
+  out[4] = a0 * b4 + a2 * b5 + a4;
+  out[5] = a1 * b4 + a3 * b5 + a5;
+  return out;
+}
+
+/**
+ * Rotates a mat2d by the given angle
+ *
+ * @param {mat2d} out the receiving matrix
+ * @param {mat2d} a the matrix to rotate
+ * @param {Number} rad the angle to rotate the matrix by
+ * @returns {mat2d} out
+ */
+function rotate(out, a, rad) {
+  var a0 = a[0],
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3],
+      a4 = a[4],
+      a5 = a[5];
+  var s = Math.sin(rad);
+  var c = Math.cos(rad);
+  out[0] = a0 * c + a2 * s;
+  out[1] = a1 * c + a3 * s;
+  out[2] = a0 * -s + a2 * c;
+  out[3] = a1 * -s + a3 * c;
+  out[4] = a4;
+  out[5] = a5;
+  return out;
+}
+
+/**
+ * Scales the mat2d by the dimensions in the given vec2
+ *
+ * @param {mat2d} out the receiving matrix
+ * @param {mat2d} a the matrix to translate
+ * @param {vec2} v the vec2 to scale the matrix by
+ * @returns {mat2d} out
+ **/
+function scale(out, a, v) {
+  var a0 = a[0],
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3],
+      a4 = a[4],
+      a5 = a[5];
+  var v0 = v[0],
+      v1 = v[1];
+  out[0] = a0 * v0;
+  out[1] = a1 * v0;
+  out[2] = a2 * v1;
+  out[3] = a3 * v1;
+  out[4] = a4;
+  out[5] = a5;
+  return out;
+}
+
+/**
+ * Translates the mat2d by the dimensions in the given vec2
+ *
+ * @param {mat2d} out the receiving matrix
+ * @param {mat2d} a the matrix to translate
+ * @param {vec2} v the vec2 to translate the matrix by
+ * @returns {mat2d} out
+ **/
+function translate(out, a, v) {
+  var a0 = a[0],
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3],
+      a4 = a[4],
+      a5 = a[5];
+  var v0 = v[0],
+      v1 = v[1];
+  out[0] = a0;
+  out[1] = a1;
+  out[2] = a2;
+  out[3] = a3;
+  out[4] = a0 * v0 + a2 * v1 + a4;
+  out[5] = a1 * v0 + a3 * v1 + a5;
+  return out;
+}
+
+/**
+ * Creates a matrix from a given angle
+ * This is equivalent to (but much faster than):
+ *
+ *     mat2d.identity(dest);
+ *     mat2d.rotate(dest, dest, rad);
+ *
+ * @param {mat2d} out mat2d receiving operation result
+ * @param {Number} rad the angle to rotate the matrix by
+ * @returns {mat2d} out
+ */
+function fromRotation(out, rad) {
+  var s = Math.sin(rad),
+      c = Math.cos(rad);
+  out[0] = c;
+  out[1] = s;
+  out[2] = -s;
+  out[3] = c;
+  out[4] = 0;
+  out[5] = 0;
+  return out;
+}
+
+/**
+ * Creates a matrix from a vector scaling
+ * This is equivalent to (but much faster than):
+ *
+ *     mat2d.identity(dest);
+ *     mat2d.scale(dest, dest, vec);
+ *
+ * @param {mat2d} out mat2d receiving operation result
+ * @param {vec2} v Scaling vector
+ * @returns {mat2d} out
+ */
+function fromScaling(out, v) {
+  out[0] = v[0];
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = v[1];
+  out[4] = 0;
+  out[5] = 0;
+  return out;
+}
+
+/**
+ * Creates a matrix from a vector translation
+ * This is equivalent to (but much faster than):
+ *
+ *     mat2d.identity(dest);
+ *     mat2d.translate(dest, dest, vec);
+ *
+ * @param {mat2d} out mat2d receiving operation result
+ * @param {vec2} v Translation vector
+ * @returns {mat2d} out
+ */
+function fromTranslation(out, v) {
+  out[0] = 1;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 1;
+  out[4] = v[0];
+  out[5] = v[1];
+  return out;
+}
+
+/**
+ * Returns a string representation of a mat2d
+ *
+ * @param {mat2d} a matrix to represent as a string
+ * @returns {String} string representation of the matrix
+ */
+function str(a) {
+  return 'mat2d(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ', ' + a[4] + ', ' + a[5] + ')';
+}
+
+/**
+ * Returns Frobenius norm of a mat2d
+ *
+ * @param {mat2d} a the matrix to calculate Frobenius norm of
+ * @returns {Number} Frobenius norm
+ */
+function frob(a) {
+  return Math.sqrt(Math.pow(a[0], 2) + Math.pow(a[1], 2) + Math.pow(a[2], 2) + Math.pow(a[3], 2) + Math.pow(a[4], 2) + Math.pow(a[5], 2) + 1);
+}
+
+/**
+ * Adds two mat2d's
+ *
+ * @param {mat2d} out the receiving matrix
+ * @param {mat2d} a the first operand
+ * @param {mat2d} b the second operand
+ * @returns {mat2d} out
+ */
+function add(out, a, b) {
+  out[0] = a[0] + b[0];
+  out[1] = a[1] + b[1];
+  out[2] = a[2] + b[2];
+  out[3] = a[3] + b[3];
+  out[4] = a[4] + b[4];
+  out[5] = a[5] + b[5];
+  return out;
+}
+
+/**
+ * Subtracts matrix b from matrix a
+ *
+ * @param {mat2d} out the receiving matrix
+ * @param {mat2d} a the first operand
+ * @param {mat2d} b the second operand
+ * @returns {mat2d} out
+ */
+function subtract(out, a, b) {
+  out[0] = a[0] - b[0];
+  out[1] = a[1] - b[1];
+  out[2] = a[2] - b[2];
+  out[3] = a[3] - b[3];
+  out[4] = a[4] - b[4];
+  out[5] = a[5] - b[5];
+  return out;
+}
+
+/**
+ * Multiply each element of the matrix by a scalar.
+ *
+ * @param {mat2d} out the receiving matrix
+ * @param {mat2d} a the matrix to scale
+ * @param {Number} b amount to scale the matrix's elements by
+ * @returns {mat2d} out
+ */
+function multiplyScalar(out, a, b) {
+  out[0] = a[0] * b;
+  out[1] = a[1] * b;
+  out[2] = a[2] * b;
+  out[3] = a[3] * b;
+  out[4] = a[4] * b;
+  out[5] = a[5] * b;
+  return out;
+}
+
+/**
+ * Adds two mat2d's after multiplying each element of the second operand by a scalar value.
+ *
+ * @param {mat2d} out the receiving vector
+ * @param {mat2d} a the first operand
+ * @param {mat2d} b the second operand
+ * @param {Number} scale the amount to scale b's elements by before adding
+ * @returns {mat2d} out
+ */
+function multiplyScalarAndAdd(out, a, b, scale) {
+  out[0] = a[0] + b[0] * scale;
+  out[1] = a[1] + b[1] * scale;
+  out[2] = a[2] + b[2] * scale;
+  out[3] = a[3] + b[3] * scale;
+  out[4] = a[4] + b[4] * scale;
+  out[5] = a[5] + b[5] * scale;
+  return out;
+}
+
+/**
+ * Returns whether or not the matrices have exactly the same elements in the same position (when compared with ===)
+ *
+ * @param {mat2d} a The first matrix.
+ * @param {mat2d} b The second matrix.
+ * @returns {Boolean} True if the matrices are equal, false otherwise.
+ */
+function exactEquals(a, b) {
+  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5];
+}
+
+/**
+ * Returns whether or not the matrices have approximately the same elements in the same position.
+ *
+ * @param {mat2d} a The first matrix.
+ * @param {mat2d} b The second matrix.
+ * @returns {Boolean} True if the matrices are equal, false otherwise.
+ */
+function equals(a, b) {
+  var a0 = a[0],
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3],
+      a4 = a[4],
+      a5 = a[5];
+  var b0 = b[0],
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3],
+      b4 = b[4],
+      b5 = b[5];
+  return Math.abs(a0 - b0) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a5), Math.abs(b5));
+}
+
+/**
+ * Alias for {@link mat2d.multiply}
+ * @function
+ */
+var mul = multiply;
+
+/**
+ * Alias for {@link mat2d.subtract}
+ * @function
+ */
+var sub = subtract;
 
 /***/ }),
-/* 3 */
+/* 8 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = create;
-/* unused harmony export fromMat4 */
-/* unused harmony export clone */
-/* unused harmony export copy */
-/* unused harmony export fromValues */
-/* unused harmony export set */
-/* unused harmony export identity */
-/* unused harmony export transpose */
-/* unused harmony export invert */
-/* unused harmony export adjoint */
-/* unused harmony export determinant */
-/* unused harmony export multiply */
-/* unused harmony export translate */
-/* unused harmony export rotate */
-/* unused harmony export scale */
-/* unused harmony export fromTranslation */
-/* unused harmony export fromRotation */
-/* unused harmony export fromScaling */
-/* unused harmony export fromMat2d */
-/* unused harmony export fromQuat */
-/* unused harmony export normalFromMat4 */
-/* unused harmony export projection */
-/* unused harmony export str */
-/* unused harmony export frob */
-/* unused harmony export add */
-/* unused harmony export subtract */
-/* unused harmony export multiplyScalar */
-/* unused harmony export multiplyScalarAndAdd */
-/* unused harmony export exactEquals */
-/* unused harmony export equals */
-/* unused harmony export mul */
-/* unused harmony export sub */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__common_js__ = __webpack_require__(0);
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromMat4", function() { return fromMat4; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clone", function() { return clone; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "copy", function() { return copy; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromValues", function() { return fromValues; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "identity", function() { return identity; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transpose", function() { return transpose; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "invert", function() { return invert; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "adjoint", function() { return adjoint; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "determinant", function() { return determinant; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiply", function() { return multiply; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "translate", function() { return translate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotate", function() { return rotate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scale", function() { return scale; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromTranslation", function() { return fromTranslation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromRotation", function() { return fromRotation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromScaling", function() { return fromScaling; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromMat2d", function() { return fromMat2d; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromQuat", function() { return fromQuat; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "normalFromMat4", function() { return normalFromMat4; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "projection", function() { return projection; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "str", function() { return str; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "frob", function() { return frob; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "add", function() { return add; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "subtract", function() { return subtract; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiplyScalar", function() { return multiplyScalar; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiplyScalarAndAdd", function() { return multiplyScalarAndAdd; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "exactEquals", function() { return exactEquals; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mul", function() { return mul; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sub", function() { return sub; });
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
 
 
 /**
@@ -219,8 +1350,8 @@ function setGL(_gl) {
  * @returns {mat3} a new 3x3 matrix
  */
 function create() {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](9);
-  if (__WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */] != Float32Array) {
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](9);
+  if (_common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"] != Float32Array) {
     out[1] = 0;
     out[2] = 0;
     out[3] = 0;
@@ -261,7 +1392,7 @@ function fromMat4(out, a) {
  * @returns {mat3} a new 3x3 matrix
  */
 function clone(a) {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](9);
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](9);
   out[0] = a[0];
   out[1] = a[1];
   out[2] = a[2];
@@ -309,7 +1440,7 @@ function copy(out, a) {
  * @returns {mat3} A new mat3
  */
 function fromValues(m00, m01, m02, m10, m11, m12, m20, m21, m22) {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](9);
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](9);
   out[0] = m00;
   out[1] = m01;
   out[2] = m02;
@@ -1002,7 +2133,7 @@ function equals(a, b) {
       b6 = b[6],
       b7 = b[7],
       b8 = b[8];
-  return Math.abs(a0 - b0) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a5), Math.abs(b5)) && Math.abs(a6 - b6) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a6), Math.abs(b6)) && Math.abs(a7 - b7) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a7), Math.abs(b7)) && Math.abs(a8 - b8) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a8), Math.abs(b8));
+  return Math.abs(a0 - b0) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a5), Math.abs(b5)) && Math.abs(a6 - b6) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a6), Math.abs(b6)) && Math.abs(a7 - b7) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a7), Math.abs(b7)) && Math.abs(a8 - b8) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a8), Math.abs(b8));
 }
 
 /**
@@ -1018,59 +2149,59 @@ var mul = multiply;
 var sub = subtract;
 
 /***/ }),
-/* 4 */
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony export (immutable) */ __webpack_exports__["create"] = create;
-/* harmony export (immutable) */ __webpack_exports__["clone"] = clone;
-/* harmony export (immutable) */ __webpack_exports__["copy"] = copy;
-/* harmony export (immutable) */ __webpack_exports__["fromValues"] = fromValues;
-/* harmony export (immutable) */ __webpack_exports__["set"] = set;
-/* harmony export (immutable) */ __webpack_exports__["identity"] = identity;
-/* harmony export (immutable) */ __webpack_exports__["transpose"] = transpose;
-/* harmony export (immutable) */ __webpack_exports__["invert"] = invert;
-/* harmony export (immutable) */ __webpack_exports__["adjoint"] = adjoint;
-/* harmony export (immutable) */ __webpack_exports__["determinant"] = determinant;
-/* harmony export (immutable) */ __webpack_exports__["multiply"] = multiply;
-/* harmony export (immutable) */ __webpack_exports__["translate"] = translate;
-/* harmony export (immutable) */ __webpack_exports__["scale"] = scale;
-/* harmony export (immutable) */ __webpack_exports__["rotate"] = rotate;
-/* harmony export (immutable) */ __webpack_exports__["rotateX"] = rotateX;
-/* harmony export (immutable) */ __webpack_exports__["rotateY"] = rotateY;
-/* harmony export (immutable) */ __webpack_exports__["rotateZ"] = rotateZ;
-/* harmony export (immutable) */ __webpack_exports__["fromTranslation"] = fromTranslation;
-/* harmony export (immutable) */ __webpack_exports__["fromScaling"] = fromScaling;
-/* harmony export (immutable) */ __webpack_exports__["fromRotation"] = fromRotation;
-/* harmony export (immutable) */ __webpack_exports__["fromXRotation"] = fromXRotation;
-/* harmony export (immutable) */ __webpack_exports__["fromYRotation"] = fromYRotation;
-/* harmony export (immutable) */ __webpack_exports__["fromZRotation"] = fromZRotation;
-/* harmony export (immutable) */ __webpack_exports__["fromRotationTranslation"] = fromRotationTranslation;
-/* harmony export (immutable) */ __webpack_exports__["fromQuat2"] = fromQuat2;
-/* harmony export (immutable) */ __webpack_exports__["getTranslation"] = getTranslation;
-/* harmony export (immutable) */ __webpack_exports__["getScaling"] = getScaling;
-/* harmony export (immutable) */ __webpack_exports__["getRotation"] = getRotation;
-/* harmony export (immutable) */ __webpack_exports__["fromRotationTranslationScale"] = fromRotationTranslationScale;
-/* harmony export (immutable) */ __webpack_exports__["fromRotationTranslationScaleOrigin"] = fromRotationTranslationScaleOrigin;
-/* harmony export (immutable) */ __webpack_exports__["fromQuat"] = fromQuat;
-/* harmony export (immutable) */ __webpack_exports__["frustum"] = frustum;
-/* harmony export (immutable) */ __webpack_exports__["perspective"] = perspective;
-/* harmony export (immutable) */ __webpack_exports__["perspectiveFromFieldOfView"] = perspectiveFromFieldOfView;
-/* harmony export (immutable) */ __webpack_exports__["ortho"] = ortho;
-/* harmony export (immutable) */ __webpack_exports__["lookAt"] = lookAt;
-/* harmony export (immutable) */ __webpack_exports__["targetTo"] = targetTo;
-/* harmony export (immutable) */ __webpack_exports__["str"] = str;
-/* harmony export (immutable) */ __webpack_exports__["frob"] = frob;
-/* harmony export (immutable) */ __webpack_exports__["add"] = add;
-/* harmony export (immutable) */ __webpack_exports__["subtract"] = subtract;
-/* harmony export (immutable) */ __webpack_exports__["multiplyScalar"] = multiplyScalar;
-/* harmony export (immutable) */ __webpack_exports__["multiplyScalarAndAdd"] = multiplyScalarAndAdd;
-/* harmony export (immutable) */ __webpack_exports__["exactEquals"] = exactEquals;
-/* harmony export (immutable) */ __webpack_exports__["equals"] = equals;
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clone", function() { return clone; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "copy", function() { return copy; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromValues", function() { return fromValues; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "identity", function() { return identity; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transpose", function() { return transpose; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "invert", function() { return invert; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "adjoint", function() { return adjoint; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "determinant", function() { return determinant; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiply", function() { return multiply; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "translate", function() { return translate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scale", function() { return scale; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotate", function() { return rotate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateX", function() { return rotateX; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateY", function() { return rotateY; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateZ", function() { return rotateZ; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromTranslation", function() { return fromTranslation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromScaling", function() { return fromScaling; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromRotation", function() { return fromRotation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromXRotation", function() { return fromXRotation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromYRotation", function() { return fromYRotation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromZRotation", function() { return fromZRotation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromRotationTranslation", function() { return fromRotationTranslation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromQuat2", function() { return fromQuat2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTranslation", function() { return getTranslation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getScaling", function() { return getScaling; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getRotation", function() { return getRotation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromRotationTranslationScale", function() { return fromRotationTranslationScale; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromRotationTranslationScaleOrigin", function() { return fromRotationTranslationScaleOrigin; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromQuat", function() { return fromQuat; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "frustum", function() { return frustum; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "perspective", function() { return perspective; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "perspectiveFromFieldOfView", function() { return perspectiveFromFieldOfView; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ortho", function() { return ortho; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "lookAt", function() { return lookAt; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "targetTo", function() { return targetTo; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "str", function() { return str; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "frob", function() { return frob; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "add", function() { return add; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "subtract", function() { return subtract; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiplyScalar", function() { return multiplyScalar; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiplyScalarAndAdd", function() { return multiplyScalarAndAdd; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "exactEquals", function() { return exactEquals; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mul", function() { return mul; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sub", function() { return sub; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__common_js__ = __webpack_require__(0);
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
 
 
 /**
@@ -1084,8 +2215,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  * @returns {mat4} a new 4x4 matrix
  */
 function create() {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](16);
-  if (__WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */] != Float32Array) {
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](16);
+  if (_common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"] != Float32Array) {
     out[1] = 0;
     out[2] = 0;
     out[3] = 0;
@@ -1113,7 +2244,7 @@ function create() {
  * @returns {mat4} a new 4x4 matrix
  */
 function clone(a) {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](16);
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](16);
   out[0] = a[0];
   out[1] = a[1];
   out[2] = a[2];
@@ -1182,7 +2313,7 @@ function copy(out, a) {
  * @returns {mat4} A new mat4
  */
 function fromValues(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33) {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](16);
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](16);
   out[0] = m00;
   out[1] = m01;
   out[2] = m02;
@@ -1647,7 +2778,7 @@ function rotate(out, a, rad, axis) {
       b21 = void 0,
       b22 = void 0;
 
-  if (len < __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */]) {
+  if (len < _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"]) {
     return null;
   }
 
@@ -1908,7 +3039,7 @@ function fromRotation(out, rad, axis) {
       c = void 0,
       t = void 0;
 
-  if (len < __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */]) {
+  if (len < _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"]) {
     return null;
   }
 
@@ -2109,7 +3240,7 @@ function fromRotationTranslation(out, q, v) {
  * @returns {mat4} mat4 receiving operation result
  */
 function fromQuat2(out, a) {
-  var translation = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](3);
+  var translation = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](3);
   var bx = -a[0],
       by = -a[1],
       bz = -a[2],
@@ -2588,7 +3719,7 @@ function lookAt(out, eye, center, up) {
   var centery = center[1];
   var centerz = center[2];
 
-  if (Math.abs(eyex - centerx) < __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] && Math.abs(eyey - centery) < __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] && Math.abs(eyez - centerz) < __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */]) {
+  if (Math.abs(eyex - centerx) < _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] && Math.abs(eyey - centery) < _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] && Math.abs(eyez - centerz) < _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"]) {
     return identity(out);
   }
 
@@ -2898,7 +4029,7 @@ function equals(a, b) {
       b14 = b[14],
       b15 = b[15];
 
-  return Math.abs(a0 - b0) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a5), Math.abs(b5)) && Math.abs(a6 - b6) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a6), Math.abs(b6)) && Math.abs(a7 - b7) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a7), Math.abs(b7)) && Math.abs(a8 - b8) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a8), Math.abs(b8)) && Math.abs(a9 - b9) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a9), Math.abs(b9)) && Math.abs(a10 - b10) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a10), Math.abs(b10)) && Math.abs(a11 - b11) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a11), Math.abs(b11)) && Math.abs(a12 - b12) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a12), Math.abs(b12)) && Math.abs(a13 - b13) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a13), Math.abs(b13)) && Math.abs(a14 - b14) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a14), Math.abs(b14)) && Math.abs(a15 - b15) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a15), Math.abs(b15));
+  return Math.abs(a0 - b0) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a5), Math.abs(b5)) && Math.abs(a6 - b6) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a6), Math.abs(b6)) && Math.abs(a7 - b7) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a7), Math.abs(b7)) && Math.abs(a8 - b8) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a8), Math.abs(b8)) && Math.abs(a9 - b9) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a9), Math.abs(b9)) && Math.abs(a10 - b10) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a10), Math.abs(b10)) && Math.abs(a11 - b11) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a11), Math.abs(b11)) && Math.abs(a12 - b12) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a12), Math.abs(b12)) && Math.abs(a13 - b13) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a13), Math.abs(b13)) && Math.abs(a14 - b14) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a14), Math.abs(b14)) && Math.abs(a15 - b15) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a15), Math.abs(b15));
 }
 
 /**
@@ -2914,49 +4045,50 @@ var mul = multiply;
 var sub = subtract;
 
 /***/ }),
-/* 5 */
+/* 10 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (immutable) */ __webpack_exports__["b"] = create;
-/* unused harmony export identity */
-/* unused harmony export setAxisAngle */
-/* unused harmony export getAxisAngle */
-/* unused harmony export multiply */
-/* harmony export (immutable) */ __webpack_exports__["e"] = rotateX;
-/* harmony export (immutable) */ __webpack_exports__["f"] = rotateY;
-/* harmony export (immutable) */ __webpack_exports__["g"] = rotateZ;
-/* unused harmony export calculateW */
-/* unused harmony export slerp */
-/* unused harmony export random */
-/* unused harmony export invert */
-/* unused harmony export conjugate */
-/* unused harmony export fromMat3 */
-/* unused harmony export fromEuler */
-/* unused harmony export str */
-/* unused harmony export clone */
-/* unused harmony export fromValues */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return copy; });
-/* unused harmony export set */
-/* unused harmony export add */
-/* unused harmony export mul */
-/* unused harmony export scale */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return dot; });
-/* unused harmony export lerp */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return length; });
-/* unused harmony export len */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return squaredLength; });
-/* unused harmony export sqrLen */
-/* unused harmony export normalize */
-/* unused harmony export exactEquals */
-/* unused harmony export equals */
-/* unused harmony export rotationTo */
-/* unused harmony export sqlerp */
-/* unused harmony export setAxes */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__common_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mat3_js__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__vec3_js__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__vec4_js__ = __webpack_require__(7);
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "identity", function() { return identity; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setAxisAngle", function() { return setAxisAngle; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAxisAngle", function() { return getAxisAngle; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiply", function() { return multiply; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateX", function() { return rotateX; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateY", function() { return rotateY; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateZ", function() { return rotateZ; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "calculateW", function() { return calculateW; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "slerp", function() { return slerp; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "random", function() { return random; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "invert", function() { return invert; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "conjugate", function() { return conjugate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromMat3", function() { return fromMat3; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromEuler", function() { return fromEuler; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "str", function() { return str; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clone", function() { return clone; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromValues", function() { return fromValues; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "copy", function() { return copy; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "add", function() { return add; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mul", function() { return mul; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scale", function() { return scale; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dot", function() { return dot; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "lerp", function() { return lerp; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "length", function() { return length; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "len", function() { return len; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "squaredLength", function() { return squaredLength; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sqrLen", function() { return sqrLen; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "normalize", function() { return normalize; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "exactEquals", function() { return exactEquals; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotationTo", function() { return rotationTo; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sqlerp", function() { return sqlerp; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setAxes", function() { return setAxes; });
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
+/* harmony import */ var _mat3_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(8);
+/* harmony import */ var _vec3_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(11);
+/* harmony import */ var _vec4_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(12);
 
 
 
@@ -2973,8 +4105,8 @@ var sub = subtract;
  * @returns {quat} a new quaternion
  */
 function create() {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](4);
-  if (__WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */] != Float32Array) {
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
+  if (_common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"] != Float32Array) {
     out[0] = 0;
     out[1] = 0;
     out[2] = 0;
@@ -3032,7 +4164,7 @@ function setAxisAngle(out, axis, rad) {
 function getAxisAngle(out_axis, q) {
   var rad = Math.acos(q[3]) * 2.0;
   var s = Math.sin(rad / 2.0);
-  if (s > __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */]) {
+  if (s > _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"]) {
     out_axis[0] = q[0] / s;
     out_axis[1] = q[1] / s;
     out_axis[2] = q[2] / s;
@@ -3204,7 +4336,7 @@ function slerp(out, a, b, t) {
     bw = -bw;
   }
   // calculate coefficients
-  if (1.0 - cosom > __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */]) {
+  if (1.0 - cosom > _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"]) {
     // standard case (slerp)
     omega = Math.acos(cosom);
     sinom = Math.sin(omega);
@@ -3234,9 +4366,9 @@ function slerp(out, a, b, t) {
 function random(out) {
   // Implementation of http://planning.cs.uiuc.edu/node198.html
   // TODO: Calling random 3 times is probably not the fastest solution
-  var u1 = __WEBPACK_IMPORTED_MODULE_0__common_js__["c" /* RANDOM */]();
-  var u2 = __WEBPACK_IMPORTED_MODULE_0__common_js__["c" /* RANDOM */]();
-  var u3 = __WEBPACK_IMPORTED_MODULE_0__common_js__["c" /* RANDOM */]();
+  var u1 = _common_js__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]();
+  var u2 = _common_js__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]();
+  var u3 = _common_js__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]();
 
   var sqrt1MinusU1 = Math.sqrt(1 - u1);
   var sqrtU1 = Math.sqrt(u1);
@@ -3380,7 +4512,7 @@ function str(a) {
  * @returns {quat} a new quaternion
  * @function
  */
-var clone = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["clone"];
+var clone = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["clone"];
 
 /**
  * Creates a new quat initialized with the given values
@@ -3392,7 +4524,7 @@ var clone = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["clone"];
  * @returns {quat} a new quaternion
  * @function
  */
-var fromValues = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["fromValues"];
+var fromValues = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["fromValues"];
 
 /**
  * Copy the values from one quat to another
@@ -3402,7 +4534,7 @@ var fromValues = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["fromValues"];
  * @returns {quat} out
  * @function
  */
-var copy = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["copy"];
+var copy = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["copy"];
 
 /**
  * Set the components of a quat to the given values
@@ -3415,7 +4547,7 @@ var copy = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["copy"];
  * @returns {quat} out
  * @function
  */
-var set = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["set"];
+var set = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["set"];
 
 /**
  * Adds two quat's
@@ -3426,7 +4558,7 @@ var set = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["set"];
  * @returns {quat} out
  * @function
  */
-var add = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["add"];
+var add = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["add"];
 
 /**
  * Alias for {@link quat.multiply}
@@ -3443,7 +4575,7 @@ var mul = multiply;
  * @returns {quat} out
  * @function
  */
-var scale = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["scale"];
+var scale = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["scale"];
 
 /**
  * Calculates the dot product of two quat's
@@ -3453,7 +4585,7 @@ var scale = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["scale"];
  * @returns {Number} dot product of a and b
  * @function
  */
-var dot = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["dot"];
+var dot = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["dot"];
 
 /**
  * Performs a linear interpolation between two quat's
@@ -3465,7 +4597,7 @@ var dot = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["dot"];
  * @returns {quat} out
  * @function
  */
-var lerp = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["lerp"];
+var lerp = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["lerp"];
 
 /**
  * Calculates the length of a quat
@@ -3473,7 +4605,7 @@ var lerp = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["lerp"];
  * @param {quat} a vector to calculate length of
  * @returns {Number} length of a
  */
-var length = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["length"];
+var length = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["length"];
 
 /**
  * Alias for {@link quat.length}
@@ -3488,7 +4620,7 @@ var len = length;
  * @returns {Number} squared length of a
  * @function
  */
-var squaredLength = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["squaredLength"];
+var squaredLength = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["squaredLength"];
 
 /**
  * Alias for {@link quat.squaredLength}
@@ -3504,7 +4636,7 @@ var sqrLen = squaredLength;
  * @returns {quat} out
  * @function
  */
-var normalize = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["normalize"];
+var normalize = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["normalize"];
 
 /**
  * Returns whether or not the quaternions have exactly the same elements in the same position (when compared with ===)
@@ -3513,7 +4645,7 @@ var normalize = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["normalize"];
  * @param {quat} b The second quaternion.
  * @returns {Boolean} True if the vectors are equal, false otherwise.
  */
-var exactEquals = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["exactEquals"];
+var exactEquals = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["exactEquals"];
 
 /**
  * Returns whether or not the quaternions have approximately the same elements in the same position.
@@ -3522,7 +4654,7 @@ var exactEquals = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["exactEquals"];
  * @param {quat} b The second vector.
  * @returns {Boolean} True if the vectors are equal, false otherwise.
  */
-var equals = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["equals"];
+var equals = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["equals"];
 
 /**
  * Sets a quaternion to represent the shortest rotation from one
@@ -3536,16 +4668,16 @@ var equals = __WEBPACK_IMPORTED_MODULE_3__vec4_js__["equals"];
  * @returns {quat} out
  */
 var rotationTo = function () {
-  var tmpvec3 = __WEBPACK_IMPORTED_MODULE_2__vec3_js__["a" /* create */]();
-  var xUnitVec3 = __WEBPACK_IMPORTED_MODULE_2__vec3_js__["d" /* fromValues */](1, 0, 0);
-  var yUnitVec3 = __WEBPACK_IMPORTED_MODULE_2__vec3_js__["d" /* fromValues */](0, 1, 0);
+  var tmpvec3 = _vec3_js__WEBPACK_IMPORTED_MODULE_2__["create"]();
+  var xUnitVec3 = _vec3_js__WEBPACK_IMPORTED_MODULE_2__["fromValues"](1, 0, 0);
+  var yUnitVec3 = _vec3_js__WEBPACK_IMPORTED_MODULE_2__["fromValues"](0, 1, 0);
 
   return function (out, a, b) {
-    var dot = __WEBPACK_IMPORTED_MODULE_2__vec3_js__["c" /* dot */](a, b);
+    var dot = _vec3_js__WEBPACK_IMPORTED_MODULE_2__["dot"](a, b);
     if (dot < -0.999999) {
-      __WEBPACK_IMPORTED_MODULE_2__vec3_js__["b" /* cross */](tmpvec3, xUnitVec3, a);
-      if (__WEBPACK_IMPORTED_MODULE_2__vec3_js__["e" /* len */](tmpvec3) < 0.000001) __WEBPACK_IMPORTED_MODULE_2__vec3_js__["b" /* cross */](tmpvec3, yUnitVec3, a);
-      __WEBPACK_IMPORTED_MODULE_2__vec3_js__["f" /* normalize */](tmpvec3, tmpvec3);
+      _vec3_js__WEBPACK_IMPORTED_MODULE_2__["cross"](tmpvec3, xUnitVec3, a);
+      if (_vec3_js__WEBPACK_IMPORTED_MODULE_2__["len"](tmpvec3) < 0.000001) _vec3_js__WEBPACK_IMPORTED_MODULE_2__["cross"](tmpvec3, yUnitVec3, a);
+      _vec3_js__WEBPACK_IMPORTED_MODULE_2__["normalize"](tmpvec3, tmpvec3);
       setAxisAngle(out, tmpvec3, Math.PI);
       return out;
     } else if (dot > 0.999999) {
@@ -3555,7 +4687,7 @@ var rotationTo = function () {
       out[3] = 1;
       return out;
     } else {
-      __WEBPACK_IMPORTED_MODULE_2__vec3_js__["b" /* cross */](tmpvec3, a, b);
+      _vec3_js__WEBPACK_IMPORTED_MODULE_2__["cross"](tmpvec3, a, b);
       out[0] = tmpvec3[0];
       out[1] = tmpvec3[1];
       out[2] = tmpvec3[2];
@@ -3600,7 +4732,7 @@ var sqlerp = function () {
  * @returns {quat} out
  */
 var setAxes = function () {
-  var matr = __WEBPACK_IMPORTED_MODULE_1__mat3_js__["a" /* create */]();
+  var matr = _mat3_js__WEBPACK_IMPORTED_MODULE_1__["create"]();
 
   return function (out, view, right, up) {
     matr[0] = right[0];
@@ -3620,58 +4752,59 @@ var setAxes = function () {
 }();
 
 /***/ }),
-/* 6 */
+/* 11 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = create;
-/* unused harmony export clone */
-/* unused harmony export length */
-/* harmony export (immutable) */ __webpack_exports__["d"] = fromValues;
-/* unused harmony export copy */
-/* unused harmony export set */
-/* unused harmony export add */
-/* unused harmony export subtract */
-/* unused harmony export multiply */
-/* unused harmony export divide */
-/* unused harmony export ceil */
-/* unused harmony export floor */
-/* unused harmony export min */
-/* unused harmony export max */
-/* unused harmony export round */
-/* unused harmony export scale */
-/* unused harmony export scaleAndAdd */
-/* unused harmony export distance */
-/* unused harmony export squaredDistance */
-/* unused harmony export squaredLength */
-/* unused harmony export negate */
-/* unused harmony export inverse */
-/* harmony export (immutable) */ __webpack_exports__["f"] = normalize;
-/* harmony export (immutable) */ __webpack_exports__["c"] = dot;
-/* harmony export (immutable) */ __webpack_exports__["b"] = cross;
-/* unused harmony export lerp */
-/* unused harmony export hermite */
-/* unused harmony export bezier */
-/* unused harmony export random */
-/* unused harmony export transformMat4 */
-/* unused harmony export transformMat3 */
-/* unused harmony export transformQuat */
-/* unused harmony export rotateX */
-/* unused harmony export rotateY */
-/* unused harmony export rotateZ */
-/* unused harmony export angle */
-/* unused harmony export str */
-/* unused harmony export exactEquals */
-/* unused harmony export equals */
-/* unused harmony export sub */
-/* unused harmony export mul */
-/* unused harmony export div */
-/* unused harmony export dist */
-/* unused harmony export sqrDist */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return len; });
-/* unused harmony export sqrLen */
-/* unused harmony export forEach */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__common_js__ = __webpack_require__(0);
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clone", function() { return clone; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "length", function() { return length; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromValues", function() { return fromValues; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "copy", function() { return copy; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "add", function() { return add; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "subtract", function() { return subtract; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiply", function() { return multiply; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "divide", function() { return divide; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ceil", function() { return ceil; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "floor", function() { return floor; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "min", function() { return min; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "max", function() { return max; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "round", function() { return round; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scale", function() { return scale; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scaleAndAdd", function() { return scaleAndAdd; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "distance", function() { return distance; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "squaredDistance", function() { return squaredDistance; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "squaredLength", function() { return squaredLength; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "negate", function() { return negate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "inverse", function() { return inverse; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "normalize", function() { return normalize; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dot", function() { return dot; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "cross", function() { return cross; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "lerp", function() { return lerp; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hermite", function() { return hermite; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "bezier", function() { return bezier; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "random", function() { return random; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transformMat4", function() { return transformMat4; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transformMat3", function() { return transformMat3; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transformQuat", function() { return transformQuat; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateX", function() { return rotateX; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateY", function() { return rotateY; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateZ", function() { return rotateZ; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "angle", function() { return angle; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "str", function() { return str; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "exactEquals", function() { return exactEquals; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sub", function() { return sub; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mul", function() { return mul; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "div", function() { return div; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dist", function() { return dist; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sqrDist", function() { return sqrDist; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "len", function() { return len; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sqrLen", function() { return sqrLen; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "forEach", function() { return forEach; });
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
 
 
 /**
@@ -3685,8 +4818,8 @@ var setAxes = function () {
  * @returns {vec3} a new 3D vector
  */
 function create() {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](3);
-  if (__WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */] != Float32Array) {
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](3);
+  if (_common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"] != Float32Array) {
     out[0] = 0;
     out[1] = 0;
     out[2] = 0;
@@ -3701,7 +4834,7 @@ function create() {
  * @returns {vec3} a new 3D vector
  */
 function clone(a) {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](3);
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](3);
   out[0] = a[0];
   out[1] = a[1];
   out[2] = a[2];
@@ -3730,7 +4863,7 @@ function length(a) {
  * @returns {vec3} a new 3D vector
  */
 function fromValues(x, y, z) {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](3);
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](3);
   out[0] = x;
   out[1] = y;
   out[2] = z;
@@ -4135,8 +5268,8 @@ function bezier(out, a, b, c, d, t) {
 function random(out, scale) {
   scale = scale || 1.0;
 
-  var r = __WEBPACK_IMPORTED_MODULE_0__common_js__["c" /* RANDOM */]() * 2.0 * Math.PI;
-  var z = __WEBPACK_IMPORTED_MODULE_0__common_js__["c" /* RANDOM */]() * 2.0 - 1.0;
+  var r = _common_js__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]() * 2.0 * Math.PI;
+  var z = _common_js__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]() * 2.0 - 1.0;
   var zScale = Math.sqrt(1.0 - z * z) * scale;
 
   out[0] = Math.cos(r) * zScale;
@@ -4373,7 +5506,7 @@ function equals(a, b) {
   var b0 = b[0],
       b1 = b[1],
       b2 = b[2];
-  return Math.abs(a0 - b0) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a2), Math.abs(b2));
+  return Math.abs(a0 - b0) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2));
 }
 
 /**
@@ -4461,42 +5594,42 @@ var forEach = function () {
 }();
 
 /***/ }),
-/* 7 */
+/* 12 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony export (immutable) */ __webpack_exports__["create"] = create;
-/* harmony export (immutable) */ __webpack_exports__["clone"] = clone;
-/* harmony export (immutable) */ __webpack_exports__["fromValues"] = fromValues;
-/* harmony export (immutable) */ __webpack_exports__["copy"] = copy;
-/* harmony export (immutable) */ __webpack_exports__["set"] = set;
-/* harmony export (immutable) */ __webpack_exports__["add"] = add;
-/* harmony export (immutable) */ __webpack_exports__["subtract"] = subtract;
-/* harmony export (immutable) */ __webpack_exports__["multiply"] = multiply;
-/* harmony export (immutable) */ __webpack_exports__["divide"] = divide;
-/* harmony export (immutable) */ __webpack_exports__["ceil"] = ceil;
-/* harmony export (immutable) */ __webpack_exports__["floor"] = floor;
-/* harmony export (immutable) */ __webpack_exports__["min"] = min;
-/* harmony export (immutable) */ __webpack_exports__["max"] = max;
-/* harmony export (immutable) */ __webpack_exports__["round"] = round;
-/* harmony export (immutable) */ __webpack_exports__["scale"] = scale;
-/* harmony export (immutable) */ __webpack_exports__["scaleAndAdd"] = scaleAndAdd;
-/* harmony export (immutable) */ __webpack_exports__["distance"] = distance;
-/* harmony export (immutable) */ __webpack_exports__["squaredDistance"] = squaredDistance;
-/* harmony export (immutable) */ __webpack_exports__["length"] = length;
-/* harmony export (immutable) */ __webpack_exports__["squaredLength"] = squaredLength;
-/* harmony export (immutable) */ __webpack_exports__["negate"] = negate;
-/* harmony export (immutable) */ __webpack_exports__["inverse"] = inverse;
-/* harmony export (immutable) */ __webpack_exports__["normalize"] = normalize;
-/* harmony export (immutable) */ __webpack_exports__["dot"] = dot;
-/* harmony export (immutable) */ __webpack_exports__["lerp"] = lerp;
-/* harmony export (immutable) */ __webpack_exports__["random"] = random;
-/* harmony export (immutable) */ __webpack_exports__["transformMat4"] = transformMat4;
-/* harmony export (immutable) */ __webpack_exports__["transformQuat"] = transformQuat;
-/* harmony export (immutable) */ __webpack_exports__["str"] = str;
-/* harmony export (immutable) */ __webpack_exports__["exactEquals"] = exactEquals;
-/* harmony export (immutable) */ __webpack_exports__["equals"] = equals;
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clone", function() { return clone; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromValues", function() { return fromValues; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "copy", function() { return copy; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "add", function() { return add; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "subtract", function() { return subtract; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiply", function() { return multiply; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "divide", function() { return divide; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ceil", function() { return ceil; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "floor", function() { return floor; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "min", function() { return min; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "max", function() { return max; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "round", function() { return round; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scale", function() { return scale; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scaleAndAdd", function() { return scaleAndAdd; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "distance", function() { return distance; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "squaredDistance", function() { return squaredDistance; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "length", function() { return length; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "squaredLength", function() { return squaredLength; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "negate", function() { return negate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "inverse", function() { return inverse; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "normalize", function() { return normalize; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dot", function() { return dot; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "lerp", function() { return lerp; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "random", function() { return random; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transformMat4", function() { return transformMat4; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transformQuat", function() { return transformQuat; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "str", function() { return str; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "exactEquals", function() { return exactEquals; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sub", function() { return sub; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mul", function() { return mul; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "div", function() { return div; });
@@ -4505,7 +5638,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "len", function() { return len; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sqrLen", function() { return sqrLen; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "forEach", function() { return forEach; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__common_js__ = __webpack_require__(0);
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
 
 
 /**
@@ -4519,8 +5652,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  * @returns {vec4} a new 4D vector
  */
 function create() {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](4);
-  if (__WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */] != Float32Array) {
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
+  if (_common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"] != Float32Array) {
     out[0] = 0;
     out[1] = 0;
     out[2] = 0;
@@ -4536,7 +5669,7 @@ function create() {
  * @returns {vec4} a new 4D vector
  */
 function clone(a) {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](4);
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
   out[0] = a[0];
   out[1] = a[1];
   out[2] = a[2];
@@ -4554,7 +5687,7 @@ function clone(a) {
  * @returns {vec4} a new 4D vector
  */
 function fromValues(x, y, z, w) {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](4);
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
   out[0] = x;
   out[1] = y;
   out[2] = z;
@@ -4928,13 +6061,13 @@ function random(out, scale) {
   var v1, v2, v3, v4;
   var s1, s2;
   do {
-    v1 = __WEBPACK_IMPORTED_MODULE_0__common_js__["c" /* RANDOM */]() * 2 - 1;
-    v2 = __WEBPACK_IMPORTED_MODULE_0__common_js__["c" /* RANDOM */]() * 2 - 1;
+    v1 = _common_js__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]() * 2 - 1;
+    v2 = _common_js__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]() * 2 - 1;
     s1 = v1 * v1 + v2 * v2;
   } while (s1 >= 1);
   do {
-    v3 = __WEBPACK_IMPORTED_MODULE_0__common_js__["c" /* RANDOM */]() * 2 - 1;
-    v4 = __WEBPACK_IMPORTED_MODULE_0__common_js__["c" /* RANDOM */]() * 2 - 1;
+    v3 = _common_js__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]() * 2 - 1;
+    v4 = _common_js__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]() * 2 - 1;
     s2 = v3 * v3 + v4 * v4;
   } while (s2 >= 1);
 
@@ -5034,7 +6167,7 @@ function equals(a, b) {
       b1 = b[1],
       b2 = b[2],
       b3 = b[3];
-  return Math.abs(a0 - b0) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a3), Math.abs(b3));
+  return Math.abs(a0 - b0) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a3), Math.abs(b3));
 }
 
 /**
@@ -5122,1308 +6255,53 @@ var forEach = function () {
 }();
 
 /***/ }),
-/* 8 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_gl_matrix__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__scene_Terrain__ = __webpack_require__(17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__geometry_Tile__ = __webpack_require__(18);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__globals__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Camera__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__rendering_gl_ShaderProgram__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__rendering_Texture2D__ = __webpack_require__(22);
-
-
-
-
-
-
-
-class GameEngine {
-    static getEngine() {
-        if (GameEngine.engine) {
-            return GameEngine.engine;
-        }
-        else {
-            let tile = new __WEBPACK_IMPORTED_MODULE_2__geometry_Tile__["a" /* default */]();
-            tile.create();
-            GameEngine.engine = new GameEngine(tile);
-            return GameEngine.engine;
-        }
-    }
-    constructor(_tile) {
-        this.gameObjects = [];
-        this.terrainObjects = [];
-        this.collidableObjects = [];
-        this.tile = _tile;
-        this.camera = new __WEBPACK_IMPORTED_MODULE_4__Camera__["a" /* default */](__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(0, 0));
-        this.downkeys = new Set();
-        this.spriteShader = new __WEBPACK_IMPORTED_MODULE_5__rendering_gl_ShaderProgram__["b" /* default */]([
-            new __WEBPACK_IMPORTED_MODULE_5__rendering_gl_ShaderProgram__["a" /* Shader */](__WEBPACK_IMPORTED_MODULE_3__globals__["a" /* gl */].VERTEX_SHADER, __webpack_require__(23)),
-            new __WEBPACK_IMPORTED_MODULE_5__rendering_gl_ShaderProgram__["a" /* Shader */](__WEBPACK_IMPORTED_MODULE_3__globals__["a" /* gl */].FRAGMENT_SHADER, __webpack_require__(24)),
-        ]);
-        this.spriteShader.setSpriteTex(new __WEBPACK_IMPORTED_MODULE_6__rendering_Texture2D__["a" /* default */]("../../assets/sprites.png"));
-        window.addEventListener("keydown", (keyEvent) => {
-            if (!this.downkeys.has(keyEvent.key)) {
-                this.gameObjects.forEach((go) => { go.onKeyDown(keyEvent.key); });
-            }
-            this.downkeys.add(keyEvent.key);
-        });
-        window.addEventListener("keyup", (keyEvent) => {
-            this.downkeys.delete(keyEvent.key);
-            this.gameObjects.forEach((go) => { go.onKeyUp(keyEvent.key); });
-        });
-        let terrain = new __WEBPACK_IMPORTED_MODULE_1__scene_Terrain__["a" /* default */]();
-        for (let i = -2; i < 3; i++) {
-            terrain.setTileAt(i, -3);
-            terrain.setTileAt(i, -4);
-        }
-        terrain.setTileAt(7, -3);
-        terrain.setTileAt(8, -3);
-        terrain.setTileAt(9, -3);
-        terrain.setTileAt(7, -4);
-        terrain.setTileAt(8, -4);
-        terrain.setTileAt(9, -4);
-        terrain.setTileAt(9, 0);
-        this.setTerrain(terrain);
-    }
-    setRenderer(renderer) {
-        this.renderer = renderer;
-    }
-    setTerrain(terrain) {
-        this.terrainObjects.push(terrain);
-    }
-    getCamera() {
-        return this.camera;
-    }
-    drawGameObjects() {
-        let tilePositions = [];
-        let tileUvs = [];
-        let tileMirrors = [];
-        for (let go of this.gameObjects) {
-            tilePositions.push(go.getPosition());
-            tileUvs.push(go.getSpriteUv());
-            tileMirrors.push(go.facingLeft());
-        }
-        for (let ter of this.terrainObjects) {
-            for (let x of ter.tiles.keys()) {
-                for (let y of ter.tiles.get(x)) {
-                    tilePositions.push(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(x, y));
-                    tileUvs.push(ter.getSpritePosition(x, y));
-                    tileMirrors.push(false);
-                }
-            }
-        }
-        let totalPositions;
-        this.tile.setInstanceVBOs(tilePositions, tileUvs, tileMirrors);
-        this.tile.setNumInstances(tilePositions.length);
-        this.renderer.render(this.camera, this.spriteShader, [this.tile]);
-    }
-    // Only call from GameObject class
-    addGameObject(go) {
-        if (this.gameObjects.indexOf(go) < 0) {
-            this.gameObjects.push(go);
-        }
-    }
-    // Only call from the GameObject cass
-    destroyGameObject(go) {
-        let idx = this.gameObjects.indexOf(go);
-        if (idx >= 0) {
-            this.gameObjects.splice(idx, 1);
-        }
-    }
-    updateGameObjects(deltaTime) {
-        for (let go of this.gameObjects) {
-            go.physicsUpdate(deltaTime);
-            for (let key of this.downkeys) {
-                go.onKeyPress(key);
-            }
-            go.onUpdate(deltaTime);
-        }
-        this.camera.update();
-    }
-    startGame() {
-        this.lastTick = Date.now();
-        let tick = () => {
-            let curTime = Date.now();
-            let deltaTime = curTime - this.lastTick;
-            this.lastTick = curTime;
-            this.updateGameObjects(deltaTime / 1000.0);
-            window.setTimeout(tick, 16);
-        };
-        tick();
-    }
-}
-/* harmony default export */ __webpack_exports__["a"] = (GameEngine);
-
-
-/***/ }),
-/* 9 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-let sceneAttributes = {
-    gravity: 1.5,
-    playerSpeed: 7.0,
-    playerJump: 6.2,
-    maxJumpHold: 0.3,
-    jumpFalloff: 0.78,
-    maxObjectSpeed: 5.0,
-};
-/* harmony default export */ __webpack_exports__["a"] = (sceneAttributes);
-
-
-/***/ }),
-/* 10 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_stats_js__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_stats_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_stats_js__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__globals__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__rendering_gl_OpenGLRenderer__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__engine_GameEngine__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__scene_Player__ = __webpack_require__(25);
-
-
-
-
-
-let time = 0.0;
-function loadScene() {
-}
-function main() {
-    // get canvas and webgl context
-    const canvas = document.getElementById('canvas');
-    const gl = canvas.getContext('webgl2');
-    if (!gl) {
-        alert('WebGL 2 not supported!');
-    }
-    Object(__WEBPACK_IMPORTED_MODULE_1__globals__["b" /* setGL */])(gl);
-    loadScene();
-    // Initial display for framerate
-    const stats = __WEBPACK_IMPORTED_MODULE_0_stats_js__();
-    stats.setMode(0);
-    stats.domElement.style.position = 'absolute';
-    stats.domElement.style.left = '0px';
-    stats.domElement.style.top = '0px';
-    document.body.appendChild(stats.domElement);
-    let engine = __WEBPACK_IMPORTED_MODULE_3__engine_GameEngine__["a" /* default */].getEngine();
-    const camera = engine.getCamera();
-    const renderer = new __WEBPACK_IMPORTED_MODULE_2__rendering_gl_OpenGLRenderer__["a" /* default */](canvas);
-    renderer.setClearColor(0.9, 0.9, 0.9, 1);
-    engine.setRenderer(renderer);
-    let player = new __WEBPACK_IMPORTED_MODULE_4__scene_Player__["a" /* default */]();
-    engine.addGameObject(player);
-    camera.makeParent(player);
-    //new RhythmGropuGenerator(20, 20, 0.5, 0.6, [1, 0, 0]).generateRhythmGroup();
-    // This function will be called every frame
-    function tick() {
-        stats.begin();
-        time++;
-        gl.viewport(0, 0, window.innerWidth, window.innerHeight);
-        renderer.clear();
-        __WEBPACK_IMPORTED_MODULE_3__engine_GameEngine__["a" /* default */].getEngine().drawGameObjects();
-        // Tell the browser to call `tick` again whenever it renders a new frame
-        stats.end();
-        requestAnimationFrame(tick);
-    }
-    window.addEventListener('resize', function () {
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        camera.setAspectRatio(window.innerWidth / window.innerHeight);
-        camera.updateProjectionMatrix();
-    }, false);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.setAspectRatio(window.innerWidth / window.innerHeight);
-    camera.updateProjectionMatrix();
-    // Start the render loop
-    engine.startGame();
-    tick();
-}
-main();
-
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-!function(e,t){ true?module.exports=t():"function"==typeof define&&define.amd?define(t):e.Stats=t()}(this,function(){"use strict";var c=function(){var n=0,l=document.createElement("div");function e(e){return l.appendChild(e.dom),e}function t(e){for(var t=0;t<l.children.length;t++)l.children[t].style.display=t===e?"block":"none";n=e}l.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000",l.addEventListener("click",function(e){e.preventDefault(),t(++n%l.children.length)},!1);var i=(performance||Date).now(),a=i,o=0,f=e(new c.Panel("FPS","#0ff","#002")),r=e(new c.Panel("MS","#0f0","#020"));if(self.performance&&self.performance.memory)var d=e(new c.Panel("MB","#f08","#201"));return t(0),{REVISION:16,dom:l,addPanel:e,showPanel:t,begin:function(){i=(performance||Date).now()},end:function(){o++;var e=(performance||Date).now();if(r.update(e-i,200),a+1e3<=e&&(f.update(1e3*o/(e-a),100),a=e,o=0,d)){var t=performance.memory;d.update(t.usedJSHeapSize/1048576,t.jsHeapSizeLimit/1048576)}return e},update:function(){i=this.end()},domElement:l,setMode:t}};return c.Panel=function(n,l,i){var a=1/0,o=0,f=Math.round,r=f(window.devicePixelRatio||1),d=80*r,e=48*r,c=3*r,p=2*r,u=3*r,s=15*r,m=74*r,h=30*r,y=document.createElement("canvas");y.width=d,y.height=e,y.style.cssText="width:80px;height:48px";var v=y.getContext("2d");return v.font="bold "+9*r+"px Helvetica,Arial,sans-serif",v.textBaseline="top",v.fillStyle=i,v.fillRect(0,0,d,e),v.fillStyle=l,v.fillText(n,c,p),v.fillRect(u,s,m,h),v.fillStyle=i,v.globalAlpha=.9,v.fillRect(u,s,m,h),{dom:y,update:function(e,t){a=Math.min(a,e),o=Math.max(o,e),v.fillStyle=i,v.globalAlpha=1,v.fillRect(0,0,d,s),v.fillStyle=l,v.fillText(f(e)+" "+n+" ("+f(a)+"-"+f(o)+")",c,p),v.drawImage(y,u+r,s,m-r,h,u,s,m-r,h),v.fillRect(u+m-r,s,r,h),v.fillStyle=i,v.globalAlpha=.9,v.fillRect(u+m-r,s,r,f((1-e/t)*h))}}},c});
-
-
-/***/ }),
-/* 12 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_gl_matrix__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__globals__ = __webpack_require__(1);
-
-
-// In this file, `gl` is accessible because it is imported above
-class OpenGLRenderer {
-    constructor(canvas) {
-        this.canvas = canvas;
-    }
-    setClearColor(r, g, b, a) {
-        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].clearColor(r, g, b, a);
-    }
-    setSize(width, height) {
-        this.canvas.width = width;
-        this.canvas.height = height;
-    }
-    clear() {
-        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].clear(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].COLOR_BUFFER_BIT | __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].DEPTH_BUFFER_BIT);
-    }
-    render(camera, prog, drawables) {
-        let model = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["a" /* mat4 */].create();
-        let viewProj = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["a" /* mat4 */].create();
-        let color = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec4 */].fromValues(1, 0, 0, 1);
-        prog.setCameraPos(camera.position);
-        __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["a" /* mat4 */].identity(model);
-        __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["a" /* mat4 */].multiply(viewProj, camera.projectionMatrix, camera.viewMatrix);
-        prog.setModelMatrix(model);
-        prog.setViewProjMatrix(viewProj);
-        for (let drawable of drawables) {
-            prog.draw(drawable);
-        }
-    }
-}
-;
-/* harmony default export */ __webpack_exports__["a"] = (OpenGLRenderer);
-
-
-/***/ }),
 /* 13 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* unused harmony export create */
-/* unused harmony export clone */
-/* unused harmony export copy */
-/* unused harmony export identity */
-/* unused harmony export fromValues */
-/* unused harmony export set */
-/* unused harmony export transpose */
-/* unused harmony export invert */
-/* unused harmony export adjoint */
-/* unused harmony export determinant */
-/* unused harmony export multiply */
-/* unused harmony export rotate */
-/* unused harmony export scale */
-/* unused harmony export fromRotation */
-/* unused harmony export fromScaling */
-/* unused harmony export str */
-/* unused harmony export frob */
-/* unused harmony export LDU */
-/* unused harmony export add */
-/* unused harmony export subtract */
-/* unused harmony export exactEquals */
-/* unused harmony export equals */
-/* unused harmony export multiplyScalar */
-/* unused harmony export multiplyScalarAndAdd */
-/* unused harmony export mul */
-/* unused harmony export sub */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__common_js__ = __webpack_require__(0);
-
-
-/**
- * 2x2 Matrix
- * @module mat2
- */
-
-/**
- * Creates a new identity mat2
- *
- * @returns {mat2} a new 2x2 matrix
- */
-function create() {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](4);
-  if (__WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */] != Float32Array) {
-    out[1] = 0;
-    out[2] = 0;
-  }
-  out[0] = 1;
-  out[3] = 1;
-  return out;
-}
-
-/**
- * Creates a new mat2 initialized with values from an existing matrix
- *
- * @param {mat2} a matrix to clone
- * @returns {mat2} a new 2x2 matrix
- */
-function clone(a) {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](4);
-  out[0] = a[0];
-  out[1] = a[1];
-  out[2] = a[2];
-  out[3] = a[3];
-  return out;
-}
-
-/**
- * Copy the values from one mat2 to another
- *
- * @param {mat2} out the receiving matrix
- * @param {mat2} a the source matrix
- * @returns {mat2} out
- */
-function copy(out, a) {
-  out[0] = a[0];
-  out[1] = a[1];
-  out[2] = a[2];
-  out[3] = a[3];
-  return out;
-}
-
-/**
- * Set a mat2 to the identity matrix
- *
- * @param {mat2} out the receiving matrix
- * @returns {mat2} out
- */
-function identity(out) {
-  out[0] = 1;
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = 1;
-  return out;
-}
-
-/**
- * Create a new mat2 with the given values
- *
- * @param {Number} m00 Component in column 0, row 0 position (index 0)
- * @param {Number} m01 Component in column 0, row 1 position (index 1)
- * @param {Number} m10 Component in column 1, row 0 position (index 2)
- * @param {Number} m11 Component in column 1, row 1 position (index 3)
- * @returns {mat2} out A new 2x2 matrix
- */
-function fromValues(m00, m01, m10, m11) {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](4);
-  out[0] = m00;
-  out[1] = m01;
-  out[2] = m10;
-  out[3] = m11;
-  return out;
-}
-
-/**
- * Set the components of a mat2 to the given values
- *
- * @param {mat2} out the receiving matrix
- * @param {Number} m00 Component in column 0, row 0 position (index 0)
- * @param {Number} m01 Component in column 0, row 1 position (index 1)
- * @param {Number} m10 Component in column 1, row 0 position (index 2)
- * @param {Number} m11 Component in column 1, row 1 position (index 3)
- * @returns {mat2} out
- */
-function set(out, m00, m01, m10, m11) {
-  out[0] = m00;
-  out[1] = m01;
-  out[2] = m10;
-  out[3] = m11;
-  return out;
-}
-
-/**
- * Transpose the values of a mat2
- *
- * @param {mat2} out the receiving matrix
- * @param {mat2} a the source matrix
- * @returns {mat2} out
- */
-function transpose(out, a) {
-  // If we are transposing ourselves we can skip a few steps but have to cache
-  // some values
-  if (out === a) {
-    var a1 = a[1];
-    out[1] = a[2];
-    out[2] = a1;
-  } else {
-    out[0] = a[0];
-    out[1] = a[2];
-    out[2] = a[1];
-    out[3] = a[3];
-  }
-
-  return out;
-}
-
-/**
- * Inverts a mat2
- *
- * @param {mat2} out the receiving matrix
- * @param {mat2} a the source matrix
- * @returns {mat2} out
- */
-function invert(out, a) {
-  var a0 = a[0],
-      a1 = a[1],
-      a2 = a[2],
-      a3 = a[3];
-
-  // Calculate the determinant
-  var det = a0 * a3 - a2 * a1;
-
-  if (!det) {
-    return null;
-  }
-  det = 1.0 / det;
-
-  out[0] = a3 * det;
-  out[1] = -a1 * det;
-  out[2] = -a2 * det;
-  out[3] = a0 * det;
-
-  return out;
-}
-
-/**
- * Calculates the adjugate of a mat2
- *
- * @param {mat2} out the receiving matrix
- * @param {mat2} a the source matrix
- * @returns {mat2} out
- */
-function adjoint(out, a) {
-  // Caching this value is nessecary if out == a
-  var a0 = a[0];
-  out[0] = a[3];
-  out[1] = -a[1];
-  out[2] = -a[2];
-  out[3] = a0;
-
-  return out;
-}
-
-/**
- * Calculates the determinant of a mat2
- *
- * @param {mat2} a the source matrix
- * @returns {Number} determinant of a
- */
-function determinant(a) {
-  return a[0] * a[3] - a[2] * a[1];
-}
-
-/**
- * Multiplies two mat2's
- *
- * @param {mat2} out the receiving matrix
- * @param {mat2} a the first operand
- * @param {mat2} b the second operand
- * @returns {mat2} out
- */
-function multiply(out, a, b) {
-  var a0 = a[0],
-      a1 = a[1],
-      a2 = a[2],
-      a3 = a[3];
-  var b0 = b[0],
-      b1 = b[1],
-      b2 = b[2],
-      b3 = b[3];
-  out[0] = a0 * b0 + a2 * b1;
-  out[1] = a1 * b0 + a3 * b1;
-  out[2] = a0 * b2 + a2 * b3;
-  out[3] = a1 * b2 + a3 * b3;
-  return out;
-}
-
-/**
- * Rotates a mat2 by the given angle
- *
- * @param {mat2} out the receiving matrix
- * @param {mat2} a the matrix to rotate
- * @param {Number} rad the angle to rotate the matrix by
- * @returns {mat2} out
- */
-function rotate(out, a, rad) {
-  var a0 = a[0],
-      a1 = a[1],
-      a2 = a[2],
-      a3 = a[3];
-  var s = Math.sin(rad);
-  var c = Math.cos(rad);
-  out[0] = a0 * c + a2 * s;
-  out[1] = a1 * c + a3 * s;
-  out[2] = a0 * -s + a2 * c;
-  out[3] = a1 * -s + a3 * c;
-  return out;
-}
-
-/**
- * Scales the mat2 by the dimensions in the given vec2
- *
- * @param {mat2} out the receiving matrix
- * @param {mat2} a the matrix to rotate
- * @param {vec2} v the vec2 to scale the matrix by
- * @returns {mat2} out
- **/
-function scale(out, a, v) {
-  var a0 = a[0],
-      a1 = a[1],
-      a2 = a[2],
-      a3 = a[3];
-  var v0 = v[0],
-      v1 = v[1];
-  out[0] = a0 * v0;
-  out[1] = a1 * v0;
-  out[2] = a2 * v1;
-  out[3] = a3 * v1;
-  return out;
-}
-
-/**
- * Creates a matrix from a given angle
- * This is equivalent to (but much faster than):
- *
- *     mat2.identity(dest);
- *     mat2.rotate(dest, dest, rad);
- *
- * @param {mat2} out mat2 receiving operation result
- * @param {Number} rad the angle to rotate the matrix by
- * @returns {mat2} out
- */
-function fromRotation(out, rad) {
-  var s = Math.sin(rad);
-  var c = Math.cos(rad);
-  out[0] = c;
-  out[1] = s;
-  out[2] = -s;
-  out[3] = c;
-  return out;
-}
-
-/**
- * Creates a matrix from a vector scaling
- * This is equivalent to (but much faster than):
- *
- *     mat2.identity(dest);
- *     mat2.scale(dest, dest, vec);
- *
- * @param {mat2} out mat2 receiving operation result
- * @param {vec2} v Scaling vector
- * @returns {mat2} out
- */
-function fromScaling(out, v) {
-  out[0] = v[0];
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = v[1];
-  return out;
-}
-
-/**
- * Returns a string representation of a mat2
- *
- * @param {mat2} a matrix to represent as a string
- * @returns {String} string representation of the matrix
- */
-function str(a) {
-  return 'mat2(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ')';
-}
-
-/**
- * Returns Frobenius norm of a mat2
- *
- * @param {mat2} a the matrix to calculate Frobenius norm of
- * @returns {Number} Frobenius norm
- */
-function frob(a) {
-  return Math.sqrt(Math.pow(a[0], 2) + Math.pow(a[1], 2) + Math.pow(a[2], 2) + Math.pow(a[3], 2));
-}
-
-/**
- * Returns L, D and U matrices (Lower triangular, Diagonal and Upper triangular) by factorizing the input matrix
- * @param {mat2} L the lower triangular matrix
- * @param {mat2} D the diagonal matrix
- * @param {mat2} U the upper triangular matrix
- * @param {mat2} a the input matrix to factorize
- */
-
-function LDU(L, D, U, a) {
-  L[2] = a[2] / a[0];
-  U[0] = a[0];
-  U[1] = a[1];
-  U[3] = a[3] - L[2] * U[1];
-  return [L, D, U];
-}
-
-/**
- * Adds two mat2's
- *
- * @param {mat2} out the receiving matrix
- * @param {mat2} a the first operand
- * @param {mat2} b the second operand
- * @returns {mat2} out
- */
-function add(out, a, b) {
-  out[0] = a[0] + b[0];
-  out[1] = a[1] + b[1];
-  out[2] = a[2] + b[2];
-  out[3] = a[3] + b[3];
-  return out;
-}
-
-/**
- * Subtracts matrix b from matrix a
- *
- * @param {mat2} out the receiving matrix
- * @param {mat2} a the first operand
- * @param {mat2} b the second operand
- * @returns {mat2} out
- */
-function subtract(out, a, b) {
-  out[0] = a[0] - b[0];
-  out[1] = a[1] - b[1];
-  out[2] = a[2] - b[2];
-  out[3] = a[3] - b[3];
-  return out;
-}
-
-/**
- * Returns whether or not the matrices have exactly the same elements in the same position (when compared with ===)
- *
- * @param {mat2} a The first matrix.
- * @param {mat2} b The second matrix.
- * @returns {Boolean} True if the matrices are equal, false otherwise.
- */
-function exactEquals(a, b) {
-  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
-}
-
-/**
- * Returns whether or not the matrices have approximately the same elements in the same position.
- *
- * @param {mat2} a The first matrix.
- * @param {mat2} b The second matrix.
- * @returns {Boolean} True if the matrices are equal, false otherwise.
- */
-function equals(a, b) {
-  var a0 = a[0],
-      a1 = a[1],
-      a2 = a[2],
-      a3 = a[3];
-  var b0 = b[0],
-      b1 = b[1],
-      b2 = b[2],
-      b3 = b[3];
-  return Math.abs(a0 - b0) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a3), Math.abs(b3));
-}
-
-/**
- * Multiply each element of the matrix by a scalar.
- *
- * @param {mat2} out the receiving matrix
- * @param {mat2} a the matrix to scale
- * @param {Number} b amount to scale the matrix's elements by
- * @returns {mat2} out
- */
-function multiplyScalar(out, a, b) {
-  out[0] = a[0] * b;
-  out[1] = a[1] * b;
-  out[2] = a[2] * b;
-  out[3] = a[3] * b;
-  return out;
-}
-
-/**
- * Adds two mat2's after multiplying each element of the second operand by a scalar value.
- *
- * @param {mat2} out the receiving vector
- * @param {mat2} a the first operand
- * @param {mat2} b the second operand
- * @param {Number} scale the amount to scale b's elements by before adding
- * @returns {mat2} out
- */
-function multiplyScalarAndAdd(out, a, b, scale) {
-  out[0] = a[0] + b[0] * scale;
-  out[1] = a[1] + b[1] * scale;
-  out[2] = a[2] + b[2] * scale;
-  out[3] = a[3] + b[3] * scale;
-  return out;
-}
-
-/**
- * Alias for {@link mat2.multiply}
- * @function
- */
-var mul = multiply;
-
-/**
- * Alias for {@link mat2.subtract}
- * @function
- */
-var sub = subtract;
-
-/***/ }),
-/* 14 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* unused harmony export create */
-/* unused harmony export clone */
-/* unused harmony export copy */
-/* unused harmony export identity */
-/* unused harmony export fromValues */
-/* unused harmony export set */
-/* unused harmony export invert */
-/* unused harmony export determinant */
-/* unused harmony export multiply */
-/* unused harmony export rotate */
-/* unused harmony export scale */
-/* unused harmony export translate */
-/* unused harmony export fromRotation */
-/* unused harmony export fromScaling */
-/* unused harmony export fromTranslation */
-/* unused harmony export str */
-/* unused harmony export frob */
-/* unused harmony export add */
-/* unused harmony export subtract */
-/* unused harmony export multiplyScalar */
-/* unused harmony export multiplyScalarAndAdd */
-/* unused harmony export exactEquals */
-/* unused harmony export equals */
-/* unused harmony export mul */
-/* unused harmony export sub */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__common_js__ = __webpack_require__(0);
-
-
-/**
- * 2x3 Matrix
- * @module mat2d
- *
- * @description
- * A mat2d contains six elements defined as:
- * <pre>
- * [a, c, tx,
- *  b, d, ty]
- * </pre>
- * This is a short form for the 3x3 matrix:
- * <pre>
- * [a, c, tx,
- *  b, d, ty,
- *  0, 0, 1]
- * </pre>
- * The last row is ignored so the array is shorter and operations are faster.
- */
-
-/**
- * Creates a new identity mat2d
- *
- * @returns {mat2d} a new 2x3 matrix
- */
-function create() {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](6);
-  if (__WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */] != Float32Array) {
-    out[1] = 0;
-    out[2] = 0;
-    out[4] = 0;
-    out[5] = 0;
-  }
-  out[0] = 1;
-  out[3] = 1;
-  return out;
-}
-
-/**
- * Creates a new mat2d initialized with values from an existing matrix
- *
- * @param {mat2d} a matrix to clone
- * @returns {mat2d} a new 2x3 matrix
- */
-function clone(a) {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](6);
-  out[0] = a[0];
-  out[1] = a[1];
-  out[2] = a[2];
-  out[3] = a[3];
-  out[4] = a[4];
-  out[5] = a[5];
-  return out;
-}
-
-/**
- * Copy the values from one mat2d to another
- *
- * @param {mat2d} out the receiving matrix
- * @param {mat2d} a the source matrix
- * @returns {mat2d} out
- */
-function copy(out, a) {
-  out[0] = a[0];
-  out[1] = a[1];
-  out[2] = a[2];
-  out[3] = a[3];
-  out[4] = a[4];
-  out[5] = a[5];
-  return out;
-}
-
-/**
- * Set a mat2d to the identity matrix
- *
- * @param {mat2d} out the receiving matrix
- * @returns {mat2d} out
- */
-function identity(out) {
-  out[0] = 1;
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = 1;
-  out[4] = 0;
-  out[5] = 0;
-  return out;
-}
-
-/**
- * Create a new mat2d with the given values
- *
- * @param {Number} a Component A (index 0)
- * @param {Number} b Component B (index 1)
- * @param {Number} c Component C (index 2)
- * @param {Number} d Component D (index 3)
- * @param {Number} tx Component TX (index 4)
- * @param {Number} ty Component TY (index 5)
- * @returns {mat2d} A new mat2d
- */
-function fromValues(a, b, c, d, tx, ty) {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](6);
-  out[0] = a;
-  out[1] = b;
-  out[2] = c;
-  out[3] = d;
-  out[4] = tx;
-  out[5] = ty;
-  return out;
-}
-
-/**
- * Set the components of a mat2d to the given values
- *
- * @param {mat2d} out the receiving matrix
- * @param {Number} a Component A (index 0)
- * @param {Number} b Component B (index 1)
- * @param {Number} c Component C (index 2)
- * @param {Number} d Component D (index 3)
- * @param {Number} tx Component TX (index 4)
- * @param {Number} ty Component TY (index 5)
- * @returns {mat2d} out
- */
-function set(out, a, b, c, d, tx, ty) {
-  out[0] = a;
-  out[1] = b;
-  out[2] = c;
-  out[3] = d;
-  out[4] = tx;
-  out[5] = ty;
-  return out;
-}
-
-/**
- * Inverts a mat2d
- *
- * @param {mat2d} out the receiving matrix
- * @param {mat2d} a the source matrix
- * @returns {mat2d} out
- */
-function invert(out, a) {
-  var aa = a[0],
-      ab = a[1],
-      ac = a[2],
-      ad = a[3];
-  var atx = a[4],
-      aty = a[5];
-
-  var det = aa * ad - ab * ac;
-  if (!det) {
-    return null;
-  }
-  det = 1.0 / det;
-
-  out[0] = ad * det;
-  out[1] = -ab * det;
-  out[2] = -ac * det;
-  out[3] = aa * det;
-  out[4] = (ac * aty - ad * atx) * det;
-  out[5] = (ab * atx - aa * aty) * det;
-  return out;
-}
-
-/**
- * Calculates the determinant of a mat2d
- *
- * @param {mat2d} a the source matrix
- * @returns {Number} determinant of a
- */
-function determinant(a) {
-  return a[0] * a[3] - a[1] * a[2];
-}
-
-/**
- * Multiplies two mat2d's
- *
- * @param {mat2d} out the receiving matrix
- * @param {mat2d} a the first operand
- * @param {mat2d} b the second operand
- * @returns {mat2d} out
- */
-function multiply(out, a, b) {
-  var a0 = a[0],
-      a1 = a[1],
-      a2 = a[2],
-      a3 = a[3],
-      a4 = a[4],
-      a5 = a[5];
-  var b0 = b[0],
-      b1 = b[1],
-      b2 = b[2],
-      b3 = b[3],
-      b4 = b[4],
-      b5 = b[5];
-  out[0] = a0 * b0 + a2 * b1;
-  out[1] = a1 * b0 + a3 * b1;
-  out[2] = a0 * b2 + a2 * b3;
-  out[3] = a1 * b2 + a3 * b3;
-  out[4] = a0 * b4 + a2 * b5 + a4;
-  out[5] = a1 * b4 + a3 * b5 + a5;
-  return out;
-}
-
-/**
- * Rotates a mat2d by the given angle
- *
- * @param {mat2d} out the receiving matrix
- * @param {mat2d} a the matrix to rotate
- * @param {Number} rad the angle to rotate the matrix by
- * @returns {mat2d} out
- */
-function rotate(out, a, rad) {
-  var a0 = a[0],
-      a1 = a[1],
-      a2 = a[2],
-      a3 = a[3],
-      a4 = a[4],
-      a5 = a[5];
-  var s = Math.sin(rad);
-  var c = Math.cos(rad);
-  out[0] = a0 * c + a2 * s;
-  out[1] = a1 * c + a3 * s;
-  out[2] = a0 * -s + a2 * c;
-  out[3] = a1 * -s + a3 * c;
-  out[4] = a4;
-  out[5] = a5;
-  return out;
-}
-
-/**
- * Scales the mat2d by the dimensions in the given vec2
- *
- * @param {mat2d} out the receiving matrix
- * @param {mat2d} a the matrix to translate
- * @param {vec2} v the vec2 to scale the matrix by
- * @returns {mat2d} out
- **/
-function scale(out, a, v) {
-  var a0 = a[0],
-      a1 = a[1],
-      a2 = a[2],
-      a3 = a[3],
-      a4 = a[4],
-      a5 = a[5];
-  var v0 = v[0],
-      v1 = v[1];
-  out[0] = a0 * v0;
-  out[1] = a1 * v0;
-  out[2] = a2 * v1;
-  out[3] = a3 * v1;
-  out[4] = a4;
-  out[5] = a5;
-  return out;
-}
-
-/**
- * Translates the mat2d by the dimensions in the given vec2
- *
- * @param {mat2d} out the receiving matrix
- * @param {mat2d} a the matrix to translate
- * @param {vec2} v the vec2 to translate the matrix by
- * @returns {mat2d} out
- **/
-function translate(out, a, v) {
-  var a0 = a[0],
-      a1 = a[1],
-      a2 = a[2],
-      a3 = a[3],
-      a4 = a[4],
-      a5 = a[5];
-  var v0 = v[0],
-      v1 = v[1];
-  out[0] = a0;
-  out[1] = a1;
-  out[2] = a2;
-  out[3] = a3;
-  out[4] = a0 * v0 + a2 * v1 + a4;
-  out[5] = a1 * v0 + a3 * v1 + a5;
-  return out;
-}
-
-/**
- * Creates a matrix from a given angle
- * This is equivalent to (but much faster than):
- *
- *     mat2d.identity(dest);
- *     mat2d.rotate(dest, dest, rad);
- *
- * @param {mat2d} out mat2d receiving operation result
- * @param {Number} rad the angle to rotate the matrix by
- * @returns {mat2d} out
- */
-function fromRotation(out, rad) {
-  var s = Math.sin(rad),
-      c = Math.cos(rad);
-  out[0] = c;
-  out[1] = s;
-  out[2] = -s;
-  out[3] = c;
-  out[4] = 0;
-  out[5] = 0;
-  return out;
-}
-
-/**
- * Creates a matrix from a vector scaling
- * This is equivalent to (but much faster than):
- *
- *     mat2d.identity(dest);
- *     mat2d.scale(dest, dest, vec);
- *
- * @param {mat2d} out mat2d receiving operation result
- * @param {vec2} v Scaling vector
- * @returns {mat2d} out
- */
-function fromScaling(out, v) {
-  out[0] = v[0];
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = v[1];
-  out[4] = 0;
-  out[5] = 0;
-  return out;
-}
-
-/**
- * Creates a matrix from a vector translation
- * This is equivalent to (but much faster than):
- *
- *     mat2d.identity(dest);
- *     mat2d.translate(dest, dest, vec);
- *
- * @param {mat2d} out mat2d receiving operation result
- * @param {vec2} v Translation vector
- * @returns {mat2d} out
- */
-function fromTranslation(out, v) {
-  out[0] = 1;
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = 1;
-  out[4] = v[0];
-  out[5] = v[1];
-  return out;
-}
-
-/**
- * Returns a string representation of a mat2d
- *
- * @param {mat2d} a matrix to represent as a string
- * @returns {String} string representation of the matrix
- */
-function str(a) {
-  return 'mat2d(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ', ' + a[4] + ', ' + a[5] + ')';
-}
-
-/**
- * Returns Frobenius norm of a mat2d
- *
- * @param {mat2d} a the matrix to calculate Frobenius norm of
- * @returns {Number} Frobenius norm
- */
-function frob(a) {
-  return Math.sqrt(Math.pow(a[0], 2) + Math.pow(a[1], 2) + Math.pow(a[2], 2) + Math.pow(a[3], 2) + Math.pow(a[4], 2) + Math.pow(a[5], 2) + 1);
-}
-
-/**
- * Adds two mat2d's
- *
- * @param {mat2d} out the receiving matrix
- * @param {mat2d} a the first operand
- * @param {mat2d} b the second operand
- * @returns {mat2d} out
- */
-function add(out, a, b) {
-  out[0] = a[0] + b[0];
-  out[1] = a[1] + b[1];
-  out[2] = a[2] + b[2];
-  out[3] = a[3] + b[3];
-  out[4] = a[4] + b[4];
-  out[5] = a[5] + b[5];
-  return out;
-}
-
-/**
- * Subtracts matrix b from matrix a
- *
- * @param {mat2d} out the receiving matrix
- * @param {mat2d} a the first operand
- * @param {mat2d} b the second operand
- * @returns {mat2d} out
- */
-function subtract(out, a, b) {
-  out[0] = a[0] - b[0];
-  out[1] = a[1] - b[1];
-  out[2] = a[2] - b[2];
-  out[3] = a[3] - b[3];
-  out[4] = a[4] - b[4];
-  out[5] = a[5] - b[5];
-  return out;
-}
-
-/**
- * Multiply each element of the matrix by a scalar.
- *
- * @param {mat2d} out the receiving matrix
- * @param {mat2d} a the matrix to scale
- * @param {Number} b amount to scale the matrix's elements by
- * @returns {mat2d} out
- */
-function multiplyScalar(out, a, b) {
-  out[0] = a[0] * b;
-  out[1] = a[1] * b;
-  out[2] = a[2] * b;
-  out[3] = a[3] * b;
-  out[4] = a[4] * b;
-  out[5] = a[5] * b;
-  return out;
-}
-
-/**
- * Adds two mat2d's after multiplying each element of the second operand by a scalar value.
- *
- * @param {mat2d} out the receiving vector
- * @param {mat2d} a the first operand
- * @param {mat2d} b the second operand
- * @param {Number} scale the amount to scale b's elements by before adding
- * @returns {mat2d} out
- */
-function multiplyScalarAndAdd(out, a, b, scale) {
-  out[0] = a[0] + b[0] * scale;
-  out[1] = a[1] + b[1] * scale;
-  out[2] = a[2] + b[2] * scale;
-  out[3] = a[3] + b[3] * scale;
-  out[4] = a[4] + b[4] * scale;
-  out[5] = a[5] + b[5] * scale;
-  return out;
-}
-
-/**
- * Returns whether or not the matrices have exactly the same elements in the same position (when compared with ===)
- *
- * @param {mat2d} a The first matrix.
- * @param {mat2d} b The second matrix.
- * @returns {Boolean} True if the matrices are equal, false otherwise.
- */
-function exactEquals(a, b) {
-  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5];
-}
-
-/**
- * Returns whether or not the matrices have approximately the same elements in the same position.
- *
- * @param {mat2d} a The first matrix.
- * @param {mat2d} b The second matrix.
- * @returns {Boolean} True if the matrices are equal, false otherwise.
- */
-function equals(a, b) {
-  var a0 = a[0],
-      a1 = a[1],
-      a2 = a[2],
-      a3 = a[3],
-      a4 = a[4],
-      a5 = a[5];
-  var b0 = b[0],
-      b1 = b[1],
-      b2 = b[2],
-      b3 = b[3],
-      b4 = b[4],
-      b5 = b[5];
-  return Math.abs(a0 - b0) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a5), Math.abs(b5));
-}
-
-/**
- * Alias for {@link mat2d.multiply}
- * @function
- */
-var mul = multiply;
-
-/**
- * Alias for {@link mat2d.subtract}
- * @function
- */
-var sub = subtract;
-
-/***/ }),
-/* 15 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* unused harmony export create */
-/* unused harmony export clone */
-/* unused harmony export fromValues */
-/* unused harmony export fromRotationTranslationValues */
-/* unused harmony export fromRotationTranslation */
-/* unused harmony export fromTranslation */
-/* unused harmony export fromRotation */
-/* unused harmony export fromMat4 */
-/* unused harmony export copy */
-/* unused harmony export identity */
-/* unused harmony export set */
-/* unused harmony export getReal */
-/* unused harmony export getDual */
-/* unused harmony export setReal */
-/* unused harmony export setDual */
-/* unused harmony export getTranslation */
-/* unused harmony export translate */
-/* unused harmony export rotateX */
-/* unused harmony export rotateY */
-/* unused harmony export rotateZ */
-/* unused harmony export rotateByQuatAppend */
-/* unused harmony export rotateByQuatPrepend */
-/* unused harmony export rotateAroundAxis */
-/* unused harmony export add */
-/* unused harmony export multiply */
-/* unused harmony export mul */
-/* unused harmony export scale */
-/* unused harmony export dot */
-/* unused harmony export lerp */
-/* unused harmony export invert */
-/* unused harmony export conjugate */
-/* unused harmony export length */
-/* unused harmony export len */
-/* unused harmony export squaredLength */
-/* unused harmony export sqrLen */
-/* unused harmony export normalize */
-/* unused harmony export str */
-/* unused harmony export exactEquals */
-/* unused harmony export equals */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__common_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__quat_js__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mat4_js__ = __webpack_require__(4);
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clone", function() { return clone; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromValues", function() { return fromValues; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromRotationTranslationValues", function() { return fromRotationTranslationValues; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromRotationTranslation", function() { return fromRotationTranslation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromTranslation", function() { return fromTranslation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromRotation", function() { return fromRotation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromMat4", function() { return fromMat4; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "copy", function() { return copy; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "identity", function() { return identity; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getReal", function() { return getReal; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDual", function() { return getDual; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setReal", function() { return setReal; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setDual", function() { return setDual; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTranslation", function() { return getTranslation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "translate", function() { return translate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateX", function() { return rotateX; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateY", function() { return rotateY; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateZ", function() { return rotateZ; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateByQuatAppend", function() { return rotateByQuatAppend; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateByQuatPrepend", function() { return rotateByQuatPrepend; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateAroundAxis", function() { return rotateAroundAxis; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "add", function() { return add; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiply", function() { return multiply; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mul", function() { return mul; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scale", function() { return scale; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dot", function() { return dot; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "lerp", function() { return lerp; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "invert", function() { return invert; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "conjugate", function() { return conjugate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "length", function() { return length; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "len", function() { return len; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "squaredLength", function() { return squaredLength; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sqrLen", function() { return sqrLen; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "normalize", function() { return normalize; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "str", function() { return str; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "exactEquals", function() { return exactEquals; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
+/* harmony import */ var _quat_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
+/* harmony import */ var _mat4_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9);
 
 
 
@@ -6442,8 +6320,8 @@ var sub = subtract;
  * @returns {quat2} a new dual quaternion [real -> rotation, dual -> translation]
  */
 function create() {
-  var dq = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](8);
-  if (__WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */] != Float32Array) {
+  var dq = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](8);
+  if (_common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"] != Float32Array) {
     dq[0] = 0;
     dq[1] = 0;
     dq[2] = 0;
@@ -6464,7 +6342,7 @@ function create() {
  * @function
  */
 function clone(a) {
-  var dq = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](8);
+  var dq = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](8);
   dq[0] = a[0];
   dq[1] = a[1];
   dq[2] = a[2];
@@ -6491,7 +6369,7 @@ function clone(a) {
  * @function
  */
 function fromValues(x1, y1, z1, w1, x2, y2, z2, w2) {
-  var dq = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](8);
+  var dq = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](8);
   dq[0] = x1;
   dq[1] = y1;
   dq[2] = z1;
@@ -6517,7 +6395,7 @@ function fromValues(x1, y1, z1, w1, x2, y2, z2, w2) {
  * @function
  */
 function fromRotationTranslationValues(x1, y1, z1, w1, x2, y2, z2) {
-  var dq = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](8);
+  var dq = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](8);
   dq[0] = x1;
   dq[1] = y1;
   dq[2] = z1;
@@ -6610,10 +6488,10 @@ function fromRotation(out, q) {
  */
 function fromMat4(out, a) {
   //TODO Optimize this
-  var outer = __WEBPACK_IMPORTED_MODULE_1__quat_js__["b" /* create */]();
-  __WEBPACK_IMPORTED_MODULE_2__mat4_js__["getRotation"](outer, a);
-  var t = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](3);
-  __WEBPACK_IMPORTED_MODULE_2__mat4_js__["getTranslation"](t, a);
+  var outer = _quat_js__WEBPACK_IMPORTED_MODULE_1__["create"]();
+  _mat4_js__WEBPACK_IMPORTED_MODULE_2__["getRotation"](outer, a);
+  var t = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](3);
+  _mat4_js__WEBPACK_IMPORTED_MODULE_2__["getTranslation"](t, a);
   fromRotationTranslation(out, outer, t);
   return out;
 }
@@ -6690,7 +6568,7 @@ function set(out, x1, y1, z1, w1, x2, y2, z2, w2) {
  * @param  {quat2} a Dual Quaternion
  * @return {quat} real part
  */
-var getReal = __WEBPACK_IMPORTED_MODULE_1__quat_js__["a" /* copy */];
+var getReal = _quat_js__WEBPACK_IMPORTED_MODULE_1__["copy"];
 
 /**
  * Gets the dual part of a dual quat
@@ -6714,7 +6592,7 @@ function getDual(out, a) {
  * @returns {quat2} out
  * @function
  */
-var setReal = __WEBPACK_IMPORTED_MODULE_1__quat_js__["a" /* copy */];
+var setReal = _quat_js__WEBPACK_IMPORTED_MODULE_1__["copy"];
 
 /**
  * Set the dual component of a dual quat to the given quaternion
@@ -6805,7 +6683,7 @@ function rotateX(out, a, rad) {
       ay1 = ay * bw + aw * by + az * bx - ax * bz,
       az1 = az * bw + aw * bz + ax * by - ay * bx,
       aw1 = aw * bw - ax * bx - ay * by - az * bz;
-  __WEBPACK_IMPORTED_MODULE_1__quat_js__["e" /* rotateX */](out, a, rad);
+  _quat_js__WEBPACK_IMPORTED_MODULE_1__["rotateX"](out, a, rad);
   bx = out[0];
   by = out[1];
   bz = out[2];
@@ -6838,7 +6716,7 @@ function rotateY(out, a, rad) {
       ay1 = ay * bw + aw * by + az * bx - ax * bz,
       az1 = az * bw + aw * bz + ax * by - ay * bx,
       aw1 = aw * bw - ax * bx - ay * by - az * bz;
-  __WEBPACK_IMPORTED_MODULE_1__quat_js__["f" /* rotateY */](out, a, rad);
+  _quat_js__WEBPACK_IMPORTED_MODULE_1__["rotateY"](out, a, rad);
   bx = out[0];
   by = out[1];
   bz = out[2];
@@ -6871,7 +6749,7 @@ function rotateZ(out, a, rad) {
       ay1 = ay * bw + aw * by + az * bx - ax * bz,
       az1 = az * bw + aw * bz + ax * by - ay * bx,
       aw1 = aw * bw - ax * bx - ay * by - az * bz;
-  __WEBPACK_IMPORTED_MODULE_1__quat_js__["g" /* rotateZ */](out, a, rad);
+  _quat_js__WEBPACK_IMPORTED_MODULE_1__["rotateZ"](out, a, rad);
   bx = out[0];
   by = out[1];
   bz = out[2];
@@ -6960,7 +6838,7 @@ function rotateByQuatPrepend(out, q, a) {
  */
 function rotateAroundAxis(out, a, axis, rad) {
   //Special case for rad = 0
-  if (Math.abs(rad) < __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */]) {
+  if (Math.abs(rad) < _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"]) {
     return copy(out, a);
   }
   var axisLength = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
@@ -7085,7 +6963,7 @@ function scale(out, a, b) {
  * @returns {Number} dot product of a and b
  * @function
  */
-var dot = __WEBPACK_IMPORTED_MODULE_1__quat_js__["c" /* dot */];
+var dot = _quat_js__WEBPACK_IMPORTED_MODULE_1__["dot"];
 
 /**
  * Performs a linear interpolation between two dual quats's
@@ -7160,7 +7038,7 @@ function conjugate(out, a) {
  * @returns {Number} length of a
  * @function
  */
-var length = __WEBPACK_IMPORTED_MODULE_1__quat_js__["d" /* length */];
+var length = _quat_js__WEBPACK_IMPORTED_MODULE_1__["length"];
 
 /**
  * Alias for {@link quat2.length}
@@ -7175,7 +7053,7 @@ var len = length;
  * @returns {Number} squared length of a
  * @function
  */
-var squaredLength = __WEBPACK_IMPORTED_MODULE_1__quat_js__["h" /* squaredLength */];
+var squaredLength = _quat_js__WEBPACK_IMPORTED_MODULE_1__["squaredLength"];
 
 /**
  * Alias for {@link quat2.squaredLength}
@@ -7266,51 +7144,51 @@ function equals(a, b) {
       b5 = b[5],
       b6 = b[6],
       b7 = b[7];
-  return Math.abs(a0 - b0) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a5), Math.abs(b5)) && Math.abs(a6 - b6) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a6), Math.abs(b6)) && Math.abs(a7 - b7) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a7), Math.abs(b7));
+  return Math.abs(a0 - b0) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a5), Math.abs(b5)) && Math.abs(a6 - b6) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a6), Math.abs(b6)) && Math.abs(a7 - b7) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a7), Math.abs(b7));
 }
 
 /***/ }),
-/* 16 */
+/* 14 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony export (immutable) */ __webpack_exports__["create"] = create;
-/* harmony export (immutable) */ __webpack_exports__["clone"] = clone;
-/* harmony export (immutable) */ __webpack_exports__["fromValues"] = fromValues;
-/* harmony export (immutable) */ __webpack_exports__["copy"] = copy;
-/* harmony export (immutable) */ __webpack_exports__["set"] = set;
-/* harmony export (immutable) */ __webpack_exports__["add"] = add;
-/* harmony export (immutable) */ __webpack_exports__["subtract"] = subtract;
-/* harmony export (immutable) */ __webpack_exports__["multiply"] = multiply;
-/* harmony export (immutable) */ __webpack_exports__["divide"] = divide;
-/* harmony export (immutable) */ __webpack_exports__["ceil"] = ceil;
-/* harmony export (immutable) */ __webpack_exports__["floor"] = floor;
-/* harmony export (immutable) */ __webpack_exports__["min"] = min;
-/* harmony export (immutable) */ __webpack_exports__["max"] = max;
-/* harmony export (immutable) */ __webpack_exports__["round"] = round;
-/* harmony export (immutable) */ __webpack_exports__["scale"] = scale;
-/* harmony export (immutable) */ __webpack_exports__["scaleAndAdd"] = scaleAndAdd;
-/* harmony export (immutable) */ __webpack_exports__["distance"] = distance;
-/* harmony export (immutable) */ __webpack_exports__["squaredDistance"] = squaredDistance;
-/* harmony export (immutable) */ __webpack_exports__["length"] = length;
-/* harmony export (immutable) */ __webpack_exports__["squaredLength"] = squaredLength;
-/* harmony export (immutable) */ __webpack_exports__["negate"] = negate;
-/* harmony export (immutable) */ __webpack_exports__["inverse"] = inverse;
-/* harmony export (immutable) */ __webpack_exports__["normalize"] = normalize;
-/* harmony export (immutable) */ __webpack_exports__["dot"] = dot;
-/* harmony export (immutable) */ __webpack_exports__["cross"] = cross;
-/* harmony export (immutable) */ __webpack_exports__["lerp"] = lerp;
-/* harmony export (immutable) */ __webpack_exports__["random"] = random;
-/* harmony export (immutable) */ __webpack_exports__["transformMat2"] = transformMat2;
-/* harmony export (immutable) */ __webpack_exports__["transformMat2d"] = transformMat2d;
-/* harmony export (immutable) */ __webpack_exports__["transformMat3"] = transformMat3;
-/* harmony export (immutable) */ __webpack_exports__["transformMat4"] = transformMat4;
-/* harmony export (immutable) */ __webpack_exports__["rotate"] = rotate;
-/* harmony export (immutable) */ __webpack_exports__["angle"] = angle;
-/* harmony export (immutable) */ __webpack_exports__["str"] = str;
-/* harmony export (immutable) */ __webpack_exports__["exactEquals"] = exactEquals;
-/* harmony export (immutable) */ __webpack_exports__["equals"] = equals;
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clone", function() { return clone; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromValues", function() { return fromValues; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "copy", function() { return copy; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "add", function() { return add; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "subtract", function() { return subtract; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiply", function() { return multiply; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "divide", function() { return divide; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ceil", function() { return ceil; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "floor", function() { return floor; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "min", function() { return min; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "max", function() { return max; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "round", function() { return round; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scale", function() { return scale; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scaleAndAdd", function() { return scaleAndAdd; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "distance", function() { return distance; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "squaredDistance", function() { return squaredDistance; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "length", function() { return length; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "squaredLength", function() { return squaredLength; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "negate", function() { return negate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "inverse", function() { return inverse; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "normalize", function() { return normalize; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dot", function() { return dot; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "cross", function() { return cross; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "lerp", function() { return lerp; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "random", function() { return random; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transformMat2", function() { return transformMat2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transformMat2d", function() { return transformMat2d; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transformMat3", function() { return transformMat3; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transformMat4", function() { return transformMat4; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotate", function() { return rotate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "angle", function() { return angle; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "str", function() { return str; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "exactEquals", function() { return exactEquals; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "len", function() { return len; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sub", function() { return sub; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mul", function() { return mul; });
@@ -7319,7 +7197,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sqrDist", function() { return sqrDist; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sqrLen", function() { return sqrLen; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "forEach", function() { return forEach; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__common_js__ = __webpack_require__(0);
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
 
 
 /**
@@ -7333,8 +7211,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  * @returns {vec2} a new 2D vector
  */
 function create() {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](2);
-  if (__WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */] != Float32Array) {
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](2);
+  if (_common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"] != Float32Array) {
     out[0] = 0;
     out[1] = 0;
   }
@@ -7348,7 +7226,7 @@ function create() {
  * @returns {vec2} a new 2D vector
  */
 function clone(a) {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](2);
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](2);
   out[0] = a[0];
   out[1] = a[1];
   return out;
@@ -7362,7 +7240,7 @@ function clone(a) {
  * @returns {vec2} a new 2D vector
  */
 function fromValues(x, y) {
-  var out = new __WEBPACK_IMPORTED_MODULE_0__common_js__["a" /* ARRAY_TYPE */](2);
+  var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](2);
   out[0] = x;
   out[1] = y;
   return out;
@@ -7696,7 +7574,7 @@ function lerp(out, a, b, t) {
  */
 function random(out, scale) {
   scale = scale || 1.0;
-  var r = __WEBPACK_IMPORTED_MODULE_0__common_js__["c" /* RANDOM */]() * 2.0 * Math.PI;
+  var r = _common_js__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]() * 2.0 * Math.PI;
   out[0] = Math.cos(r) * scale;
   out[1] = Math.sin(r) * scale;
   return out;
@@ -7859,7 +7737,7 @@ function equals(a, b) {
       a1 = a[1];
   var b0 = b[0],
       b1 = b[1];
-  return Math.abs(a0 - b0) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= __WEBPACK_IMPORTED_MODULE_0__common_js__["b" /* EPSILON */] * Math.max(1.0, Math.abs(a1), Math.abs(b1));
+  return Math.abs(a0 - b0) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1));
 }
 
 /**
@@ -7947,15 +7825,162 @@ var forEach = function () {
 }();
 
 /***/ }),
-/* 17 */
+/* 15 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_gl_matrix__ = __webpack_require__(2);
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _scene_Terrain__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(16);
+/* harmony import */ var _geometry_Tile__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(17);
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(2);
+/* harmony import */ var _Camera__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(19);
+/* harmony import */ var _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(20);
+/* harmony import */ var _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(21);
+
+
+
+
+
+
+
+class GameEngine {
+    static getEngine() {
+        if (GameEngine.engine) {
+            return GameEngine.engine;
+        }
+        else {
+            let tile = new _geometry_Tile__WEBPACK_IMPORTED_MODULE_2__["default"]();
+            tile.create();
+            GameEngine.engine = new GameEngine(tile);
+            return GameEngine.engine;
+        }
+    }
+    constructor(_tile) {
+        this.gameObjects = [];
+        this.terrainObjects = [];
+        this.collidableObjects = [];
+        this.tile = _tile;
+        this.camera = new _Camera__WEBPACK_IMPORTED_MODULE_4__["default"](gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0));
+        this.downkeys = new Set();
+        this.spriteShader = new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_5__["default"]([
+            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_5__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_3__["gl"].VERTEX_SHADER, __webpack_require__(22)),
+            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_5__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_3__["gl"].FRAGMENT_SHADER, __webpack_require__(23)),
+        ]);
+        this.spriteShader.setSpriteTex(new _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_6__["default"]("../../assets/sprites.png"));
+        window.addEventListener("keydown", (keyEvent) => {
+            if (!this.downkeys.has(keyEvent.key)) {
+                this.gameObjects.forEach((go) => { go.onKeyDown(keyEvent.key); });
+            }
+            this.downkeys.add(keyEvent.key);
+        });
+        window.addEventListener("keyup", (keyEvent) => {
+            this.downkeys.delete(keyEvent.key);
+            this.gameObjects.forEach((go) => { go.onKeyUp(keyEvent.key); });
+        });
+        let terrain = _scene_Terrain__WEBPACK_IMPORTED_MODULE_1__["default"].makeTestTerrain();
+        this.setTerrain(terrain);
+    }
+    setRenderer(renderer) {
+        this.renderer = renderer;
+    }
+    setTerrain(terrain) {
+        this.terrainObjects.push(terrain);
+    }
+    getCamera() {
+        return this.camera;
+    }
+    drawGameObjects() {
+        let tilePositions = [];
+        let tileUvs = [];
+        let tileMirrors = [];
+        for (let go of this.gameObjects) {
+            tilePositions.push(go.getPosition());
+            tileUvs.push(go.getSpriteUv());
+            tileMirrors.push(go.facingLeft());
+        }
+        for (let ter of this.terrainObjects) {
+            for (let x of ter.tiles.keys()) {
+                for (let y of ter.tiles.get(x)) {
+                    tilePositions.push(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(x, y));
+                    tileUvs.push(ter.getSpritePosition(x, y));
+                    tileMirrors.push(false);
+                }
+            }
+        }
+        let totalPositions;
+        this.tile.setInstanceVBOs(tilePositions, tileUvs, tileMirrors);
+        this.tile.setNumInstances(tilePositions.length);
+        this.renderer.render(this.camera, this.spriteShader, [this.tile]);
+    }
+    // Only call from GameObject class
+    addGameObject(go) {
+        if (this.gameObjects.indexOf(go) < 0) {
+            this.gameObjects.push(go);
+        }
+    }
+    // Only call from the GameObject cass
+    destroyGameObject(go) {
+        let idx = this.gameObjects.indexOf(go);
+        if (idx >= 0) {
+            this.gameObjects.splice(idx, 1);
+        }
+    }
+    updateGameObjects(deltaTime) {
+        for (let go of this.gameObjects) {
+            go.physicsUpdate(deltaTime);
+            for (let key of this.downkeys) {
+                go.onKeyPress(key);
+            }
+            go.onUpdate(deltaTime);
+        }
+        this.camera.update();
+    }
+    startGame() {
+        this.lastTick = Date.now();
+        let tick = () => {
+            let curTime = Date.now();
+            let deltaTime = curTime - this.lastTick;
+            this.lastTick = curTime;
+            this.updateGameObjects(deltaTime / 1000.0);
+            window.setTimeout(tick, 16);
+        };
+        tick();
+    }
+}
+/* harmony default export */ __webpack_exports__["default"] = (GameEngine);
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 
 class Terrain {
     constructor() {
         this.tiles = new Map();
+    }
+    static makeTestTerrain() {
+        let terrain = new Terrain();
+        for (let i = -2; i < 15; i++) {
+            if (i < 4 || i > 7) {
+                terrain.setTileAt(i, -3);
+                terrain.setTileAt(i, -4);
+            }
+            if (i > 9) {
+                terrain.setTileAt(i, -2);
+            }
+            if (i > 11) {
+                terrain.setTileAt(i, -1);
+                terrain.setTileAt(i, 0);
+            }
+        }
+        terrain.setTileAt(18, 0);
+        terrain.setTileAt(23, 2);
+        return terrain;
     }
     tileAt(x, y) {
         x = Math.floor(x);
@@ -7986,48 +8011,58 @@ class Terrain {
         let bl = this.tileAt(x - 1, y - 1);
         let bc = this.tileAt(x + 0, y - 1);
         let br = this.tileAt(x + 1, y - 1);
-        if (!tc && cl && cr) {
-            return __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(1, 0);
+        if (!cr && !cl && !tc && !bc) {
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(4, 0);
+        }
+        else if (!tc && cl && cr) {
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(1, 0);
         }
         else if (!bc && cl && cr) {
-            return __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(1, 2);
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(1, 2);
         }
         else if (!cr && tc && bc) {
-            return __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(2, 1);
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(2, 1);
         }
         else if (!cl && tc && bc) {
-            return __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(0, 1);
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 1);
         }
         else if (!tl && !tc && !cl) {
-            return __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(0, 0);
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
         }
         else if (!tr && !tc && !cr) {
-            return __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(2, 0);
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(2, 0);
         }
         else if (!br && !bc && !cr) {
-            return __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(2, 2);
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(2, 2);
         }
         else if (!bl && !bc && !cl) {
-            return __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(0, 2);
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 2);
+        }
+        else if (!tl && tc && cl && bc && cr) {
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(3, 0);
+        }
+        else if (!tr && tc && cl && bc && cr) {
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(3, 1);
         }
         else {
-            return __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(1, 1);
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(1, 1);
         }
     }
 }
-/* harmony default export */ __webpack_exports__["a"] = (Terrain);
+/* harmony default export */ __webpack_exports__["default"] = (Terrain);
 
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__rendering_gl_Drawable__ = __webpack_require__(19);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__globals__ = __webpack_require__(1);
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _rendering_gl_Drawable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(18);
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 
 
-class Tile extends __WEBPACK_IMPORTED_MODULE_0__rendering_gl_Drawable__["a" /* default */] {
+class Tile extends _rendering_gl_Drawable__WEBPACK_IMPORTED_MODULE_0__["default"] {
     constructor() {
         super();
     }
@@ -8048,10 +8083,10 @@ class Tile extends __WEBPACK_IMPORTED_MODULE_0__rendering_gl_Drawable__["a" /* d
         this.generateUV();
         this.generateOff();
         this.generateMir();
-        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].ELEMENT_ARRAY_BUFFER, this.bufIdx);
-        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bufferData(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].ELEMENT_ARRAY_BUFFER, this.indices, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].STATIC_DRAW);
-        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].ARRAY_BUFFER, this.bufPos);
-        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bufferData(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].ARRAY_BUFFER, this.positions, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].STATIC_DRAW);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ELEMENT_ARRAY_BUFFER, this.bufIdx);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bufferData(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ELEMENT_ARRAY_BUFFER, this.indices, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].STATIC_DRAW);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.bufPos);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bufferData(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.positions, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].STATIC_DRAW);
     }
     setInstanceVBOs(posOffsets, uvOffsets, mirrors) {
         let posOffsetArray = [];
@@ -8069,23 +8104,24 @@ class Tile extends __WEBPACK_IMPORTED_MODULE_0__rendering_gl_Drawable__["a" /* d
         this.offsets = new Float32Array(posOffsetArray);
         this.uvs = new Float32Array(uvOffsetArray);
         this.mirrors = new Int32Array(mirrorArray);
-        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].ARRAY_BUFFER, this.bufOff);
-        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bufferData(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].ARRAY_BUFFER, this.offsets, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].STATIC_DRAW);
-        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].ARRAY_BUFFER, this.bufUV);
-        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bufferData(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].ARRAY_BUFFER, this.uvs, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].STATIC_DRAW);
-        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].ARRAY_BUFFER, this.bufMir);
-        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bufferData(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].ARRAY_BUFFER, this.mirrors, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].STATIC_DRAW);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.bufOff);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bufferData(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.offsets, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].STATIC_DRAW);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.bufUV);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bufferData(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.uvs, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].STATIC_DRAW);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.bufMir);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bufferData(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.mirrors, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].STATIC_DRAW);
     }
 }
-/* harmony default export */ __webpack_exports__["a"] = (Tile);
+/* harmony default export */ __webpack_exports__["default"] = (Tile);
 
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__globals__ = __webpack_require__(1);
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 
 class Drawable {
     constructor() {
@@ -8098,59 +8134,59 @@ class Drawable {
         this.numInstances = 0; // How many instances of this Drawable the shader program should draw
     }
     destroy() {
-        __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].deleteBuffer(this.bufIdx);
-        __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].deleteBuffer(this.bufPos);
-        __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].deleteBuffer(this.bufOff);
-        __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].deleteBuffer(this.bufUV);
-        __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].deleteBuffer(this.bufMir);
+        _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].deleteBuffer(this.bufIdx);
+        _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].deleteBuffer(this.bufPos);
+        _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].deleteBuffer(this.bufOff);
+        _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].deleteBuffer(this.bufUV);
+        _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].deleteBuffer(this.bufMir);
     }
     generateIdx() {
         this.idxGenerated = true;
-        this.bufIdx = __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].createBuffer();
+        this.bufIdx = _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].createBuffer();
     }
     generatePos() {
         this.posGenerated = true;
-        this.bufPos = __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].createBuffer();
+        this.bufPos = _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].createBuffer();
     }
     generateUV() {
         this.uvGenerated = true;
-        this.bufUV = __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].createBuffer();
+        this.bufUV = _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].createBuffer();
     }
     generateOff() {
         this.offGenerated = true;
-        this.bufOff = __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].createBuffer();
+        this.bufOff = _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].createBuffer();
     }
     generateMir() {
         this.mirGenerated = true;
-        this.bufMir = __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].createBuffer();
+        this.bufMir = _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].createBuffer();
     }
     bindIdx() {
         if (this.idxGenerated) {
-            __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].ELEMENT_ARRAY_BUFFER, this.bufIdx);
+            _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].ELEMENT_ARRAY_BUFFER, this.bufIdx);
         }
         return this.idxGenerated;
     }
     bindPos() {
         if (this.posGenerated) {
-            __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].ARRAY_BUFFER, this.bufPos);
+            _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].ARRAY_BUFFER, this.bufPos);
         }
         return this.posGenerated;
     }
     bindUV() {
         if (this.uvGenerated) {
-            __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].ARRAY_BUFFER, this.bufUV);
+            _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].ARRAY_BUFFER, this.bufUV);
         }
         return this.uvGenerated;
     }
     bindOff() {
         if (this.offGenerated) {
-            __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].ARRAY_BUFFER, this.bufOff);
+            _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].ARRAY_BUFFER, this.bufOff);
         }
         return this.offGenerated;
     }
     bindMir() {
         if (this.mirGenerated) {
-            __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].ARRAY_BUFFER, this.bufMir);
+            _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].ARRAY_BUFFER, this.bufMir);
         }
         return this.mirGenerated;
     }
@@ -8158,45 +8194,46 @@ class Drawable {
         return this.count;
     }
     drawMode() {
-        return __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].TRIANGLES;
+        return _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TRIANGLES;
     }
     setNumInstances(num) {
         this.numInstances = num;
     }
 }
 ;
-/* harmony default export */ __webpack_exports__["a"] = (Drawable);
+/* harmony default export */ __webpack_exports__["default"] = (Drawable);
 
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_gl_matrix__ = __webpack_require__(2);
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 
 class Camera {
     constructor(position) {
-        this.projectionMatrix = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["a" /* mat4 */].create();
-        this.viewMatrix = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["a" /* mat4 */].create();
+        this.projectionMatrix = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+        this.viewMatrix = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
         this.aspectRatio = 1;
-        this.position = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].create();
+        this.position = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
         this.child = null;
-        this.position = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(position[0], position[1]);
+        this.position = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(position[0], position[1]);
     }
     setAspectRatio(aspectRatio) {
         this.aspectRatio = aspectRatio;
     }
     updateProjectionMatrix() {
-        __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["a" /* mat4 */].ortho(this.projectionMatrix, -10 * this.aspectRatio, 10 * this.aspectRatio, -10, 10, -1, 1);
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].ortho(this.projectionMatrix, -10 * this.aspectRatio, 10 * this.aspectRatio, -10, 10, -1, 1);
     }
     setPosition(newPos) {
-        this.position = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(newPos[0], newPos[1]);
-        __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["a" /* mat4 */].translate(this.viewMatrix, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["a" /* mat4 */].create(), [newPos[0], newPos[1], 0]);
+        this.position = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(newPos[0], newPos[1]);
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].translate(this.viewMatrix, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(), [newPos[0], newPos[1], 0]);
     }
     translate(amount) {
-        __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].add(this.position, this.position, amount);
-        __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["a" /* mat4 */].translate(this.viewMatrix, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["a" /* mat4 */].create(), [this.position[0], this.position[1], 0]);
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(this.position, this.position, amount);
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].translate(this.viewMatrix, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(), [this.position[0], this.position[1], 0]);
     }
     makeParent(child) {
         this.child = child;
@@ -8208,7 +8245,140 @@ class Camera {
     }
 }
 ;
-/* harmony default export */ __webpack_exports__["a"] = (Camera);
+/* harmony default export */ __webpack_exports__["default"] = (Camera);
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Shader", function() { return Shader; });
+/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+
+
+var activeProgram = null;
+class Shader {
+    constructor(type, source) {
+        this.shader = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].createShader(type);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].shaderSource(this.shader, source);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].compileShader(this.shader);
+        if (!_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getShaderParameter(this.shader, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].COMPILE_STATUS)) {
+            throw _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getShaderInfoLog(this.shader);
+        }
+    }
+}
+;
+class ShaderProgram {
+    constructor(shaders) {
+        this.prog = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].createProgram();
+        for (let shader of shaders) {
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].attachShader(this.prog, shader.shader);
+        }
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].linkProgram(this.prog);
+        if (!_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getProgramParameter(this.prog, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].LINK_STATUS)) {
+            throw _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getProgramInfoLog(this.prog);
+        }
+        this.attrPos = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getAttribLocation(this.prog, "vs_Pos");
+        this.attrUV = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getAttribLocation(this.prog, "vs_UV");
+        this.attrOff = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getAttribLocation(this.prog, "vs_Offset");
+        this.attrMir = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getAttribLocation(this.prog, "vs_MirrorUv");
+        this.unifModel = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getUniformLocation(this.prog, "u_Model");
+        this.unifModelInvTr = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getUniformLocation(this.prog, "u_ModelInvTr");
+        this.unifViewProj = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getUniformLocation(this.prog, "u_ViewProj");
+        this.unifDimensions = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getUniformLocation(this.prog, "u_Dimensions");
+        this.unifTime = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getUniformLocation(this.prog, "u_Time");
+        this.unifCam = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getUniformLocation(this.prog, "u_CameraPos");
+        this.unifSpriteTex = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getUniformLocation(this.prog, "u_SpriteTex");
+    }
+    use() {
+        if (activeProgram !== this.prog) {
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].useProgram(this.prog);
+            activeProgram = this.prog;
+        }
+    }
+    setCameraPos(pos) {
+        this.use();
+        if (this.unifCam !== -1) {
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].uniform2f(this.unifCam, pos[0], pos[1]);
+        }
+    }
+    setDimensions(width, height) {
+        this.use();
+        if (this.unifDimensions !== -1) {
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].uniform2f(this.unifDimensions, width, height);
+        }
+    }
+    setModelMatrix(model) {
+        this.use();
+        if (this.unifModel !== -1) {
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].uniformMatrix4fv(this.unifModel, false, model);
+        }
+        if (this.unifModelInvTr !== -1) {
+            let modelinvtr = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+            gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(modelinvtr, model);
+            gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(modelinvtr, modelinvtr);
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].uniformMatrix4fv(this.unifModelInvTr, false, modelinvtr);
+        }
+    }
+    setViewProjMatrix(vp) {
+        this.use();
+        if (this.unifViewProj !== -1) {
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].uniformMatrix4fv(this.unifViewProj, false, vp);
+        }
+    }
+    setTime(t) {
+        this.use();
+        if (this.unifTime !== -1) {
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].uniform1f(this.unifTime, t);
+        }
+    }
+    setSpriteTex(tex) {
+        this.use();
+        if (this.unifSpriteTex !== -1) {
+            tex.loadTexture();
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].uniform1i(this.unifSpriteTex, tex.slot);
+        }
+    }
+    draw(d) {
+        this.use();
+        if (this.attrPos != -1 && d.bindPos()) {
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].enableVertexAttribArray(this.attrPos);
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].vertexAttribPointer(this.attrPos, 2, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].FLOAT, false, 0, 0);
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].vertexAttribDivisor(this.attrPos, 0); // Advance 1 index in pos VBO for each vertex
+        }
+        if (this.attrUV != -1 && d.bindUV()) {
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].enableVertexAttribArray(this.attrUV);
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].vertexAttribPointer(this.attrUV, 2, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].FLOAT, false, 0, 0);
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].vertexAttribDivisor(this.attrUV, 1); // Advance 1 index in pos VBO for each vertex
+        }
+        if (this.attrOff != -1 && d.bindOff()) {
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].enableVertexAttribArray(this.attrOff);
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].vertexAttribPointer(this.attrOff, 2, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].FLOAT, false, 0, 0);
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].vertexAttribDivisor(this.attrOff, 1); // Advance 1 index in pos VBO for each vertex
+        }
+        if (this.attrMir != -1 && d.bindMir()) {
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].enableVertexAttribArray(this.attrMir);
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].vertexAttribIPointer(this.attrMir, 1, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].INT, 0, 0);
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].vertexAttribDivisor(this.attrMir, 1);
+        }
+        d.bindIdx();
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].drawElementsInstanced(d.drawMode(), d.elemCount(), _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].UNSIGNED_INT, 0, d.numInstances);
+        if (this.attrPos != -1) {
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].disableVertexAttribArray(this.attrPos);
+        }
+        if (this.attrUV != -1) {
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].disableVertexAttribArray(this.attrUV);
+        }
+        if (this.attrOff != -1) {
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].disableVertexAttribArray(this.attrOff);
+        }
+    }
+}
+;
+/* harmony default export */ __webpack_exports__["default"] = (ShaderProgram);
 
 
 /***/ }),
@@ -8216,140 +8386,8 @@ class Camera {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_gl_matrix__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__globals__ = __webpack_require__(1);
-
-
-var activeProgram = null;
-class Shader {
-    constructor(type, source) {
-        this.shader = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].createShader(type);
-        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].shaderSource(this.shader, source);
-        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].compileShader(this.shader);
-        if (!__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getShaderParameter(this.shader, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].COMPILE_STATUS)) {
-            throw __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getShaderInfoLog(this.shader);
-        }
-    }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Shader;
-
-;
-class ShaderProgram {
-    constructor(shaders) {
-        this.prog = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].createProgram();
-        for (let shader of shaders) {
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].attachShader(this.prog, shader.shader);
-        }
-        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].linkProgram(this.prog);
-        if (!__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getProgramParameter(this.prog, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].LINK_STATUS)) {
-            throw __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getProgramInfoLog(this.prog);
-        }
-        this.attrPos = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getAttribLocation(this.prog, "vs_Pos");
-        this.attrUV = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getAttribLocation(this.prog, "vs_UV");
-        this.attrOff = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getAttribLocation(this.prog, "vs_Offset");
-        this.attrMir = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getAttribLocation(this.prog, "vs_MirrorUv");
-        this.unifModel = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_Model");
-        this.unifModelInvTr = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_ModelInvTr");
-        this.unifViewProj = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_ViewProj");
-        this.unifDimensions = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_Dimensions");
-        this.unifTime = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_Time");
-        this.unifCam = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_CameraPos");
-        this.unifSpriteTex = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_SpriteTex");
-    }
-    use() {
-        if (activeProgram !== this.prog) {
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].useProgram(this.prog);
-            activeProgram = this.prog;
-        }
-    }
-    setCameraPos(pos) {
-        this.use();
-        if (this.unifCam !== -1) {
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform2f(this.unifCam, pos[0], pos[1]);
-        }
-    }
-    setDimensions(width, height) {
-        this.use();
-        if (this.unifDimensions !== -1) {
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform2f(this.unifDimensions, width, height);
-        }
-    }
-    setModelMatrix(model) {
-        this.use();
-        if (this.unifModel !== -1) {
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniformMatrix4fv(this.unifModel, false, model);
-        }
-        if (this.unifModelInvTr !== -1) {
-            let modelinvtr = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["a" /* mat4 */].create();
-            __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["a" /* mat4 */].transpose(modelinvtr, model);
-            __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["a" /* mat4 */].invert(modelinvtr, modelinvtr);
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniformMatrix4fv(this.unifModelInvTr, false, modelinvtr);
-        }
-    }
-    setViewProjMatrix(vp) {
-        this.use();
-        if (this.unifViewProj !== -1) {
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniformMatrix4fv(this.unifViewProj, false, vp);
-        }
-    }
-    setTime(t) {
-        this.use();
-        if (this.unifTime !== -1) {
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1f(this.unifTime, t);
-        }
-    }
-    setSpriteTex(tex) {
-        this.use();
-        if (this.unifSpriteTex !== -1) {
-            tex.loadTexture();
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifSpriteTex, tex.slot);
-        }
-    }
-    draw(d) {
-        this.use();
-        if (this.attrPos != -1 && d.bindPos()) {
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].enableVertexAttribArray(this.attrPos);
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].vertexAttribPointer(this.attrPos, 2, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].FLOAT, false, 0, 0);
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].vertexAttribDivisor(this.attrPos, 0); // Advance 1 index in pos VBO for each vertex
-        }
-        if (this.attrUV != -1 && d.bindUV()) {
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].enableVertexAttribArray(this.attrUV);
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].vertexAttribPointer(this.attrUV, 2, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].FLOAT, false, 0, 0);
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].vertexAttribDivisor(this.attrUV, 1); // Advance 1 index in pos VBO for each vertex
-        }
-        if (this.attrOff != -1 && d.bindOff()) {
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].enableVertexAttribArray(this.attrOff);
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].vertexAttribPointer(this.attrOff, 2, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].FLOAT, false, 0, 0);
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].vertexAttribDivisor(this.attrOff, 1); // Advance 1 index in pos VBO for each vertex
-        }
-        if (this.attrMir != -1 && d.bindMir()) {
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].enableVertexAttribArray(this.attrMir);
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].vertexAttribIPointer(this.attrMir, 1, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].INT, 0, 0);
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].vertexAttribDivisor(this.attrMir, 1);
-        }
-        d.bindIdx();
-        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].drawElementsInstanced(d.drawMode(), d.elemCount(), __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].UNSIGNED_INT, 0, d.numInstances);
-        if (this.attrPos != -1) {
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].disableVertexAttribArray(this.attrPos);
-        }
-        if (this.attrUV != -1) {
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].disableVertexAttribArray(this.attrUV);
-        }
-        if (this.attrOff != -1) {
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].disableVertexAttribArray(this.attrOff);
-        }
-    }
-}
-;
-/* harmony default export */ __webpack_exports__["b"] = (ShaderProgram);
-
-
-/***/ }),
-/* 22 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__globals__ = __webpack_require__(1);
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 
 // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
 class Texture2D {
@@ -8362,55 +8400,57 @@ class Texture2D {
     }
     loadTextureCallback(texture) {
         this.loaded = true;
-        __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].activeTexture(__WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].TEXTURE0 + this.slot);
-        __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].bindTexture(__WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].TEXTURE_2D, texture);
-        __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].texParameteri(__WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].TEXTURE_2D, __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].TEXTURE_MAG_FILTER, __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].NEAREST);
-        __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].texParameteri(__WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].TEXTURE_2D, __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].TEXTURE_MIN_FILTER, __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].NEAREST);
-        __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].texParameteri(__WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].TEXTURE_2D, __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].TEXTURE_WRAP_S, __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].CLAMP_TO_EDGE);
-        __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].texParameteri(__WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].TEXTURE_2D, __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].TEXTURE_WRAP_T, __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].CLAMP_TO_EDGE);
-        __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].texImage2D(__WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].TEXTURE_2D, 0, __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].RGBA, __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].RGBA, __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].UNSIGNED_BYTE, this.image);
+        _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].activeTexture(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE0 + this.slot);
+        _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].bindTexture(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_2D, texture);
+        _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].texParameteri(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_2D, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_MAG_FILTER, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].NEAREST);
+        _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].texParameteri(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_2D, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_MIN_FILTER, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].NEAREST);
+        _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].texParameteri(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_2D, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_WRAP_S, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].CLAMP_TO_EDGE);
+        _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].texParameteri(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_2D, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_WRAP_T, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].CLAMP_TO_EDGE);
+        _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].texImage2D(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_2D, 0, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].RGBA, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].RGBA, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].UNSIGNED_BYTE, this.image);
     }
     loadTexture() {
-        const texture = __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].createTexture();
+        const texture = _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].createTexture();
         if (this.loaded) {
             this.loadTextureCallback(texture);
         }
         else {
-            __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].bindTexture(__WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].TEXTURE_2D, texture);
+            _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].bindTexture(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_2D, texture);
             this.image.onload = () => { this.loadTextureCallback(texture); };
         }
     }
 }
-/* harmony default export */ __webpack_exports__["a"] = (Texture2D);
+/* harmony default export */ __webpack_exports__["default"] = (Texture2D);
 
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports) {
 
 module.exports = "#version 300 es\nprecision highp float;\n\nuniform mat4 u_ViewProj;\nuniform mat4 u_Model;\n\nin vec2 vs_Pos;\nin vec2 vs_Offset;\nin vec2 vs_UV;\nin int vs_MirrorUv;\nout vec2 fs_Pos;\nout vec2 fs_UV;\n\nvoid main() {\n    fs_Pos = vs_Pos;\n    bool mirrorUv = vs_MirrorUv == 1;\n    fs_UV = vs_UV + vec2(mirrorUv ? 1.0 - vs_Pos.x : vs_Pos.x, 1.0 - vs_Pos.y);\n\n    vec2 actualPos = vs_Pos + vs_Offset;\n    gl_Position = u_ViewProj * u_Model * vec4(actualPos, 0, 1);\n}\n"
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports) {
 
 module.exports = "#version 300 es\nprecision highp float;\n\nuniform sampler2D u_SpriteTex;\n\nin vec2 fs_Pos;\nin vec2 fs_UV;\n\nout vec4 out_Col;\n\nvoid main() {\n    vec4 color = texture(u_SpriteTex, fs_UV / 8.0);\n    if (color.a < 0.5) {\n        discard;\n    }\n    out_Col = color;\n}\n"
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_gl_matrix__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__engine_GameObject__ = __webpack_require__(26);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__SceneAttributes__ = __webpack_require__(9);
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(25);
+/* harmony import */ var _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(26);
 
 
 
-class Player extends __WEBPACK_IMPORTED_MODULE_1__engine_GameObject__["a" /* default */] {
+const WALK_CYCLE_LENGTH = 10;
+class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] {
     constructor() {
         super(true);
-        this.playerVelocity = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(0, 0);
+        this.playerVelocity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
         this.jumping = false;
         this.groundedImmunity = false;
         this.walkFrame = 0;
@@ -8419,16 +8459,16 @@ class Player extends __WEBPACK_IMPORTED_MODULE_1__engine_GameObject__["a" /* def
         this.dPressed = false;
     }
     onUpdate(delta) {
-        this.translate(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].scale(this.playerVelocity, this.playerVelocity, delta * 4));
-        this.playerVelocity = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(0, 0);
+        this.translate(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].scale(this.playerVelocity, this.playerVelocity, delta * 4));
+        this.playerVelocity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
         if (this.jumping) {
-            let jumpDecay = Math.pow(__WEBPACK_IMPORTED_MODULE_2__SceneAttributes__["a" /* default */].jumpFalloff, this.jumpTime * 50);
-            let jumpAmount = __WEBPACK_IMPORTED_MODULE_2__SceneAttributes__["a" /* default */].playerJump * jumpDecay;
-            __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].add(this.inputVelocity, this.inputVelocity, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(0, jumpAmount));
+            let jumpDecay = Math.pow(_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].jumpFalloff, this.jumpTime * 50);
+            let jumpAmount = _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerJump * jumpDecay;
+            gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(this.inputVelocity, this.inputVelocity, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, jumpAmount));
             this.jumpTime += delta;
             console.log("jumping");
         }
-        if (this.jumpTime > __WEBPACK_IMPORTED_MODULE_2__SceneAttributes__["a" /* default */].maxJumpHold || (this.isGrounded && !this.groundedImmunity)) {
+        if (this.jumpTime > _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].maxJumpHold || (this.isGrounded && !this.groundedImmunity)) {
             this.jumping = false;
         }
         this.groundedImmunity = false;
@@ -8444,14 +8484,14 @@ class Player extends __WEBPACK_IMPORTED_MODULE_1__engine_GameObject__["a" /* def
         ;
     }
     onKeyPress(key) {
-        let playerMovement = this.isGrounded ? __WEBPACK_IMPORTED_MODULE_2__SceneAttributes__["a" /* default */].playerSpeed : __WEBPACK_IMPORTED_MODULE_2__SceneAttributes__["a" /* default */].playerSpeed;
+        let playerMovement = this.isGrounded ? _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed : _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed;
         if (key === "a") {
-            __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].add(this.inputVelocity, this.inputVelocity, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(-playerMovement, 0));
+            gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(this.inputVelocity, this.inputVelocity, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(-playerMovement, 0));
             this.direction = -1;
             this.moving = true;
         }
         else if (key === "d") {
-            __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].add(this.inputVelocity, this.inputVelocity, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(playerMovement, 0));
+            gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(this.inputVelocity, this.inputVelocity, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(playerMovement, 0));
             this.direction = 1;
             this.moving = true;
         }
@@ -8468,6 +8508,9 @@ class Player extends __WEBPACK_IMPORTED_MODULE_1__engine_GameObject__["a" /* def
         else if (key === 'd') {
             this.dPressed = true;
         }
+        else if (key === 's') {
+            this.sPressed = true;
+        }
     }
     onKeyUp(key) {
         if (key === 'w') {
@@ -8480,28 +8523,35 @@ class Player extends __WEBPACK_IMPORTED_MODULE_1__engine_GameObject__["a" /* def
         else if (key === 'd') {
             this.dPressed = false;
         }
+        else if (key === 's') {
+            this.sPressed = false;
+        }
     }
     getSpriteUv() {
         if (!this.isGrounded) {
-            return __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(1, 7);
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(1, 7);
         }
         else if (this.moving) {
-            return __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(this.walkFrame % 10 < 5 ? 2 : 3, 7);
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(this.walkFrame % WALK_CYCLE_LENGTH < WALK_CYCLE_LENGTH / 2 ? 2 : 3, 7);
         }
-        return __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(0, 7);
+        else if (this.sPressed) {
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(4, 7);
+        }
+        return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 7);
     }
 }
-/* harmony default export */ __webpack_exports__["a"] = (Player);
+/* harmony default export */ __webpack_exports__["default"] = (Player);
 
 
 /***/ }),
-/* 26 */
+/* 25 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_gl_matrix__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__GameEngine__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__scene_SceneAttributes__ = __webpack_require__(9);
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _GameEngine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(15);
+/* harmony import */ var _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(26);
 
 
 
@@ -8512,14 +8562,14 @@ class GameObject {
     constructor(isDynamic) {
         this.dynamic = isDynamic;
         this.passive = false;
-        this.position = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(0, 0);
-        this.velocity = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(0, 0);
-        this.inputVelocity = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(0, 0);
+        this.position = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
+        this.velocity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
+        this.inputVelocity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
         this.direction = 1;
-        __WEBPACK_IMPORTED_MODULE_1__GameEngine__["a" /* default */].getEngine().addGameObject(this);
+        _GameEngine__WEBPACK_IMPORTED_MODULE_1__["default"].getEngine().addGameObject(this);
     }
     destroy() {
-        __WEBPACK_IMPORTED_MODULE_1__GameEngine__["a" /* default */].getEngine().destroyGameObject(this);
+        _GameEngine__WEBPACK_IMPORTED_MODULE_1__["default"].getEngine().destroyGameObject(this);
         this.drawable = null;
     }
     isPassive() {
@@ -8529,34 +8579,34 @@ class GameObject {
         return this.direction === -1;
     }
     getPosition() {
-        return __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(this.position[0], this.position[1]);
+        return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(this.position[0], this.position[1]);
     }
     setPosition(newPosition) {
         this.position[0] = newPosition[0];
         this.position[1] = newPosition[1];
     }
     translate(amount) {
-        __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].add(this.position, this.position, amount);
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(this.position, this.position, amount);
     }
     getVelocity() {
-        return __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(this.velocity[0], this.velocity[1]);
+        return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(this.velocity[0], this.velocity[1]);
     }
     physicsUpdate(delta) {
         if (!this.dynamic) {
             return;
         }
         let prevVelocity = this.velocity;
-        this.velocity = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(0, 0);
+        this.velocity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
         // Apply gravity
         if (!this.grounded) {
-            this.velocity[1] = prevVelocity[1] - __WEBPACK_IMPORTED_MODULE_2__scene_SceneAttributes__["a" /* default */].gravity;
+            this.velocity[1] = prevVelocity[1] - _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].gravity;
         }
         // Apply non-physical motion
-        __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].add(this.velocity, this.velocity, this.inputVelocity);
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(this.velocity, this.velocity, this.inputVelocity);
         // Scale back velocity if it's too high
         let speed = this.velocity.length;
-        if (speed > __WEBPACK_IMPORTED_MODULE_2__scene_SceneAttributes__["a" /* default */].maxObjectSpeed) {
-            __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].scale(this.velocity, this.velocity, __WEBPACK_IMPORTED_MODULE_2__scene_SceneAttributes__["a" /* default */].maxObjectSpeed / speed);
+        if (speed > _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].maxObjectSpeed) {
+            gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].scale(this.velocity, this.velocity, _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].maxObjectSpeed / speed);
         }
         // Update the object position, accounting for collisions
         // We assume that before applying any motion this frame, the object is not intersecting anything
@@ -8567,21 +8617,21 @@ class GameObject {
         //     the amount of the overlap
         //     - Note that this pushback will only have to be in the x axis
         //   - Repeat with the y-axis
-        let deltaPos = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].scale(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].create(), this.velocity, delta);
+        let deltaPos = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].scale(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create(), this.velocity, delta);
         for (let axis = 0; axis < 2; axis++) {
             if (Math.abs(deltaPos[axis]) > 10e-6) {
                 this.position[axis] += deltaPos[axis];
                 let adjacentTiles = this.getAdjacentTiles();
                 for (let tile of adjacentTiles) {
-                    for (let terrain of __WEBPACK_IMPORTED_MODULE_1__GameEngine__["a" /* default */].getEngine().terrainObjects) {
+                    for (let terrain of _GameEngine__WEBPACK_IMPORTED_MODULE_1__["default"].getEngine().terrainObjects) {
                         let response = this.testTerrainCollision(terrain, tile, axis);
-                        __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].add(this.position, this.position, response);
+                        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(this.position, this.position, response);
                     }
                 }
             }
         }
         this.grounded = this.checkIfGrounded();
-        this.inputVelocity = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(0, 0);
+        this.inputVelocity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
     }
     getAdjacentTiles() {
         let x = Math.floor(this.position[0]);
@@ -8598,14 +8648,14 @@ class GameObject {
         let pX = this.position[0];
         let pY = this.position[1];
         if (!terrain.tileAt(tX, tY)) {
-            return __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].create();
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
         }
         let xIntersect = pX < (tX + 1) && tX < (pX + 1);
         let yIntersect = pY < (tY + 1) && tY < (pY + 2);
         let isIntersecting = xIntersect && yIntersect;
         let axisVelocity = this.velocity[axis];
         if (isIntersecting) {
-            let pushback = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].create();
+            let pushback = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
             if (axisVelocity > 0) {
                 let isY = (axis == 1) ? 0 : 0;
                 pushback[axis] = tile[axis] - (this.position[axis] + 1 + isY);
@@ -8616,18 +8666,18 @@ class GameObject {
             return pushback;
         }
         else {
-            return __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].create();
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
         }
     }
     checkIfGrounded() {
         // Check if we would be colliding with a block if we were just a teensy bit lower
-        let newPos = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].subtract(__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].create(), this.position, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(0, 0.05));
-        let gridPosition = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* vec2 */].fromValues(Math.floor(newPos[0]), Math.floor(newPos[1]));
+        let newPos = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].subtract(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create(), this.position, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0.05));
+        let gridPosition = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(Math.floor(newPos[0]), Math.floor(newPos[1]));
         for (let x = 0; x < 2; x++) {
             let tX = gridPosition[0] + x;
             let tY = gridPosition[1];
             let existsTile = false;
-            for (let terrain of __WEBPACK_IMPORTED_MODULE_1__GameEngine__["a" /* default */].getEngine().terrainObjects) {
+            for (let terrain of _GameEngine__WEBPACK_IMPORTED_MODULE_1__["default"].getEngine().terrainObjects) {
                 if (terrain.tileAt(tX, tY)) {
                     existsTile = true;
                     break;
@@ -8651,7 +8701,24 @@ class GameObject {
     ;
     onKeyUp(key) { }
 }
-/* harmony default export */ __webpack_exports__["a"] = (GameObject);
+/* harmony default export */ __webpack_exports__["default"] = (GameObject);
+
+
+/***/ }),
+/* 26 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+let sceneAttributes = {
+    gravity: 1.5,
+    playerSpeed: 7.0,
+    playerJump: 6.2,
+    maxJumpHold: 0.3,
+    jumpFalloff: 0.78,
+    maxObjectSpeed: 5.0,
+};
+/* harmony default export */ __webpack_exports__["default"] = (sceneAttributes);
 
 
 /***/ })

@@ -28,4 +28,5 @@ module.exports = {
     port: 5660,
     overlay: true,
   },
+  mode: "none",
 };
