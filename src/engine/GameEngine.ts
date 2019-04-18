@@ -58,18 +58,7 @@ class GameEngine {
             this.gameObjects.forEach((go: GameObject) => {go.onKeyUp(keyEvent.key)});
         });
 
-        let terrain: Terrain = new Terrain();
-        for (let i = -2; i < 3; i++) {
-            terrain.setTileAt(i, -3);
-            terrain.setTileAt(i, -4);
-        }
-        terrain.setTileAt(7, -3);
-        terrain.setTileAt(8, -3);
-        terrain.setTileAt(9, -3);
-        terrain.setTileAt(7, -4);
-        terrain.setTileAt(8, -4);
-        terrain.setTileAt(9, -4);
-        terrain.setTileAt(9, 0);
+        let terrain: Terrain = Terrain.makeTestTerrain();
         this.setTerrain(terrain);
     }
 

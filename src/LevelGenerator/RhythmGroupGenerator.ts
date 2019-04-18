@@ -1,4 +1,5 @@
 import RhythmGroup, {Verb} from './RhythmGroup';
+import sceneAttributes from '../scene/SceneAttributes';
 
 export enum BeatPattern {
     REGULAR,
@@ -69,7 +70,8 @@ class RhythmGroupGenerator {
         let group: RhythmGroup = new RhythmGroup(groupDuration);
         let beatTimes: number[] = this.getBeatTimes(groupDuration, chosenPattern);
 
-        let jumpLengths = [0.1, 0.2, 0.3];
+        let maxJumpHold = sceneAttributes.maxJumpHold;
+        let jumpLengths = [maxJumpHold, maxJumpHold / 2.0, maxJumpHold / 4.0];
 
         let lastJumpTime = -1;
         let lastJumpDuration = 0;

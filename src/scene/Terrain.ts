@@ -9,6 +9,27 @@ class Terrain {
         this.tiles = new Map();
     }
 
+    static makeTestTerrain(): Terrain {
+        let terrain: Terrain = new Terrain();
+        for (let i = -2; i < 15; i++) {
+            if (i < 4 || i > 7) {
+                terrain.setTileAt(i, -3);
+                terrain.setTileAt(i, -4);
+            }
+            if (i > 9) {
+                terrain.setTileAt(i, -2);
+            }
+            if (i > 11) {
+                terrain.setTileAt(i, -1);
+                terrain.setTileAt(i, 0);
+            }
+        }
+
+        terrain.setTileAt(18, 0);
+        terrain.setTileAt(23, 2);
+        return terrain;
+    }
+
     tileAt(x: number, y: number): boolean {
         x = Math.floor(x);
         y = Math.floor(y);
@@ -41,7 +62,10 @@ class Terrain {
         let bc = this.tileAt(x + 0, y - 1);
         let br = this.tileAt(x + 1, y - 1);
 
-        if (!tc && cl && cr) {
+        if (!cr && !cl && !tc && !bc) {
+            return vec2.fromValues(4, 0);
+        }
+        else if (!tc && cl && cr) {
             return vec2.fromValues(1, 0);
         }
         else if (!bc && cl && cr) {
@@ -64,6 +88,12 @@ class Terrain {
         }
         else if (!bl && !bc && !cl) {
             return vec2.fromValues(0, 2);
+        }
+        else if (!tl && tc && cl && bc && cr) {
+            return vec2.fromValues(3, 0);
+        }
+        else if (!tr && tc && cl && bc && cr) {
+            return vec2.fromValues(3, 1);
         }
         else {
             return vec2.fromValues(1, 1);
