@@ -8,14 +8,16 @@ class Texture2D {
     loaded: boolean;
 
     constructor(path: string, slot: number = 0) {
+        console.log(path);
         this.loaded = false;
         this.image = new Image();
-        this.image.onload = () => {this.loaded = true}
+        this.image.onload = () => {this.loaded = true; console.log("loaded")}
         this.image.src = path;
         this.slot = slot;
     }
 
     private loadTextureCallback(texture: WebGLTexture): void {
+        console.log("loaded")
         this.loaded = true;
         gl.activeTexture(gl.TEXTURE0 + this.slot);
         gl.bindTexture(gl.TEXTURE_2D, texture);

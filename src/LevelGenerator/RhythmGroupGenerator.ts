@@ -85,7 +85,6 @@ class RhythmGroupGenerator {
             }
         }
 
-        console.log(group);
         return group
     }
 }

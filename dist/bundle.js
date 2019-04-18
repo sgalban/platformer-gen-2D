@@ -7867,7 +7867,7 @@ class GameEngine {
             new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_5__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_3__["gl"].VERTEX_SHADER, __webpack_require__(22)),
             new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_5__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_3__["gl"].FRAGMENT_SHADER, __webpack_require__(23)),
         ]);
-        this.spriteShader.setSpriteTex(new _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_6__["default"]("../../assets/sprites.png"));
+        this.spriteShader.setSpriteTex(new _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_6__["default"]('http://' + window.location.host + '/src/assets/sprites.png'));
         window.addEventListener("keydown", (keyEvent) => {
             if (!this.downkeys.has(keyEvent.key)) {
                 this.gameObjects.forEach((go) => { go.onKeyDown(keyEvent.key); });
@@ -8392,13 +8392,15 @@ __webpack_require__.r(__webpack_exports__);
 // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
 class Texture2D {
     constructor(path, slot = 0) {
+        console.log(path);
         this.loaded = false;
         this.image = new Image();
-        this.image.onload = () => { this.loaded = true; };
+        this.image.onload = () => { this.loaded = true; console.log("loaded"); };
         this.image.src = path;
         this.slot = slot;
     }
     loadTextureCallback(texture) {
+        console.log("loaded");
         this.loaded = true;
         _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].activeTexture(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE0 + this.slot);
         _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].bindTexture(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_2D, texture);

@@ -45,7 +45,8 @@ class GameEngine {
             new Shader(gl.VERTEX_SHADER, require('../shaders/tile-vert.glsl')),
             new Shader(gl.FRAGMENT_SHADER, require('../shaders/tile-frag.glsl')),
         ]);
-        this.spriteShader.setSpriteTex(new Texture2D("../../assets/sprites.png"));
+
+        this.spriteShader.setSpriteTex(new Texture2D('http://' + window.location.host + '/src/assets/sprites.png'));
 
         window.addEventListener("keydown", (keyEvent) => {
             if (!this.downkeys.has(keyEvent.key)) {
