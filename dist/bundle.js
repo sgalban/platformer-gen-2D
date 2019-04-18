@@ -95,7 +95,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var _rendering_gl_OpenGLRenderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
 /* harmony import */ var _engine_GameEngine__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(15);
-/* harmony import */ var _scene_Player__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(24);
+/* harmony import */ var _scene_Player__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(29);
 
 
 
@@ -7832,11 +7832,13 @@ var forEach = function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 /* harmony import */ var _scene_Terrain__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(16);
-/* harmony import */ var _geometry_Tile__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(17);
+/* harmony import */ var _geometry_Tile__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(18);
 /* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(2);
-/* harmony import */ var _Camera__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(19);
-/* harmony import */ var _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(20);
-/* harmony import */ var _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(21);
+/* harmony import */ var _Camera__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(20);
+/* harmony import */ var _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(21);
+/* harmony import */ var _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(22);
+/* harmony import */ var _LevelGenerator_LevelGenerator__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(23);
+
 
 
 
@@ -7861,11 +7863,11 @@ class GameEngine {
         this.terrainObjects = [];
         this.collidableObjects = [];
         this.tile = _tile;
-        this.camera = new _Camera__WEBPACK_IMPORTED_MODULE_4__["default"](gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0));
+        this.camera = new _Camera__WEBPACK_IMPORTED_MODULE_4__["default"](gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, -3));
         this.downkeys = new Set();
         this.spriteShader = new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_5__["default"]([
-            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_5__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_3__["gl"].VERTEX_SHADER, __webpack_require__(22)),
-            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_5__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_3__["gl"].FRAGMENT_SHADER, __webpack_require__(23)),
+            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_5__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_3__["gl"].VERTEX_SHADER, __webpack_require__(27)),
+            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_5__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_3__["gl"].FRAGMENT_SHADER, __webpack_require__(28)),
         ]);
         this.spriteShader.setSpriteTex(new _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_6__["default"]('http://' + window.location.host + '/src/assets/sprites.png'));
         window.addEventListener("keydown", (keyEvent) => {
@@ -7878,8 +7880,11 @@ class GameEngine {
             this.downkeys.delete(keyEvent.key);
             this.gameObjects.forEach((go) => { go.onKeyUp(keyEvent.key); });
         });
-        let terrain = _scene_Terrain__WEBPACK_IMPORTED_MODULE_1__["default"].makeTestTerrain();
+        let terrain = new _scene_Terrain__WEBPACK_IMPORTED_MODULE_1__["default"]();
         this.setTerrain(terrain);
+        let levelGen = new _LevelGenerator_LevelGenerator__WEBPACK_IMPORTED_MODULE_7__["default"](3, terrain, 15, 15, 1, 0.7, [1, 0, 0]);
+        levelGen.generateRhythms();
+        levelGen.generateGeometry();
     }
     setRenderer(renderer) {
         this.renderer = renderer;
@@ -7936,6 +7941,7 @@ class GameEngine {
         }
         this.camera.update();
     }
+    // Maybe integrate this with the main tick()
     startGame() {
         this.lastTick = Date.now();
         let tick = () => {
@@ -7958,6 +7964,8 @@ class GameEngine {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(17);
+
 
 class Terrain {
     constructor() {
@@ -7998,6 +8006,11 @@ class Terrain {
         }
         else {
             this.tiles.set(x, new Set([y]));
+        }
+    }
+    setColumnAt(x, y) {
+        for (let i = _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_1__["default"].deathHeight - 1; i <= y; i++) {
+            this.setTileAt(x, i);
         }
     }
     getSpritePosition(x, y) {
@@ -8058,7 +8071,25 @@ class Terrain {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _rendering_gl_Drawable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(18);
+let sceneAttributes = {
+    gravity: 1.5,
+    playerSpeed: 7.5,
+    playerJump: 5.5,
+    maxJumpHold: 0.4,
+    jumpFalloff: 0.85,
+    maxObjectSpeed: 7.5,
+    deathHeight: -15
+};
+/* harmony default export */ __webpack_exports__["default"] = (sceneAttributes);
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _rendering_gl_Drawable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(19);
 /* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 
 
@@ -8116,7 +8147,7 @@ class Tile extends _rendering_gl_Drawable__WEBPACK_IMPORTED_MODULE_0__["default"
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8205,7 +8236,7 @@ class Drawable {
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8249,7 +8280,7 @@ class Camera {
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8382,7 +8413,7 @@ class ShaderProgram {
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8423,16 +8454,40 @@ class Texture2D {
 
 
 /***/ }),
-/* 22 */
-/***/ (function(module, exports) {
-
-module.exports = "#version 300 es\nprecision highp float;\n\nuniform mat4 u_ViewProj;\nuniform mat4 u_Model;\n\nin vec2 vs_Pos;\nin vec2 vs_Offset;\nin vec2 vs_UV;\nin int vs_MirrorUv;\nout vec2 fs_Pos;\nout vec2 fs_UV;\n\nvoid main() {\n    fs_Pos = vs_Pos;\n    bool mirrorUv = vs_MirrorUv == 1;\n    fs_UV = vs_UV + vec2(mirrorUv ? 1.0 - vs_Pos.x : vs_Pos.x, 1.0 - vs_Pos.y);\n\n    vec2 actualPos = vs_Pos + vs_Offset;\n    gl_Position = u_ViewProj * u_Model * vec4(actualPos, 0, 1);\n}\n"
-
-/***/ }),
 /* 23 */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-module.exports = "#version 300 es\nprecision highp float;\n\nuniform sampler2D u_SpriteTex;\n\nin vec2 fs_Pos;\nin vec2 fs_UV;\n\nout vec4 out_Col;\n\nvoid main() {\n    vec4 color = texture(u_SpriteTex, fs_UV / 8.0);\n    if (color.a < 0.5) {\n        discard;\n    }\n    out_Col = color;\n}\n"
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LevelGenerator; });
+/* harmony import */ var _RhythmGroupGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(24);
+/* harmony import */ var _GeometryGenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(26);
+
+
+class LevelGenerator {
+    constructor(_totalGroups, _terrain, minGroupDuration, maxGroupDuration, density, jumpFrequency, beatFrequencies) {
+        this.totalGroups = _totalGroups;
+        this.terrain = _terrain;
+        this.rhythmGroups = [];
+        // Create the rhythm generator
+        this.groupGenerator = new _RhythmGroupGenerator__WEBPACK_IMPORTED_MODULE_0__["default"](minGroupDuration, maxGroupDuration, density, jumpFrequency, beatFrequencies);
+        // Create the geometry generator
+        this.geometryGenerator = new _GeometryGenerator__WEBPACK_IMPORTED_MODULE_1__["default"](this.terrain);
+    }
+    generateRhythms() {
+        for (let i = 0; i < this.totalGroups; i++) {
+            this.rhythmGroups.push(this.groupGenerator.generateRhythmGroup());
+        }
+    }
+    generateGeometry() {
+        this.geometryGenerator.generateRestArea(10);
+        for (let group of this.rhythmGroups) {
+            this.geometryGenerator.generateGroupGeometry(group);
+            this.geometryGenerator.generateRestArea(6);
+        }
+    }
+}
+
 
 /***/ }),
 /* 24 */
@@ -8440,9 +8495,270 @@ module.exports = "#version 300 es\nprecision highp float;\n\nuniform sampler2D u
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BeatPattern", function() { return BeatPattern; });
+/* harmony import */ var _RhythmGroup__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(25);
+/* harmony import */ var _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(17);
+
+
+var BeatPattern;
+(function (BeatPattern) {
+    BeatPattern[BeatPattern["REGULAR"] = 0] = "REGULAR";
+    BeatPattern[BeatPattern["RANDOM"] = 1] = "RANDOM";
+    BeatPattern[BeatPattern["SWING"] = 2] = "SWING";
+})(BeatPattern || (BeatPattern = {}));
+class RhythmGroupGenerator {
+    constructor(minDuration, maxDuration, density, jumpFrequency, beatFrequencies) {
+        this.minGroupDuration = minDuration;
+        this.maxGroupDuration = maxDuration;
+        this.patternFrequencies = new Map();
+        this.jumpFrequency = jumpFrequency;
+        let normalizer = beatFrequencies.reduce((prev, cur) => prev + cur);
+        let patterns = [BeatPattern.REGULAR, BeatPattern.RANDOM, BeatPattern.SWING];
+        for (let idx = 0; idx < patterns.length; idx++) {
+            this.patternFrequencies.set(patterns[idx], beatFrequencies[idx] / normalizer);
+        }
+        this.density = density;
+    }
+    getBeatTimes(groupDuration, pattern) {
+        let out = [];
+        let amount = Math.floor(groupDuration * this.density);
+        //console.log(amount);
+        for (let i = 0; i < amount; i++) {
+            if (pattern === BeatPattern.REGULAR) {
+                out.push(i * (groupDuration * 1.0 / amount));
+            }
+            else if (pattern === BeatPattern.RANDOM) {
+                out.push(Math.random() * groupDuration);
+            }
+        }
+        return out;
+    }
+    generateRhythmGroup() {
+        let groupDuration = this.minGroupDuration === this.maxGroupDuration ?
+            this.maxGroupDuration :
+            Math.abs(Math.random() * (this.maxGroupDuration - this.minGroupDuration) + this.minGroupDuration);
+        // Decide the beat pattern randomly
+        let rng = Math.random();
+        let cumulative = 0;
+        let chosenPattern;
+        for (let frequency of this.patternFrequencies) {
+            cumulative += frequency[1];
+            if (cumulative > rng) {
+                chosenPattern = frequency[0];
+                break;
+            }
+        }
+        let group = new _RhythmGroup__WEBPACK_IMPORTED_MODULE_0__["default"](groupDuration);
+        let beatTimes = this.getBeatTimes(groupDuration, chosenPattern);
+        let maxJumpHold = _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_1__["default"].maxJumpHold;
+        let jumpLengths = [_RhythmGroup__WEBPACK_IMPORTED_MODULE_0__["JumpType"].SHORT, _RhythmGroup__WEBPACK_IMPORTED_MODULE_0__["JumpType"].MEDIUM, _RhythmGroup__WEBPACK_IMPORTED_MODULE_0__["JumpType"].LONG];
+        let lastJumpTime = -1;
+        let lastJumpDuration = 0;
+        group.addAction(_RhythmGroup__WEBPACK_IMPORTED_MODULE_0__["Verb"].MOVE, 0, groupDuration);
+        for (let time of beatTimes) {
+            if (time > lastJumpTime + lastJumpDuration + 1) {
+                if (Math.random() < this.jumpFrequency) {
+                    let jumpType = Math.floor(Math.random() * jumpLengths.length);
+                    group.addAction(_RhythmGroup__WEBPACK_IMPORTED_MODULE_0__["Verb"].JUMP, time, jumpLengths[jumpType]);
+                }
+            }
+        }
+        return group;
+    }
+}
+/* harmony default export */ __webpack_exports__["default"] = (RhythmGroupGenerator);
+
+
+/***/ }),
+/* 25 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Verb", function() { return Verb; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "JumpType", function() { return JumpType; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Action", function() { return Action; });
+/* harmony import */ var _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(17);
+
+var Verb;
+(function (Verb) {
+    Verb[Verb["MOVE"] = 0] = "MOVE";
+    Verb[Verb["JUMP"] = 1] = "JUMP";
+})(Verb || (Verb = {}));
+var JumpType;
+(function (JumpType) {
+    JumpType[JumpType["SHORT"] = _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_0__["default"].maxJumpHold / 5] = "SHORT";
+    JumpType[JumpType["MEDIUM"] = _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_0__["default"].maxJumpHold / 3] = "MEDIUM";
+    JumpType[JumpType["LONG"] = _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_0__["default"].maxJumpHold] = "LONG";
+})(JumpType || (JumpType = {}));
+class Action {
+    constructor(_type, _startTime, _duration) {
+        this.type = _type;
+        this.startTime = _startTime;
+        this.duration = _duration;
+    }
+}
+class RhythmGroup {
+    constructor(_duration) {
+        this.duration = _duration;
+        this.actions = [];
+    }
+    addAction(type, startTime, actionDuration) {
+        let groupDuration = this.duration;
+        if (startTime > groupDuration) {
+            return false;
+        }
+        if (startTime + actionDuration > groupDuration) {
+            actionDuration = groupDuration - startTime;
+        }
+        let newAction = new Action(type, startTime, actionDuration);
+        this.actions.push(newAction);
+        return true;
+    }
+}
+/* harmony default export */ __webpack_exports__["default"] = (RhythmGroup);
+
+
+/***/ }),
+/* 26 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return GeometryGenerator; });
 /* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
-/* harmony import */ var _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(25);
-/* harmony import */ var _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(26);
+/* harmony import */ var _RhythmGroup__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(25);
+/* harmony import */ var _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(17);
+
+
+
+class GeometryGenerator {
+    constructor(_terrain) {
+        this.terrain = _terrain;
+        this.currentPos = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(-3, -1);
+    }
+    queuesFromRhythm(rhythm) {
+        let movement = [];
+        let jumps = [];
+        let lastMoveStartTime = 0;
+        let lastMoveDuration = 0;
+        for (let action of rhythm.actions) {
+            if (action.type === _RhythmGroup__WEBPACK_IMPORTED_MODULE_1__["Verb"].MOVE) {
+                if (movement.length > 0) {
+                    let curMoveStartTime = action.startTime;
+                    let lastMove = movement[movement.length - 1];
+                    movement.push({
+                        state: "waiting",
+                        duration: curMoveStartTime - (lastMoveStartTime + lastMoveDuration)
+                    });
+                }
+                lastMoveDuration = action.duration;
+                movement.push({
+                    state: "moving",
+                    duration: action.duration
+                });
+            }
+            else if (action.type === _RhythmGroup__WEBPACK_IMPORTED_MODULE_1__["Verb"].JUMP) {
+                jumps.push({
+                    startTime: action.startTime,
+                    jumpHold: action.duration,
+                });
+            }
+        }
+        return { moveStates: movement, jumpStates: jumps };
+    }
+    // Calculate the height of a jump when the jump button is held for a specified amount of time
+    // Also find the time it takes to get to that height
+    getJumpHeight(jumpHold) {
+        // This is, at its core, a ballistics problem. However, it's complicated by the fact
+        // that the velocity is controlled by the player even after the jump begins. This means 
+        // that to find the max height, we have to separate the jump into 2 parts: the part 
+        // where the jump key is being held, and the part afterward. We have to find the height
+        // and upward velocity acheived at the end of the first part, and then the second part
+        // just becomes a simple physics problem. Getting those vectors will rely heavily on the
+        // jumping implementation though.
+        let gravity = _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].gravity;
+        let jumpVel = _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerJump;
+        let jumpFalloff = _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].jumpFalloff;
+        return { height: 0, time: 0 };
+    }
+    generateGroupGeometry(rhythm) {
+        let playerSpeed = _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed;
+        let queues = this.queuesFromRhythm(rhythm);
+        for (let jump of queues.jumpStates) {
+            if (jump.jumpHold === _RhythmGroup__WEBPACK_IMPORTED_MODULE_1__["JumpType"].SHORT) {
+                if (Math.random() < 0.5) {
+                    this.currentPos[0] += 5;
+                    this.terrain.setColumnAt(this.currentPos[0] - 4, this.currentPos[1]);
+                    this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
+                }
+                else {
+                    this.currentPos[0] += 3;
+                    this.currentPos[1] += 1;
+                    this.terrain.setColumnAt(this.currentPos[0] - 2, this.currentPos[1] - 1);
+                    this.terrain.setColumnAt(this.currentPos[0] - 1, this.currentPos[1]);
+                    this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
+                }
+            }
+            if (jump.jumpHold === _RhythmGroup__WEBPACK_IMPORTED_MODULE_1__["JumpType"].MEDIUM) {
+                if (Math.random() < 0.5) {
+                    this.currentPos[0] += 6;
+                    this.terrain.setColumnAt(this.currentPos[0] - 5, this.currentPos[1]);
+                    this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
+                }
+                else {
+                    this.currentPos[0] += 7;
+                    this.currentPos[1] -= 1;
+                    this.terrain.setColumnAt(this.currentPos[0] - 6, this.currentPos[1] + 1);
+                    this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
+                }
+            }
+            else if (jump.jumpHold === _RhythmGroup__WEBPACK_IMPORTED_MODULE_1__["JumpType"].LONG) {
+                if (Math.random() < 0.5) {
+                    this.currentPos[0] += 8;
+                    this.terrain.setColumnAt(this.currentPos[0] - 7, this.currentPos[1]);
+                    this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
+                }
+                else {
+                    this.currentPos[0] += 9;
+                    this.currentPos[1] -= 3;
+                    this.terrain.setColumnAt(this.currentPos[0] - 8, this.currentPos[1] + 3);
+                    this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
+                }
+            }
+        }
+    }
+    generateRestArea(length) {
+        for (let i = 0; i < length; i++) {
+            this.terrain.setTileAt(this.currentPos[0] + i, this.currentPos[1]);
+            this.terrain.setTileAt(this.currentPos[0] + i, this.currentPos[1] - 1);
+        }
+        this.currentPos[0] += length + 2;
+    }
+}
+
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports) {
+
+module.exports = "#version 300 es\nprecision highp float;\n\nuniform mat4 u_ViewProj;\nuniform mat4 u_Model;\n\nin vec2 vs_Pos;\nin vec2 vs_Offset;\nin vec2 vs_UV;\nin int vs_MirrorUv;\nout vec2 fs_Pos;\nout vec2 fs_UV;\n\nvoid main() {\n    fs_Pos = vs_Pos;\n    bool mirrorUv = vs_MirrorUv == 1;\n    fs_UV = vs_UV + vec2(mirrorUv ? 1.0 - vs_Pos.x : vs_Pos.x, 1.0 - vs_Pos.y);\n\n    vec2 actualPos = vs_Pos + vs_Offset;\n    gl_Position = u_ViewProj * u_Model * vec4(actualPos, 0, 1);\n}\n"
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports) {
+
+module.exports = "#version 300 es\nprecision highp float;\n\nuniform sampler2D u_SpriteTex;\n\nin vec2 fs_Pos;\nin vec2 fs_UV;\n\nout vec4 out_Col;\n\nvoid main() {\n    vec4 color = texture(u_SpriteTex, fs_UV / 8.0);\n    if (color.a < 0.5) {\n        discard;\n    }\n    out_Col = color;\n}\n"
+
+/***/ }),
+/* 29 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(30);
+/* harmony import */ var _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(17);
 
 
 
@@ -8450,22 +8766,23 @@ const WALK_CYCLE_LENGTH = 10;
 class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] {
     constructor() {
         super(true);
-        this.playerVelocity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
         this.jumping = false;
         this.groundedImmunity = false;
+        this.direction = 1;
         this.walkFrame = 0;
         this.moving = false;
         this.aPressed = false;
         this.dPressed = false;
+        this.sPressed = false;
+        this.setPosition([0, 0]);
     }
     onUpdate(delta) {
-        this.translate(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].scale(this.playerVelocity, this.playerVelocity, delta * 4));
-        this.playerVelocity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
         if (this.jumping) {
             let jumpDecay = Math.pow(_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].jumpFalloff, this.jumpTime * 50);
             let jumpAmount = _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerJump * jumpDecay;
             gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(this.inputVelocity, this.inputVelocity, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, jumpAmount));
             this.jumpTime += delta;
+            console.log(this.getVelocity()[1]);
         }
         if (this.jumpTime > _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].maxJumpHold || (this.isGrounded && !this.groundedImmunity)) {
             this.jumping = false;
@@ -8481,6 +8798,9 @@ class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] 
             this.walkFrame = 0;
         }
         ;
+        if (this.getPosition()[1] < _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].deathHeight) {
+            this.setPosition([0, 0]);
+        }
     }
     onKeyPress(key) {
         let playerMovement = this.isGrounded ? _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed : _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed;
@@ -8543,14 +8863,14 @@ class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] 
 
 
 /***/ }),
-/* 25 */
+/* 30 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 /* harmony import */ var _GameEngine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(15);
-/* harmony import */ var _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(26);
+/* harmony import */ var _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(17);
 
 
 
@@ -8701,23 +9021,6 @@ class GameObject {
     onKeyUp(key) { }
 }
 /* harmony default export */ __webpack_exports__["default"] = (GameObject);
-
-
-/***/ }),
-/* 26 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-let sceneAttributes = {
-    gravity: 1.5,
-    playerSpeed: 7.0,
-    playerJump: 6.2,
-    maxJumpHold: 0.3,
-    jumpFalloff: 0.78,
-    maxObjectSpeed: 5.0,
-};
-/* harmony default export */ __webpack_exports__["default"] = (sceneAttributes);
 
 
 /***/ })
