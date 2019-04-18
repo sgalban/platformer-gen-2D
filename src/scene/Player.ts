@@ -48,7 +48,6 @@ class Player extends GameObject {
             let jumpAmount = sceneAttributes.playerJump * jumpDecay;
             vec2.add(this.inputVelocity, this.inputVelocity, vec2.fromValues(0, jumpAmount));
             this.jumpTime += delta;
-            console.log(this.getVelocity()[1]);
         }
         if (this.jumpTime > sceneAttributes.maxJumpHold || (this.isGrounded && !this.groundedImmunity)) {
             this.jumping = false;
