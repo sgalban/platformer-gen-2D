@@ -7,6 +7,7 @@ import Camera from '../Camera';
 import OpenGlRenderer from '../rendering/gl/OpenGLRenderer';
 import ShaderProgram, {Shader} from '../rendering/gl/ShaderProgram';
 import Texture2D from '../rendering/Texture2D';
+import LevelGenerator from '../LevelGenerator/LevelGenerator';
 
 class GameEngine {
 
@@ -59,8 +60,12 @@ class GameEngine {
             this.gameObjects.forEach((go: GameObject) => {go.onKeyUp(keyEvent.key)});
         });
 
-        let terrain: Terrain = Terrain.makeTestTerrain();
+        let terrain: Terrain = new Terrain();
         this.setTerrain(terrain);
+
+        let levelGen = new LevelGenerator(3, terrain, 15, 15, 5, 0.7, [1, 0, 0]);
+        levelGen.generateRhythms();
+        levelGen.generateGeometry();
     }
 
     setRenderer(renderer: OpenGlRenderer) {

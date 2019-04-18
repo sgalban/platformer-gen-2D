@@ -28,6 +28,7 @@ class Player extends GameObject {
         this.moving = false;
         this.aPressed = false;
         this.dPressed = false;
+        this.setPosition([0, 0]);
     }
 
     onUpdate(delta: number) {
@@ -54,6 +55,10 @@ class Player extends GameObject {
         else {
             this.walkFrame = 0
         };
+
+        if (this.getPosition()[1] < -15) {
+            this.setPosition([0, 0]);
+        }
     }
 
     onKeyPress(key: string) {

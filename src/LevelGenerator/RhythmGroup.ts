@@ -1,7 +1,14 @@
+import sceneAttributes from '../scene/SceneAttributes';
 
 export enum Verb {
     MOVE,
     JUMP
+}
+
+export enum JumpType {
+    SHORT = sceneAttributes.maxJumpHold / 4,
+    MEDIUM = sceneAttributes.maxJumpHold / 2,
+    LONG = sceneAttributes.maxJumpHold,
 }
 
 export class Action {

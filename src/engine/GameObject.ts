@@ -45,7 +45,7 @@ abstract class GameObject {
         return vec2.fromValues(this.position[0], this.position[1]);
     }
 
-    setPosition(newPosition: vec2): void {
+    setPosition(newPosition: vec2 | number[]): void {
         this.position[0] = newPosition[0];
         this.position[1] = newPosition[1];
     }

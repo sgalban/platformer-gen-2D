@@ -1,4 +1,4 @@
-import RhythmGroup, {Verb} from './RhythmGroup';
+import RhythmGroup, {Verb, JumpType} from './RhythmGroup';
 import sceneAttributes from '../scene/SceneAttributes';
 
 export enum BeatPattern {
@@ -71,7 +71,7 @@ class RhythmGroupGenerator {
         let beatTimes: number[] = this.getBeatTimes(groupDuration, chosenPattern);
 
         let maxJumpHold = sceneAttributes.maxJumpHold;
-        let jumpLengths = [maxJumpHold, maxJumpHold / 2.0, maxJumpHold / 4.0];
+        let jumpLengths = [JumpType.SHORT, JumpType.MEDIUM, JumpType.LONG];
 
         let lastJumpTime = -1;
         let lastJumpDuration = 0;
