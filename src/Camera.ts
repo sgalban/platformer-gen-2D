@@ -8,17 +8,32 @@ class Camera {
     aspectRatio: number = 1;
     position: vec2 = vec2.create();
     child: GameObject = null;
+    width: number;
+    height: number;
   
-    constructor(position: vec2) {
+    constructor(position: vec2, height: number) {
         this.position = vec2.fromValues(position[0], position[1]);
+        this.height = height;
+        this.width = height;
     }
   
     setAspectRatio(aspectRatio: number) {
         this.aspectRatio = aspectRatio;
+        this.width = this.height * aspectRatio;
+    }
+
+    getWidth(): number {
+        return this.width;
+    }
+
+    getHeight(): number {
+        return this.height;
     }
   
     updateProjectionMatrix() {
-        mat4.ortho(this.projectionMatrix, -10 * this.aspectRatio, 10 * this.aspectRatio, -10, 10, -1, 1);
+        let w = this.width / 2;
+        let h = this.height / 2;
+        mat4.ortho(this.projectionMatrix, -w, w, -h, h, -1, 1);
     }
 
     setPosition(newPos: vec2 | number[]) {
@@ -30,6 +45,7 @@ class Camera {
         vec2.add(this.position, this.position, amount);
         mat4.translate(this.viewMatrix, mat4.create(), [this.position[0], this.position[1], 0]);
     }
+
 
     makeParent(child: GameObject) {
         this.child = child;

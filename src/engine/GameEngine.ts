@@ -40,7 +40,7 @@ class GameEngine {
         this.terrainObjects = [];
         this.collidableObjects = [];
         this.tile = _tile;
-        this.camera = new Camera(vec2.fromValues(0, -3));
+        this.camera = new Camera(vec2.fromValues(0, -3), 20);
         this.downkeys = new Set();
         this.spriteShader = new ShaderProgram([
             new Shader(gl.VERTEX_SHADER, require('../shaders/tile-vert.glsl')),
@@ -92,6 +92,13 @@ class GameEngine {
         for (let ter of this.terrainObjects) {
             for (let x of ter.tiles.keys()) {
                 for (let y of ter.tiles.get(x)) {
+                    let horCamDist = Math.abs(x + this.camera.position[0]);
+                    let verCamDist = Math.abs(y + this.camera.position[1]);
+                    if (horCamDist > this.camera.getWidth() / 2 + 1 ||
+                        verCamDist > this.camera.getHeight() / 2 + 1
+                    ) {
+                        continue;
+                    }
                     tilePositions.push(vec2.fromValues(x, y));
                     tileUvs.push(ter.getSpritePosition(x, y));
                     tileMirrors.push(false);
