@@ -34,10 +34,12 @@ class RhythmGroup {
     }
 
     addAction(type: Verb, startTime: number, actionDuration: number): boolean {
+
         let groupDuration = this.duration;
         if (startTime > groupDuration) {
             return false;
         }
+
         if (startTime + actionDuration > groupDuration) {
             actionDuration = groupDuration - startTime;
         }

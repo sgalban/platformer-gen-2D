@@ -1,6 +1,7 @@
 import {vec2, vec3} from 'gl-matrix';
 import GameObject from '../engine/GameObject';
 import sceneAttributes from './SceneAttributes';
+import {spriteCoordinates} from '../constants';
 
 const WALK_CYCLE_LENGTH: number = 10;
 
@@ -119,15 +120,17 @@ class Player extends GameObject {
 
     getSpriteUv() {
         if (!this.isGrounded) {
-            return vec2.fromValues(1, 7);
+            return spriteCoordinates.SPRITE_PLAYER_JUMP;
         }
         else if (this.moving) {
-            return vec2.fromValues(this.walkFrame % WALK_CYCLE_LENGTH < WALK_CYCLE_LENGTH / 2 ? 2 : 3, 7);
+            return this.walkFrame % WALK_CYCLE_LENGTH < WALK_CYCLE_LENGTH / 2 ?
+                spriteCoordinates.SPRITE_PLAYER_WALK_1 : 
+                spriteCoordinates.SPRITE_PLAYER_WALK_2;
         }
         else if (this.sPressed) {
-            return vec2.fromValues(4, 7);
+            return spriteCoordinates.SPRITE_PLAYER_CROUCH
         }
-        return vec2.fromValues(0, 7);
+        return spriteCoordinates.SPRITE_PLAYER_STAND;
     }
 }
 

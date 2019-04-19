@@ -1,6 +1,7 @@
 import {vec2, vec3} from 'gl-matrix';
 import GameObject from '../engine/GameObject';
 import sceneAttributes from '../scene/SceneAttributes';
+import {spriteCoordinates} from '../constants';
 
 class Terrain {
 
@@ -70,40 +71,40 @@ class Terrain {
         let br = this.tileAt(x + 1, y - 1);
 
         if (!cr && !cl && !tc && !bc) {
-            return vec2.fromValues(4, 0);
+            return spriteCoordinates.SPRITE_TERRAIN_SINGLE;
         }
         else if (!tc && cl && cr) {
-            return vec2.fromValues(1, 0);
+            return spriteCoordinates.SPRITE_TERRAIN_TOP;
         }
         else if (!bc && cl && cr) {
-            return vec2.fromValues(1, 2);
+            return spriteCoordinates.SPRITE_TERRAIN_BOTTOM;
         }
         else if (!cr && tc && bc) {
-            return vec2.fromValues(2, 1);
+            return spriteCoordinates.SPRITE_TERRAIN_RIGHT;
         }
         else if (!cl && tc && bc) {
-            return vec2.fromValues(0, 1);
+            return spriteCoordinates.SPRITE_TERRAIN_LEFT;
         }
         else if (!tl && !tc && !cl) {
-            return vec2.fromValues(0, 0);
+            return spriteCoordinates.SPRITE_TERRAIN_TOP_LEFT;
         }
         else if (!tr && !tc && !cr) {
-            return vec2.fromValues(2, 0);
+            return spriteCoordinates.SPRITE_TERRAIN_TOP_RIGHT;
         }
         else if (!br && !bc && !cr) {
-            return vec2.fromValues(2, 2);
+            return spriteCoordinates.SPRITE_TERRAIN_BOTTOM_RIGHT;
         }
         else if (!bl && !bc && !cl) {
-            return vec2.fromValues(0, 2);
+            return spriteCoordinates.SPRITE_TERRAIN_BOTTOM_LEFT;
         }
         else if (!tl && tc && cl && bc && cr) {
-            return vec2.fromValues(3, 0);
+            return spriteCoordinates.SPRITE_TERRAIN_LEFT_INNER_CORNER;
         }
         else if (!tr && tc && cl && bc && cr) {
-            return vec2.fromValues(3, 1);
+            return spriteCoordinates.SPRITE_TERRAIN_RIGHT_INNER_CORNER;
         }
         else {
-            return vec2.fromValues(1, 1);
+            return spriteCoordinates.SPRITE_TERRAIN_MIDDLE;
         }
     }
 }
