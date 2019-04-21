@@ -66,18 +66,30 @@ abstract class GameObject {
         }
 
         let prevVelocity: vec2 = this.velocity;
-        this.velocity = vec2.fromValues(0, 0);
+        //this.velocity = vec2.fromValues(0, 0);
 
         // Apply gravity
-        if (!this.grounded) {
-            this.velocity[1] = prevVelocity[1] - sceneAttributes.gravity;
+        if (this.grounded) {
+            this.velocity[1] = 0;
+        }
+        else {
+            this.velocity[1] -= sceneAttributes.gravity;
         }
 
         // Apply non-physical motion
-        vec2.add(this.velocity, this.velocity, this.inputVelocity);
-
+        if (Math.abs(this.inputVelocity[0]) > 0.001) {
+            let influence = this.grounded ? 0.2 : 0.15;
+            this.velocity[0] = (1 - influence) * this.velocity[0] + influence * this.inputVelocity[0];
+        }
+        else if (this.grounded) {
+            this.velocity[0] *= 0.5;
+        }
+        else {
+            this.velocity[0] *= 0.9;
+        }
+        this.velocity[1] += this.inputVelocity[1];
         // Scale back velocity if it's too high
-        let speed: number = this.velocity.length;
+        let speed: number = vec2.length(this.velocity);
         if (speed > sceneAttributes.maxObjectSpeed) {
             vec2.scale(this.velocity, this.velocity, sceneAttributes.maxObjectSpeed / speed);
         }
@@ -104,6 +116,7 @@ abstract class GameObject {
                 }
             }
         }
+
 
         this.grounded = this.checkIfGrounded();
         this.inputVelocity = vec2.fromValues(0, 0);

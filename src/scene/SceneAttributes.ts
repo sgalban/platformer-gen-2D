@@ -1,10 +1,10 @@
 let sceneAttributes = {
-    gravity: 1.5,
-    playerSpeed: 7.5,
+    gravity: 2.5,
+    playerSpeed: 9.5,
     playerJump: 5.5,
     maxJumpHold: 0.4,
     jumpFalloff: 0.85, 
-    maxObjectSpeed: 7.5,
+    maxObjectSpeed: 30,
     deathHeight: -15
 }
 

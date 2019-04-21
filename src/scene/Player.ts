@@ -22,8 +22,10 @@ class Player extends GameObject {
     // The current frame of the player's walk cycle
     walkFrame: number;
 
-    // Wheher or not the player is moving horizontally
+    // Whether or not the player is moving horizontally
     moving: boolean;
+
+    jumpFalloff: number;
 
     aPressed: boolean;
     dPressed: boolean;
@@ -41,16 +43,21 @@ class Player extends GameObject {
         this.dPressed = false;
         this.sPressed = false;
         this.setPosition([0, 0]);
+        this.jumpFalloff = 0.0;
     }
 
     onUpdate(delta: number) {
         if (this.jumping) {
-            let jumpDecay = Math.pow(sceneAttributes.jumpFalloff, this.jumpTime * 50);
+            this.jumpTime -= delta;
+            let t = Math.max(0, this.jumpTime / sceneAttributes.maxJumpHold);
+            this.inputVelocity[1] = t * sceneAttributes.playerJump;
+            /*
+            let jumpDecay = Math.pow(this.jumpFalloff, this.jumpTime * 50);
             let jumpAmount = sceneAttributes.playerJump * jumpDecay;
             vec2.add(this.inputVelocity, this.inputVelocity, vec2.fromValues(0, jumpAmount));
-            this.jumpTime += delta;
+            this.jumpTime += delta;*/
         }
-        if (this.jumpTime > sceneAttributes.maxJumpHold || (this.isGrounded && !this.groundedImmunity)) {
+        if (this.jumpTime <= 0 || (this.isGrounded && !this.groundedImmunity)) {
             this.jumping = false;
         }
         this.groundedImmunity = false;
@@ -63,7 +70,7 @@ class Player extends GameObject {
             this.walkFrame++;
         }
         else {
-            this.walkFrame = 0
+            this.walkFrame = 0;
         };
 
         if (this.getPosition()[1] < sceneAttributes.deathHeight) {
@@ -88,7 +95,7 @@ class Player extends GameObject {
     onKeyDown(key: string) {
         if (key === 'w' && this.isGrounded) {
             this.jumping = true;
-            this.jumpTime = 0;
+            this.jumpTime = sceneAttributes.maxJumpHold;
             this.groundedImmunity = true;
         }
         else if (key === 'a') {
