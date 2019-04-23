@@ -15,6 +15,8 @@ export const spriteCoordinates = {
     SPRITE_TERRAIN_SINGLE:             vec2.fromValues(4, 0),
     SPRITE_TERRAIN_LEFT_INNER_CORNER:  vec2.fromValues(5, 1),
     SPRITE_TERRAIN_RIGHT_INNER_CORNER: vec2.fromValues(6, 2),
+    SPRITE_TERRAIN_COLUMN:             vec2.fromValues(7, 1),
+    SPRITE_TERRAIN_CAP:                vec2.fromValues(7, 0),
 
     // Entities
     SPRITE_PICKUP: vec2.fromValues(0, 3),

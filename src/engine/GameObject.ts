@@ -78,14 +78,14 @@ abstract class GameObject {
 
         // Apply non-physical motion
         if (Math.abs(this.inputVelocity[0]) > 0.001) {
-            let influence = this.grounded ? 0.2 : 0.15;
+            let influence = this.grounded ? 0.18 : 0.12;
             this.velocity[0] = (1 - influence) * this.velocity[0] + influence * this.inputVelocity[0];
         }
         else if (this.grounded) {
-            this.velocity[0] *= 0.5;
+            this.velocity[0] *= 0.7;
         }
         else {
-            this.velocity[0] *= 0.9;
+            this.velocity[0] *= 0.95;
         }
         this.velocity[1] += this.inputVelocity[1];
         // Scale back velocity if it's too high

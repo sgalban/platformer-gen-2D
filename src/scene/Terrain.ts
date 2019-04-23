@@ -73,6 +73,12 @@ class Terrain {
         if (!cr && !cl && !tc && !bc) {
             return spriteCoordinates.SPRITE_TERRAIN_SINGLE;
         }
+        else if (tc && !cr && !cl) {
+            return spriteCoordinates.SPRITE_TERRAIN_COLUMN;
+        }
+        else if (!cr && !cl) {
+            return spriteCoordinates.SPRITE_TERRAIN_CAP;
+        }
         else if (!tc && cl && cr) {
             return spriteCoordinates.SPRITE_TERRAIN_TOP;
         }
