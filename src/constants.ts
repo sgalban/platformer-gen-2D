@@ -28,4 +28,9 @@ export const spriteCoordinates = {
     SPRITE_PLAYER_WALK_1: vec2.fromValues(2, 7),
     SPRITE_PLAYER_WALK_2: vec2.fromValues(3, 7),
     SPRITE_PLAYER_CROUCH: vec2.fromValues(4, 7),
+    SPRITE_PLAYER_IDLE1:  vec2.fromValues(5, 7),
+    SPRITE_PLAYER_IDLE2:  vec2.fromValues(6, 7),
+
+    // Particles
+    SPRITE_Z:    vec2.fromValues(6, 6),
 }

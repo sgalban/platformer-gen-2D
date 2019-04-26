@@ -8,12 +8,14 @@ abstract class Drawable {
     bufOff: WebGLBuffer;
     bufUV: WebGLBuffer;
     bufMir: WebGLBuffer;
+    bufScale: WebGLBuffer;
   
     idxGenerated: boolean = false;
     posGenerated: boolean = false;
     uvGenerated: boolean = false;
     offGenerated: boolean = false;
     mirGenerated: boolean = false;
+    scaleGenerated: boolean = false;
   
     numInstances: number = 0; // How many instances of this Drawable the shader program should draw
   
@@ -25,6 +27,7 @@ abstract class Drawable {
         gl.deleteBuffer(this.bufOff);
         gl.deleteBuffer(this.bufUV);
         gl.deleteBuffer(this.bufMir);
+        gl.deleteBuffer(this.bufScale);
     }
   
     generateIdx() {
@@ -50,6 +53,11 @@ abstract class Drawable {
     generateMir() {
         this.mirGenerated = true;
         this.bufMir = gl.createBuffer();
+    }
+
+    generateScale() {
+        this.scaleGenerated = true;
+        this.bufScale = gl.createBuffer();
     }
   
     bindIdx(): boolean {
@@ -85,6 +93,13 @@ abstract class Drawable {
             gl.bindBuffer(gl.ARRAY_BUFFER, this.bufMir);
         }
         return this.mirGenerated;
+    }
+
+    bindScale(): boolean {
+        if (this.scaleGenerated) {
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.bufScale);
+        }
+        return this.scaleGenerated;
     }
   
     elemCount(): number {

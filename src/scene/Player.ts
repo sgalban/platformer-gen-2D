@@ -1,6 +1,7 @@
 import {vec2, vec3} from 'gl-matrix';
 import GameObject from '../engine/GameObject';
 import sceneAttributes from './SceneAttributes';
+import Particle from './Particle';
 import {spriteCoordinates} from '../constants';
 
 const WALK_CYCLE_LENGTH: number = 10;
@@ -25,12 +26,12 @@ class Player extends GameObject {
     // Whether or not the player is moving horizontally
     moving: boolean;
 
-    jumpFalloff: number;
-
     aPressed: boolean;
     dPressed: boolean;
     sPressed: boolean;
 
+    private idleTime: number;
+    private zTime: number;
 
     constructor() {
         super(true);
@@ -43,7 +44,8 @@ class Player extends GameObject {
         this.dPressed = false;
         this.sPressed = false;
         this.setPosition([0, 0]);
-        this.jumpFalloff = 0.0;
+        this.idleTime = 0;
+        this.zTime = 0;
     }
 
     onUpdate(delta: number) {
@@ -72,6 +74,34 @@ class Player extends GameObject {
 
         if (this.getPosition()[1] < sceneAttributes.deathHeight) {
             this.setPosition([0, 0]);
+        }
+
+        if (!this.isGrounded || this.sPressed || this.moving) {
+            this.idleTime = 0;
+        }
+        else {
+            this.idleTime += delta;
+        }
+
+        if (this.idleTime > 20) {
+            if (this.zTime > 2) {
+                let z: Particle = new Particle(
+                    spriteCoordinates.SPRITE_Z,
+                    vec2.fromValues(this.getPosition()[0], this.getPosition()[1]),
+                    3.5
+                )
+                z.setMovement((time: number) => {
+                    if (time > 1) {
+                        z.scale(0.99);
+                    }
+                    return vec2.fromValues(time, Math.sin(time * 3) * 0.3 + time);
+                })
+                this.zTime = 0;
+            }
+            this.zTime += delta;
+        }
+        else {
+            this.zTime = 0;
         }
     }
 
@@ -132,7 +162,13 @@ class Player extends GameObject {
                 spriteCoordinates.SPRITE_PLAYER_WALK_2;
         }
         else if (this.sPressed) {
-            return spriteCoordinates.SPRITE_PLAYER_CROUCH
+            return spriteCoordinates.SPRITE_PLAYER_CROUCH;
+        }
+        else if (this.idleTime >= 20) {
+            return spriteCoordinates.SPRITE_PLAYER_IDLE2;
+        }
+        else if (this.idleTime >= 10) {
+            return spriteCoordinates.SPRITE_PLAYER_IDLE1;
         }
         return spriteCoordinates.SPRITE_PLAYER_STAND;
     }

@@ -84,10 +84,12 @@ class GameEngine {
         let tilePositions: vec2[] = [];
         let tileUvs: vec2[] = [];
         let tileMirrors: boolean[] = [];
+        let tileScales: number[] = [];
         for (let go of this.gameObjects) {
             tilePositions.push(go.getPosition());
             tileUvs.push(go.getSpriteUv());
             tileMirrors.push(go.facingLeft());
+            tileScales.push(go.size);
         }
         for (let ter of this.terrainObjects) {
             for (let x of ter.tiles.keys()) {
@@ -102,12 +104,13 @@ class GameEngine {
                     tilePositions.push(vec2.fromValues(x, y));
                     tileUvs.push(ter.getSpritePosition(x, y));
                     tileMirrors.push(false);
+                    tileScales.push(1);
                 }
             }
         }
 
         let totalPositions: vec2
-        this.tile.setInstanceVBOs(tilePositions, tileUvs, tileMirrors);
+        this.tile.setInstanceVBOs(tilePositions, tileUvs, tileMirrors, tileScales);
         this.tile.setNumInstances(tilePositions.length);
 
         this.renderer.render(this.camera, this.spriteShader, [this.tile]);

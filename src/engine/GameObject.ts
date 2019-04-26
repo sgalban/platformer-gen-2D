@@ -8,7 +8,9 @@ abstract class GameObject {
     private drawable: Drawable;
     private position: vec2;
     private velocity: vec2;
+    public size: number;
     protected inputVelocity: vec2;
+    protected prevInputVelocty: vec2;
     private passive: boolean;
     private dynamic: boolean;
     private grounded: boolean;
@@ -23,7 +25,9 @@ abstract class GameObject {
         this.position = vec2.fromValues(0, 0);
         this.velocity = vec2.fromValues(0, 0);
         this.inputVelocity = vec2.fromValues(0, 0);
+        this.prevInputVelocty = vec2.fromValues(0, 0);
         this.direction = 1;
+        this.size = 1;
 
         GameEngine.getEngine().addGameObject(this);
     }
@@ -48,6 +52,10 @@ abstract class GameObject {
     setPosition(newPosition: vec2 | number[]): void {
         this.position[0] = newPosition[0];
         this.position[1] = newPosition[1];
+    }
+
+    scale(amount: number) {
+        this.size *= amount;
     }
 
     abstract getSpriteUv(): vec2;
@@ -78,7 +86,7 @@ abstract class GameObject {
 
         // Apply non-physical motion
         if (Math.abs(this.inputVelocity[0]) > 0.001) {
-            let influence = this.grounded ? 0.18 : 0.12;
+            let influence = this.grounded ? 0.2 : 0.11;
             this.velocity[0] = (1 - influence) * this.velocity[0] + influence * this.inputVelocity[0];
         }
         else if (this.grounded) {
@@ -119,6 +127,7 @@ abstract class GameObject {
 
 
         this.grounded = this.checkIfGrounded();
+        vec2.copy(this.prevInputVelocty, this.inputVelocity);
         this.inputVelocity = vec2.fromValues(0, 0);
     }
 

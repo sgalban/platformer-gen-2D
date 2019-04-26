@@ -8,6 +8,7 @@ class Tile extends Drawable {
     uvs: Float32Array;
     offsets: Float32Array;
     mirrors: Int32Array;
+    scales: Float32Array;
 
     constructor() {
         super();
@@ -31,6 +32,7 @@ class Tile extends Drawable {
         this.generateUV();
         this.generateOff();
         this.generateMir();
+        this.generateScale();
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.bufIdx);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
@@ -39,7 +41,7 @@ class Tile extends Drawable {
         gl.bufferData(gl.ARRAY_BUFFER, this.positions, gl.STATIC_DRAW);
     }
 
-    setInstanceVBOs(posOffsets: vec2[], uvOffsets: vec2[], mirrors: boolean[]) {
+    setInstanceVBOs(posOffsets: vec2[], uvOffsets: vec2[], mirrors: boolean[], scales: number[]) {
         let posOffsetArray = [];
         let uvOffsetArray = [];
         let mirrorArray = [];
@@ -55,12 +57,15 @@ class Tile extends Drawable {
         this.offsets = new Float32Array(posOffsetArray);
         this.uvs = new Float32Array(uvOffsetArray);
         this.mirrors = new Int32Array(mirrorArray);
+        this.scales = new Float32Array(scales);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.bufOff);
         gl.bufferData(gl.ARRAY_BUFFER, this.offsets, gl.STATIC_DRAW);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.bufUV);
         gl.bufferData(gl.ARRAY_BUFFER, this.uvs, gl.STATIC_DRAW);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.bufMir);
         gl.bufferData(gl.ARRAY_BUFFER, this.mirrors, gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.bufScale);
+        gl.bufferData(gl.ARRAY_BUFFER, this.scales, gl.STATIC_DRAW);
     }
 }
 
