@@ -12,6 +12,7 @@ export default class GeometryGenerator {
     terrain: Terrain;
     currentPos: vec2;
     jumpHeights: Map<JumpType, {height: number, time: number}>
+    curTime: number;
 
     constructor(_terrain: Terrain) {
         this.terrain = _terrain;
@@ -20,7 +21,6 @@ export default class GeometryGenerator {
         this.jumpHeights.set(JumpType.SHORT, this.getJumpHeight(JumpType.SHORT));
         this.jumpHeights.set(JumpType.MEDIUM, this.getJumpHeight(JumpType.MEDIUM));
         this.jumpHeights.set(JumpType.LONG, this.getJumpHeight(JumpType.LONG));
-        console.log(this.jumpHeights);
     }
 
     private queuesFromRhythm(rhythm: RhythmGroup): {moveStates: MovementState[], jumpStates: JumpState[]} {
@@ -107,7 +107,7 @@ export default class GeometryGenerator {
         if (totalDistance === 2 && endHeight === 0){
             endHeight = 1
         }
-        
+
         this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
         this.currentPos[0] += 1;
         this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
@@ -120,7 +120,12 @@ export default class GeometryGenerator {
         let playerSpeed = sceneAttributes.playerSpeed;
         let queues = this.queuesFromRhythm(rhythm);
         for (let jump of queues.jumpStates) {
+
+            
+
+            let prevX = this.currentPos[0];
             this.generateSimpleJump(jump.jumpHold);
+            this.curTime += (this.currentPos[0] - prevX) / playerSpeed;
             /*if (jump.jumpHold === JumpType.SHORT) {
 
                 if (Math.random() < 0.5) {

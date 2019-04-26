@@ -1,6 +1,7 @@
 import {vec2, mat4} from 'gl-matrix';
 import GameObject from './engine/GameObject';
 import sceneAttributes from './scene/SceneAttributes';
+import Player from './scene/Player';
 
 class Camera {
     controls: any;
@@ -8,7 +9,7 @@ class Camera {
     viewMatrix: mat4 = mat4.create();
     aspectRatio: number = 1;
     position: vec2 = vec2.create();
-    child: GameObject = null;
+    child: Player = null;
     width: number;
     height: number;
   
@@ -48,14 +49,22 @@ class Camera {
     }
 
 
-    makeParent(child: GameObject) {
+    makeParent(child: Player) {
         this.child = child;
     }
 
     update(): void {
         if (this.child) {
-            let yPos = Math.max(this.child.getPosition()[1], sceneAttributes.deathHeight + 10);
-            this.setPosition([-this.child.getPosition()[0], -yPos]);
+            let yPos = this.position[1];
+            let goalPos = -Math.max(this.child.getPosition()[1] + 2, sceneAttributes.deathHeight + 10);
+
+            if (this.child.isGrounded) {
+                yPos += (goalPos - yPos) * 0.1;
+            }
+            else {
+                yPos += (goalPos - yPos) * 0.01;
+            }
+            this.setPosition([-this.child.getPosition()[0], yPos]);            
         }
     }
 };

@@ -13,7 +13,7 @@ abstract class GameObject {
     private dynamic: boolean;
     private grounded: boolean;
     protected direction: number;
-    protected get isGrounded() : boolean {
+    get isGrounded() : boolean {
         return this.grounded;
     }
 
