@@ -16,7 +16,7 @@ export default class Particle extends GameObject {
         this.lifetime = _lifetime;
         this.time = 0;
         this.startingPos = _startingPos;
-        this.movement = () => this.startingPos;
+        this.movement = () => vec2.create();;
     }
 
     setMovement(move: (time: number) => vec2) {

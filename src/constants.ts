@@ -33,4 +33,5 @@ export const spriteCoordinates = {
 
     // Particles
     SPRITE_Z:    vec2.fromValues(6, 6),
+    SPRITE_POFF: vec2.fromValues(7, 6),
 }

@@ -67,6 +67,32 @@ class Player extends GameObject {
 
         if (this.moving) {
             this.walkFrame++;
+            let skidThresh = sceneAttributes.playerSpeed / 4
+            if (this.isGrounded && (
+                (this.aPressed && this.getVelocity()[0] > skidThresh) ||
+                (this.dPressed && this.getVelocity()[0] < -skidThresh))
+            ) {
+                let poff1 = new Particle(
+                    spriteCoordinates.SPRITE_POFF,
+                    vec2.fromValues(this.getPosition()[0], this.getPosition()[1] - 0.5),
+                    0.25
+                );
+                poff1.scale(0.5)
+                poff1.setMovement((time: number) => {
+                    poff1.scale(1.03)
+                    return vec2.fromValues(0, time * time * 10);
+                })
+                let poff2 = new Particle(
+                    spriteCoordinates.SPRITE_POFF,
+                    vec2.fromValues(this.getPosition()[0], this.getPosition()[1] - 0.5),
+                    0.25
+                );
+                poff2.scale(0.5)
+                poff2.setMovement((time: number) => {
+                    poff2.scale(1.03)
+                    return vec2.fromValues(0, time * time * 5);
+                })
+            }
         }
         else {
             this.walkFrame = 0;
@@ -102,6 +128,29 @@ class Player extends GameObject {
         }
         else {
             this.zTime = 0;
+        }
+    }
+
+    onGrounded(verticalVelocity: number) {
+        if (verticalVelocity < -40) {
+            let thisPos = this.getPosition();
+            console.log("ow");
+            let poff1: Particle = new Particle(
+                spriteCoordinates.SPRITE_POFF,
+                vec2.fromValues(thisPos[0], thisPos[1] - 0.5),
+            3);
+            poff1.setMovement((time: number) => {
+                poff1.scale(1 - time / 3);
+                return vec2.fromValues(4 * time, 5 * time * time);
+            })
+            let poff2: Particle = new Particle(
+                spriteCoordinates.SPRITE_POFF,
+                vec2.fromValues(thisPos[0] + 0.5, thisPos[1] - 0.5),
+            3);
+            poff2.setMovement((time: number) => {
+                poff2.scale(1 - time / 3);
+                return vec2.fromValues(-4 * time, 5 * time * time);
+            })
         }
     }
 

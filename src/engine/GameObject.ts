@@ -126,7 +126,11 @@ abstract class GameObject {
         }
 
 
-        this.grounded = this.checkIfGrounded();
+        let groundedCheck = this.checkIfGrounded();
+        if (!this.grounded && groundedCheck) {
+            this.onGrounded(this.velocity[1]);
+        }
+        this.grounded = groundedCheck;
         vec2.copy(this.prevInputVelocty, this.inputVelocity);
         this.inputVelocity = vec2.fromValues(0, 0);
     }
@@ -209,6 +213,9 @@ abstract class GameObject {
     onKeyDown(key: string): void {/* I don't really care too much at this point */};
 
     onKeyUp(key: string): void {/* I'm just holding out til graduation at this point */}
+
+    protected onGrounded(verticalVelocity: number): void {}
+
 }
 
 export default GameObject;
