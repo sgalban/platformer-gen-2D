@@ -56,10 +56,11 @@ class Camera {
     update(): void {
         if (this.child) {
             let yPos = this.position[1];
-            let goalPos = -Math.max(this.child.getPosition()[1] + 2, sceneAttributes.deathHeight + 10);
+            let offset = this.child.sPressed && this.child.isGrounded ? -3 : 2
+            let goalPos = -Math.max(this.child.getPosition()[1] + offset, sceneAttributes.deathHeight + 10);
 
-            if (this.child.isGrounded) {
-                yPos += (goalPos - yPos) * 0.1;
+            if (this.child.isGrounded && Math.abs(yPos - goalPos) > 0.01) {
+                yPos += (goalPos - yPos) * 0.05;
             }
             else {
                 yPos += (goalPos - yPos) * 0.01;
