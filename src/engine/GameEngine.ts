@@ -132,10 +132,10 @@ class GameEngine {
 
         for (let go of this.gameObjects) {
             go.physicsUpdate(deltaTime);
+            go.onUpdate(deltaTime);
             for (let key of this.downkeys) {
                 go.onKeyPress(key);
             }
-            go.onUpdate(deltaTime);
         }
         this.camera.update();
     }
@@ -143,16 +143,13 @@ class GameEngine {
     // Maybe integrate this with the main tick()
     startGame() {
         this.lastTick = Date.now();
+    }
 
-        let tick = () => {
-
-            let curTime = Date.now();
-            let deltaTime = curTime - this.lastTick;
-            this.lastTick = curTime;
-            this.updateGameObjects(deltaTime / 1000.0);
-            window.setTimeout(tick, 16);
-        }
-        tick();
+    tick() {
+        let curTime = Date.now();
+        let deltaTime = curTime - this.lastTick;
+        this.lastTick = curTime;
+        this.updateGameObjects(deltaTime / 1000.0);
     }
 }
 

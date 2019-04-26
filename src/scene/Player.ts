@@ -48,14 +48,11 @@ class Player extends GameObject {
 
     onUpdate(delta: number) {
         if (this.jumping) {
-            this.jumpTime -= delta;
-            let t = Math.max(0, this.jumpTime / sceneAttributes.maxJumpHold);
+            // I have decided to perform this operation in units of frames instead of seconds to ensure
+            // that the jump height is consistent. It makes geometry generator calculations easier too
+            this.jumpTime -= 0.016;
+            let t = Math.max(0, this.jumpTime / 0.4);
             this.inputVelocity[1] = t * sceneAttributes.playerJump;
-            /*
-            let jumpDecay = Math.pow(this.jumpFalloff, this.jumpTime * 50);
-            let jumpAmount = sceneAttributes.playerJump * jumpDecay;
-            vec2.add(this.inputVelocity, this.inputVelocity, vec2.fromValues(0, jumpAmount));
-            this.jumpTime += delta;*/
         }
         if (this.jumpTime <= 0 || (this.isGrounded && !this.groundedImmunity)) {
             this.jumping = false;

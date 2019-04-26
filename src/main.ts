@@ -54,6 +54,7 @@ function main() {
     function tick() {
         stats.begin();
         time++;
+        engine.tick();
 
         gl.viewport(0, 0, window.innerWidth, window.innerHeight);
         renderer.clear();

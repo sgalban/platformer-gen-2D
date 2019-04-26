@@ -103,7 +103,7 @@ abstract class GameObject {
         //     the amount of the overlap
         //     - Note that this pushback will only have to be in the x axis
         //   - Repeat with the y-axis
-        let deltaPos: vec2 = vec2.scale(vec2.create(), this.velocity, delta);
+        let deltaPos: vec2 = vec2.scale(vec2.create(), this.velocity, 1.0 / 60);
         for (let axis = 0; axis < 2; axis++) {
             if (Math.abs(deltaPos[axis]) > 10e-6) {
                 this.position[axis] += deltaPos[axis];

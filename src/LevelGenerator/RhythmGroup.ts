@@ -6,8 +6,8 @@ export enum Verb {
 }
 
 export enum JumpType {
-    SHORT = sceneAttributes.maxJumpHold / 5,
-    MEDIUM = sceneAttributes.maxJumpHold / 3,
+    SHORT = sceneAttributes.maxJumpHold * 0.75,
+    MEDIUM = sceneAttributes.maxJumpHold * 0.875,
     LONG = sceneAttributes.maxJumpHold,
 }
 

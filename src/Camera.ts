@@ -1,5 +1,6 @@
 import {vec2, mat4} from 'gl-matrix';
 import GameObject from './engine/GameObject';
+import sceneAttributes from './scene/SceneAttributes';
 
 class Camera {
     controls: any;
@@ -53,7 +54,8 @@ class Camera {
 
     update(): void {
         if (this.child) {
-            this.setPosition([-this.child.getPosition()[0], this.position[1]]);
+            let yPos = Math.max(this.child.getPosition()[1], sceneAttributes.deathHeight + 10);
+            this.setPosition([-this.child.getPosition()[0], -yPos]);
         }
     }
 };
