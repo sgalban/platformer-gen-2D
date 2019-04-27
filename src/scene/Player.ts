@@ -155,12 +155,12 @@ class Player extends GameObject {
 
     onKeyPress(key: string) {
         let playerMovement = this.isGrounded ? sceneAttributes.playerSpeed : sceneAttributes.playerSpeed;
-        if (key === "a") {
+        if (key === "a" || key === "ArrowLeft") {
             vec2.add(this.inputVelocity, this.inputVelocity, vec2.fromValues(-playerMovement, 0));
             this.direction = -1;
             this.moving = true;
         }
-        else if (key === "d") {
+        else if (key === "d" || key === "ArrowRight") {
             vec2.add(this.inputVelocity, this.inputVelocity, vec2.fromValues(playerMovement, 0));
             this.direction = 1;
             this.moving = true;
@@ -168,34 +168,34 @@ class Player extends GameObject {
     }
 
     onKeyDown(key: string) {
-        if (key === 'w' && this.isGrounded) {
+        if ((key === 'w' || key === " " || key === "ArrowUp") && this.isGrounded) {
             this.jumping = true;
             this.jumpTime = sceneAttributes.maxJumpHold;
             this.groundedImmunity = true;
         }
-        else if (key === 'a') {
+        else if (key === 'a' || key === "ArrowLeft") {
             this.aPressed = true;
         }
-        else if (key === 'd') {
+        else if (key === 'd' || key === "ArrowRight") {
             this.dPressed = true;
         }
-        else if (key === 's') {
+        else if (key === 's' || key === "ArrowDown") {
             this.sPressed = true;
         }
     }
 
     onKeyUp(key: string) {
-        if (key === 'w') {
+        if (key === 'w' || key === " " || key === "ArrowUp") {
             this.jumping = false;
             this.jumpTime = 0;
         }
-        else if (key === 'a') {
+        else if (key === 'a' || key === "ArrowLeft") {
             this.aPressed = false;
         }
-        else if (key === 'd') {
+        else if (key === 'd' || key === "ArrowRight") {
             this.dPressed = false;
         }
-        else if (key === 's') {
+        else if (key === 's' || key === "ArrowDown") {
             this.sPressed = false;
         }
     }

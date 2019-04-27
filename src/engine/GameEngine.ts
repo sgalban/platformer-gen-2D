@@ -71,6 +71,7 @@ class GameEngine {
         this.backgroundShader.setSpriteTex(backgroundTex);
 
         window.addEventListener("keydown", (keyEvent) => {
+            console.log(keyEvent);
             if (!this.downkeys.has(keyEvent.key)) {
                 this.gameObjects.forEach((go: GameObject) => {go.onKeyDown(keyEvent.key)});
             }

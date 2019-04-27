@@ -7890,6 +7890,7 @@ class GameEngine {
         let backgroundTex = new _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_7__["default"](backgrounds, 1);
         this.backgroundShader.setSpriteTex(backgroundTex);
         window.addEventListener("keydown", (keyEvent) => {
+            console.log(keyEvent);
             if (!this.downkeys.has(keyEvent.key)) {
                 this.gameObjects.forEach((go) => { go.onKeyDown(keyEvent.key); });
             }
@@ -9112,45 +9113,45 @@ class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] 
     }
     onKeyPress(key) {
         let playerMovement = this.isGrounded ? _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed : _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed;
-        if (key === "a") {
+        if (key === "a" || key === "ArrowLeft") {
             gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(this.inputVelocity, this.inputVelocity, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(-playerMovement, 0));
             this.direction = -1;
             this.moving = true;
         }
-        else if (key === "d") {
+        else if (key === "d" || key === "ArrowRight") {
             gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(this.inputVelocity, this.inputVelocity, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(playerMovement, 0));
             this.direction = 1;
             this.moving = true;
         }
     }
     onKeyDown(key) {
-        if (key === 'w' && this.isGrounded) {
+        if ((key === 'w' || key === " " || key === "ArrowUp") && this.isGrounded) {
             this.jumping = true;
             this.jumpTime = _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].maxJumpHold;
             this.groundedImmunity = true;
         }
-        else if (key === 'a') {
+        else if (key === 'a' || key === "ArrowLeft") {
             this.aPressed = true;
         }
-        else if (key === 'd') {
+        else if (key === 'd' || key === "ArrowRight") {
             this.dPressed = true;
         }
-        else if (key === 's') {
+        else if (key === 's' || key === "ArrowDown") {
             this.sPressed = true;
         }
     }
     onKeyUp(key) {
-        if (key === 'w') {
+        if (key === 'w' || key === " " || key === "ArrowUp") {
             this.jumping = false;
             this.jumpTime = 0;
         }
-        else if (key === 'a') {
+        else if (key === 'a' || key === "ArrowLeft") {
             this.aPressed = false;
         }
-        else if (key === 'd') {
+        else if (key === 'd' || key === "ArrowRight") {
             this.dPressed = false;
         }
-        else if (key === 's') {
+        else if (key === 's' || key === "ArrowDown") {
             this.sPressed = false;
         }
     }
