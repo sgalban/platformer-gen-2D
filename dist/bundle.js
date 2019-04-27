@@ -95,7 +95,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var _rendering_gl_OpenGLRenderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
 /* harmony import */ var _engine_GameEngine__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(15);
-/* harmony import */ var _scene_Player__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(30);
+/* harmony import */ var _scene_Player__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(33);
 
 
 
@@ -191,6 +191,7 @@ __webpack_require__.r(__webpack_exports__);
 class OpenGLRenderer {
     constructor(canvas) {
         this.canvas = canvas;
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].enable(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].DEPTH_TEST);
     }
     setClearColor(r, g, b, a) {
         _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].clearColor(r, g, b, a);
@@ -7834,11 +7835,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 /* harmony import */ var _scene_Terrain__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(16);
 /* harmony import */ var _geometry_Tile__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(19);
-/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(2);
-/* harmony import */ var _Camera__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(21);
-/* harmony import */ var _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(22);
-/* harmony import */ var _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(23);
-/* harmony import */ var _LevelGenerator_LevelGenerator__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(24);
+/* harmony import */ var _geometry_Background__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(21);
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(2);
+/* harmony import */ var _Camera__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(22);
+/* harmony import */ var _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(23);
+/* harmony import */ var _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(24);
+/* harmony import */ var _LevelGenerator_LevelGenerator__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(25);
+
 
 
 
@@ -7854,23 +7857,36 @@ class GameEngine {
         }
         else {
             let tile = new _geometry_Tile__WEBPACK_IMPORTED_MODULE_2__["default"]();
+            let background = new _geometry_Background__WEBPACK_IMPORTED_MODULE_3__["default"]();
             tile.create();
-            GameEngine.engine = new GameEngine(tile);
+            background.create();
+            GameEngine.engine = new GameEngine(tile, background);
             return GameEngine.engine;
         }
     }
-    constructor(_tile) {
+    constructor(_tile, _background) {
         this.gameObjects = [];
         this.terrainObjects = [];
         this.collidableObjects = [];
         this.tile = _tile;
-        this.camera = new _Camera__WEBPACK_IMPORTED_MODULE_4__["default"](gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, -3), 20);
+        this.background = _background;
+        this.camera = new _Camera__WEBPACK_IMPORTED_MODULE_5__["default"](gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, -3), 20);
         this.downkeys = new Set();
-        this.spriteShader = new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_5__["default"]([
-            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_5__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_3__["gl"].VERTEX_SHADER, __webpack_require__(28)),
-            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_5__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_3__["gl"].FRAGMENT_SHADER, __webpack_require__(29)),
+        this.ticks = 0;
+        this.spriteShader = new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["default"]([
+            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].VERTEX_SHADER, __webpack_require__(29)),
+            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].FRAGMENT_SHADER, __webpack_require__(30)),
         ]);
-        this.spriteShader.setSpriteTex(new _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_6__["default"]('http://' + window.location.host + '/src/assets/sprites.png'));
+        const spriteSheet = 'http://' + window.location.host + '/src/assets/sprites.png';
+        let spriteTex = new _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_7__["default"](spriteSheet, 0);
+        this.spriteShader.setSpriteTex(spriteTex);
+        this.backgroundShader = new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["default"]([
+            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].VERTEX_SHADER, __webpack_require__(31)),
+            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].FRAGMENT_SHADER, __webpack_require__(32)),
+        ]);
+        const backgrounds = 'http://' + window.location.host + '/src/assets/backgrounds.png';
+        let backgroundTex = new _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_7__["default"](backgrounds, 1);
+        this.backgroundShader.setSpriteTex(backgroundTex);
         window.addEventListener("keydown", (keyEvent) => {
             if (!this.downkeys.has(keyEvent.key)) {
                 this.gameObjects.forEach((go) => { go.onKeyDown(keyEvent.key); });
@@ -7883,7 +7899,7 @@ class GameEngine {
         });
         let terrain = new _scene_Terrain__WEBPACK_IMPORTED_MODULE_1__["default"]();
         this.setTerrain(terrain);
-        let levelGen = new _LevelGenerator_LevelGenerator__WEBPACK_IMPORTED_MODULE_7__["default"](3, terrain, 15, 15, 1, 0.7, [1, 0, 0]);
+        let levelGen = new _LevelGenerator_LevelGenerator__WEBPACK_IMPORTED_MODULE_8__["default"](3, terrain, 15, 15, 1, 0.7, [1, 0, 0]);
         levelGen.generateRhythms();
         levelGen.generateGeometry();
     }
@@ -7900,10 +7916,12 @@ class GameEngine {
         let tilePositions = [];
         let tileUvs = [];
         let tileMirrors = [];
+        let tileScales = [];
         for (let go of this.gameObjects) {
             tilePositions.push(go.getPosition());
             tileUvs.push(go.getSpriteUv());
             tileMirrors.push(go.facingLeft());
+            tileScales.push(go.size);
         }
         for (let ter of this.terrainObjects) {
             for (let x of ter.tiles.keys()) {
@@ -7917,12 +7935,14 @@ class GameEngine {
                     tilePositions.push(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(x, y));
                     tileUvs.push(ter.getSpritePosition(x, y));
                     tileMirrors.push(false);
+                    tileScales.push(1);
                 }
             }
         }
         let totalPositions;
-        this.tile.setInstanceVBOs(tilePositions, tileUvs, tileMirrors);
+        this.tile.setInstanceVBOs(tilePositions, tileUvs, tileMirrors, tileScales);
         this.tile.setNumInstances(tilePositions.length);
+        this.renderer.render(this.camera, this.backgroundShader, [this.background]);
         this.renderer.render(this.camera, this.spriteShader, [this.tile]);
     }
     // Only call from GameObject class
@@ -7953,6 +7973,8 @@ class GameEngine {
         this.lastTick = Date.now();
     }
     tick() {
+        this.ticks++;
+        this.backgroundShader.setTime(this.ticks);
         let curTime = Date.now();
         let deltaTime = curTime - this.lastTick;
         this.lastTick = curTime;
@@ -8128,6 +8150,11 @@ const spriteCoordinates = {
     SPRITE_PLAYER_WALK_1: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(2, 7),
     SPRITE_PLAYER_WALK_2: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(3, 7),
     SPRITE_PLAYER_CROUCH: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(4, 7),
+    SPRITE_PLAYER_IDLE1: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(5, 7),
+    SPRITE_PLAYER_IDLE2: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(6, 7),
+    // Particles
+    SPRITE_Z: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(6, 6),
+    SPRITE_POFF: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(7, 6),
 };
 
 
@@ -8153,21 +8180,22 @@ class Tile extends _rendering_gl_Drawable__WEBPACK_IMPORTED_MODULE_0__["default"
             1, 1,
             0, 1
         ]);
-        this.uvs = new Float32Array([
-            0, 0, 1, 0, 1, 1, 0, 1
-        ]);
         this.count = this.indices.length;
         this.generateIdx();
         this.generatePos();
         this.generateUV();
         this.generateOff();
         this.generateMir();
+        this.generateScale();
         _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ELEMENT_ARRAY_BUFFER, this.bufIdx);
         _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bufferData(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ELEMENT_ARRAY_BUFFER, this.indices, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].STATIC_DRAW);
         _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.bufPos);
         _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bufferData(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.positions, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].STATIC_DRAW);
     }
-    setInstanceVBOs(posOffsets, uvOffsets, mirrors) {
+    isInstanced() {
+        return true;
+    }
+    setInstanceVBOs(posOffsets, uvOffsets, mirrors, scales) {
         let posOffsetArray = [];
         let uvOffsetArray = [];
         let mirrorArray = [];
@@ -8183,12 +8211,15 @@ class Tile extends _rendering_gl_Drawable__WEBPACK_IMPORTED_MODULE_0__["default"
         this.offsets = new Float32Array(posOffsetArray);
         this.uvs = new Float32Array(uvOffsetArray);
         this.mirrors = new Int32Array(mirrorArray);
+        this.scales = new Float32Array(scales);
         _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.bufOff);
         _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bufferData(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.offsets, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].STATIC_DRAW);
         _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.bufUV);
         _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bufferData(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.uvs, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].STATIC_DRAW);
         _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.bufMir);
         _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bufferData(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.mirrors, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].STATIC_DRAW);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.bufScale);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bufferData(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.scales, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].STATIC_DRAW);
     }
 }
 /* harmony default export */ __webpack_exports__["default"] = (Tile);
@@ -8210,6 +8241,7 @@ class Drawable {
         this.uvGenerated = false;
         this.offGenerated = false;
         this.mirGenerated = false;
+        this.scaleGenerated = false;
         this.numInstances = 0; // How many instances of this Drawable the shader program should draw
     }
     destroy() {
@@ -8218,6 +8250,7 @@ class Drawable {
         _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].deleteBuffer(this.bufOff);
         _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].deleteBuffer(this.bufUV);
         _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].deleteBuffer(this.bufMir);
+        _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].deleteBuffer(this.bufScale);
     }
     generateIdx() {
         this.idxGenerated = true;
@@ -8238,6 +8271,10 @@ class Drawable {
     generateMir() {
         this.mirGenerated = true;
         this.bufMir = _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].createBuffer();
+    }
+    generateScale() {
+        this.scaleGenerated = true;
+        this.bufScale = _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].createBuffer();
     }
     bindIdx() {
         if (this.idxGenerated) {
@@ -8269,6 +8306,12 @@ class Drawable {
         }
         return this.mirGenerated;
     }
+    bindScale() {
+        if (this.scaleGenerated) {
+            _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].ARRAY_BUFFER, this.bufScale);
+        }
+        return this.scaleGenerated;
+    }
     elemCount() {
         return this.count;
     }
@@ -8285,6 +8328,53 @@ class Drawable {
 
 /***/ }),
 /* 21 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _rendering_gl_Drawable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(20);
+/* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+
+
+class Background extends _rendering_gl_Drawable__WEBPACK_IMPORTED_MODULE_0__["default"] {
+    constructor() {
+        super();
+        this.numInstances = 1;
+    }
+    create() {
+        this.indices = new Uint32Array([0, 1, 2, 0, 2, 3]);
+        this.positions = new Float32Array([
+            -1.0, -1.0,
+            1.0, -1.0,
+            1.0, 1.0,
+            -1.0, 1.0
+        ]);
+        this.uvs = new Float32Array([
+            0, 1,
+            1, 1,
+            1, 0,
+            0, 0
+        ]);
+        this.count = this.indices.length;
+        this.generateIdx();
+        this.generatePos();
+        this.generateUV();
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ELEMENT_ARRAY_BUFFER, this.bufIdx);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bufferData(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ELEMENT_ARRAY_BUFFER, this.indices, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].STATIC_DRAW);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.bufPos);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bufferData(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.positions, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].STATIC_DRAW);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bindBuffer(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.bufUV);
+        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].bufferData(_globals__WEBPACK_IMPORTED_MODULE_1__["gl"].ARRAY_BUFFER, this.uvs, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].STATIC_DRAW);
+    }
+    isInstanced() {
+        return false;
+    }
+}
+/* harmony default export */ __webpack_exports__["default"] = (Background);
+
+
+/***/ }),
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8350,7 +8440,7 @@ class Camera {
 
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8386,6 +8476,7 @@ class ShaderProgram {
         this.attrUV = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getAttribLocation(this.prog, "vs_UV");
         this.attrOff = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getAttribLocation(this.prog, "vs_Offset");
         this.attrMir = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getAttribLocation(this.prog, "vs_MirrorUv");
+        this.attrScale = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getAttribLocation(this.prog, "vs_Scale");
         this.unifModel = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getUniformLocation(this.prog, "u_Model");
         this.unifModelInvTr = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getUniformLocation(this.prog, "u_ModelInvTr");
         this.unifViewProj = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getUniformLocation(this.prog, "u_ViewProj");
@@ -8453,20 +8544,30 @@ class ShaderProgram {
         if (this.attrUV != -1 && d.bindUV()) {
             _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].enableVertexAttribArray(this.attrUV);
             _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].vertexAttribPointer(this.attrUV, 2, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].FLOAT, false, 0, 0);
-            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].vertexAttribDivisor(this.attrUV, 1); // Advance 1 index in pos VBO for each vertex
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].vertexAttribDivisor(this.attrUV, d.isInstanced() ? 1 : 0);
         }
         if (this.attrOff != -1 && d.bindOff()) {
             _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].enableVertexAttribArray(this.attrOff);
             _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].vertexAttribPointer(this.attrOff, 2, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].FLOAT, false, 0, 0);
-            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].vertexAttribDivisor(this.attrOff, 1); // Advance 1 index in pos VBO for each vertex
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].vertexAttribDivisor(this.attrOff, 1);
         }
         if (this.attrMir != -1 && d.bindMir()) {
             _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].enableVertexAttribArray(this.attrMir);
             _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].vertexAttribIPointer(this.attrMir, 1, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].INT, 0, 0);
             _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].vertexAttribDivisor(this.attrMir, 1);
         }
+        if (this.attrScale != -1 && d.bindScale()) {
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].enableVertexAttribArray(this.attrScale);
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].vertexAttribPointer(this.attrScale, 1, _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].FLOAT, false, 0, 0);
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].vertexAttribDivisor(this.attrScale, 1);
+        }
         d.bindIdx();
-        _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].drawElementsInstanced(d.drawMode(), d.elemCount(), _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].UNSIGNED_INT, 0, d.numInstances);
+        if (d.isInstanced) {
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].drawElementsInstanced(d.drawMode(), d.elemCount(), _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].UNSIGNED_INT, 0, d.numInstances);
+        }
+        else {
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].drawElements(d.drawMode(), d.elemCount(), _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].UNSIGNED_INT, 0);
+        }
         if (this.attrPos != -1) {
             _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].disableVertexAttribArray(this.attrPos);
         }
@@ -8483,7 +8584,7 @@ class ShaderProgram {
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8505,7 +8606,7 @@ class Texture2D {
         _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].bindTexture(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_2D, texture);
         _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].texParameteri(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_2D, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_MAG_FILTER, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].NEAREST);
         _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].texParameteri(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_2D, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_MIN_FILTER, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].NEAREST);
-        _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].texParameteri(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_2D, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_WRAP_S, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].CLAMP_TO_EDGE);
+        _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].texParameteri(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_2D, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_WRAP_S, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].REPEAT);
         _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].texParameteri(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_2D, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_WRAP_T, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].CLAMP_TO_EDGE);
         _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].texImage2D(_globals__WEBPACK_IMPORTED_MODULE_0__["gl"].TEXTURE_2D, 0, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].RGBA, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].RGBA, _globals__WEBPACK_IMPORTED_MODULE_0__["gl"].UNSIGNED_BYTE, this.image);
     }
@@ -8524,14 +8625,14 @@ class Texture2D {
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LevelGenerator; });
-/* harmony import */ var _RhythmGroupGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(25);
-/* harmony import */ var _GeometryGenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(27);
+/* harmony import */ var _RhythmGroupGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(26);
+/* harmony import */ var _GeometryGenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(28);
 
 
 class LevelGenerator {
@@ -8560,13 +8661,13 @@ class LevelGenerator {
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BeatPattern", function() { return BeatPattern; });
-/* harmony import */ var _RhythmGroup__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(26);
+/* harmony import */ var _RhythmGroup__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(27);
 /* harmony import */ var _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(17);
 
 
@@ -8640,7 +8741,7 @@ class RhythmGroupGenerator {
 
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8690,14 +8791,14 @@ class RhythmGroup {
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return GeometryGenerator; });
 /* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
-/* harmony import */ var _RhythmGroup__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(26);
+/* harmony import */ var _RhythmGroup__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(27);
 /* harmony import */ var _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(17);
 
 
@@ -8861,27 +8962,41 @@ class GeometryGenerator {
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\nprecision highp float;\n\nuniform mat4 u_ViewProj;\nuniform mat4 u_Model;\n\nin vec2 vs_Pos;\nin vec2 vs_Offset;\nin vec2 vs_UV;\nin int vs_MirrorUv;\nout vec2 fs_Pos;\nout vec2 fs_UV;\n\nvoid main() {\n    fs_Pos = vs_Pos;\n    bool mirrorUv = vs_MirrorUv == 1;\n    fs_UV = vs_UV + vec2(mirrorUv ? 1.0 - vs_Pos.x : vs_Pos.x, 1.0 - vs_Pos.y);\n\n    vec2 actualPos = vs_Pos + vs_Offset;\n    gl_Position = u_ViewProj * u_Model * vec4(actualPos, 0, 1);\n}\n"
+module.exports = "#version 300 es\nprecision highp float;\n\nuniform mat4 u_ViewProj;\nuniform mat4 u_Model;\n\nin vec2 vs_Pos;\nin vec2 vs_Offset;\nin vec2 vs_UV;\nin float vs_Scale;\nin int vs_MirrorUv;\nout vec2 fs_Pos;\nout vec2 fs_UV;\n\nvoid main() {\n    fs_Pos = vs_Pos;\n    bool mirrorUv = vs_MirrorUv == 1;\n    fs_UV = vs_UV + vec2(mirrorUv ? 1.0 - vs_Pos.x : vs_Pos.x, 1.0 - vs_Pos.y);\n\n    vec2 actualPos = vs_Pos * vs_Scale + vs_Offset;\n    gl_Position = u_ViewProj * u_Model * vec4(actualPos, 0.5, 1);\n}\n"
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports) {
 
 module.exports = "#version 300 es\nprecision highp float;\n\nuniform sampler2D u_SpriteTex;\n\nin vec2 fs_Pos;\nin vec2 fs_UV;\n\nout vec4 out_Col;\n\nvoid main() {\n    vec4 color = texture(u_SpriteTex, fs_UV / 8.0);\n    if (color.a < 0.5) {\n        discard;\n    }\n    out_Col = color;\n}\n"
 
 /***/ }),
-/* 30 */
+/* 31 */
+/***/ (function(module, exports) {
+
+module.exports = "#version 300 es\nprecision highp float;\n\nuniform vec2 u_CameraPos;\n\nin vec2 vs_Pos;\nin vec2 vs_UV;\nout vec2 fs_Pos;\nout vec2 fs_UV1;\nout vec2 fs_UV2;\n\nvoid main() {\n    fs_Pos = vs_Pos;\n    const float squish1 = 1.8;\n    fs_UV1 = vec2(\n        vs_UV[0] / 1.5 - u_CameraPos[0] / 150.0,\n        (vs_UV[1] / 4.0) * squish1 - (squish1 / 4.0 - 0.25) + (u_CameraPos[1] + 2.0) / 100.0\n    );\n\n    const float squish2 = 1.0;\n    fs_UV2 = vec2(\n        vs_UV[0] / 2.0 - u_CameraPos[0] / 300.0,\n        (vs_UV[1] / 4.0 + 0.25) * squish2 - (squish2 / 4.0 - 0.25) + (u_CameraPos[1] + 2.0) / 200.0\n    );\n\n    gl_Position = vec4(vs_Pos, 0, 1);\n}\n"
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports) {
+
+module.exports = "#version 300 es\nprecision highp float;\n\nuniform sampler2D u_SpriteTex;\nuniform vec2 u_CameraPos;\nuniform float u_Time;\n\nin vec2 fs_Pos;\nin vec2 fs_UV1;\nin vec2 fs_UV2;\n\nout vec4 out_Col;\n\nconst vec2 SEED2 = vec2(0.31415, 0.6456);\n\nfloat random1(vec2 p) {\n    return fract(sin(dot(p + SEED2, vec2(127.1, 311.7))) * 43758.5453);\n}\n\nvec2 random2( vec2 p , vec2 seed) {\n    return fract(sin(vec2(dot(p + seed, vec2(311.7, 127.1)), dot(p + seed, vec2(269.5, 183.3)))) * 85734.3545);\n}\n\nfloat worley(vec2 noisePos, float frequency) {\n    vec2 point = noisePos * frequency;\n    vec2 cell = floor(point);\n\n    // Check the neighboring cells for the closest cell point\n    float closestDistance = 2.0;\n    for (int i = 0; i < 9; i++) {\n        vec2 curCell = cell + vec2(i % 3 - 1, floor(float(i / 3) - 1.0));\n        vec2 cellPoint = vec2(curCell) + random2(vec2(curCell), SEED2);\n        closestDistance = min(closestDistance, distance(cellPoint, point));\n    }\n    return clamp(0.0, 1.0, closestDistance);\n}\n\nvoid main() {\n    vec2 uv1 = vec2(fs_UV1.x, clamp(fs_UV1.y, 0.000, 0.249));\n    vec2 uv2 = vec2(fs_UV2.x, clamp(fs_UV2.y, 0.251, 0.499));\n    float starRadius = 0.01 + abs(sin(u_Time * 0.01 + random1(fs_Pos) * 100.0)) * 0.01;\n    vec3 stars = worley(fs_Pos, 10.0) < starRadius ? vec3(1) : vec3(0);\n    vec4 sky = mix(vec4(0.3, 0.3, 0.25, 1.0), vec4(stars, 1), pow((fs_Pos[1] + 1.0) / 2.0, 0.5));\n\n    vec4 layer1 = texture(u_SpriteTex, uv1);\n    vec4 layer2 = texture(u_SpriteTex, uv2);\n\n    vec4 color = \n        layer1.a > 0.5 ? layer1 :\n        layer2.a > 0.5 ? layer2 :\n        sky;\n\n    out_Col = vec4(color.rgb, 1);\n}\n"
+
+/***/ }),
+/* 33 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
-/* harmony import */ var _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(31);
+/* harmony import */ var _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(34);
 /* harmony import */ var _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(17);
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(18);
+/* harmony import */ var _Particle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(35);
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(18);
+
 
 
 
@@ -8899,7 +9014,8 @@ class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] 
         this.dPressed = false;
         this.sPressed = false;
         this.setPosition([0, 0]);
-        this.jumpFalloff = 0.0;
+        this.idleTime = 0;
+        this.zTime = 0;
     }
     onUpdate(delta) {
         if (this.jumping) {
@@ -8918,6 +9034,22 @@ class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] 
         }
         if (this.moving) {
             this.walkFrame++;
+            let skidThresh = _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed / 4;
+            if (this.isGrounded && ((this.aPressed && this.getVelocity()[0] > skidThresh) ||
+                (this.dPressed && this.getVelocity()[0] < -skidThresh))) {
+                let poff1 = new _Particle__WEBPACK_IMPORTED_MODULE_3__["default"](_constants__WEBPACK_IMPORTED_MODULE_4__["spriteCoordinates"].SPRITE_POFF, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(this.getPosition()[0], this.getPosition()[1] - 0.5), 0.25);
+                poff1.scale(0.5);
+                poff1.setMovement((time) => {
+                    poff1.scale(1.03);
+                    return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, time * time * 10);
+                });
+                let poff2 = new _Particle__WEBPACK_IMPORTED_MODULE_3__["default"](_constants__WEBPACK_IMPORTED_MODULE_4__["spriteCoordinates"].SPRITE_POFF, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(this.getPosition()[0], this.getPosition()[1] - 0.5), 0.25);
+                poff2.scale(0.5);
+                poff2.setMovement((time) => {
+                    poff2.scale(1.03);
+                    return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, time * time * 5);
+                });
+            }
         }
         else {
             this.walkFrame = 0;
@@ -8925,6 +9057,43 @@ class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] 
         ;
         if (this.getPosition()[1] < _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].deathHeight) {
             this.setPosition([0, 0]);
+        }
+        if (!this.isGrounded || this.sPressed || this.moving) {
+            this.idleTime = 0;
+        }
+        else {
+            this.idleTime += delta;
+        }
+        if (this.idleTime > 20) {
+            if (this.zTime > 2) {
+                let z = new _Particle__WEBPACK_IMPORTED_MODULE_3__["default"](_constants__WEBPACK_IMPORTED_MODULE_4__["spriteCoordinates"].SPRITE_Z, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(this.getPosition()[0], this.getPosition()[1]), 3.5);
+                z.setMovement((time) => {
+                    if (time > 1) {
+                        z.scale(0.99);
+                    }
+                    return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(time, Math.sin(time * 3) * 0.3 + time);
+                });
+                this.zTime = 0;
+            }
+            this.zTime += delta;
+        }
+        else {
+            this.zTime = 0;
+        }
+    }
+    onGrounded(verticalVelocity) {
+        if (verticalVelocity < -40) {
+            let thisPos = this.getPosition();
+            let poff1 = new _Particle__WEBPACK_IMPORTED_MODULE_3__["default"](_constants__WEBPACK_IMPORTED_MODULE_4__["spriteCoordinates"].SPRITE_POFF, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(thisPos[0], thisPos[1] - 0.5), 3);
+            poff1.setMovement((time) => {
+                poff1.scale(1 - time / 3);
+                return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(4 * time, 5 * time * time);
+            });
+            let poff2 = new _Particle__WEBPACK_IMPORTED_MODULE_3__["default"](_constants__WEBPACK_IMPORTED_MODULE_4__["spriteCoordinates"].SPRITE_POFF, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(thisPos[0] + 0.5, thisPos[1] - 0.5), 3);
+            poff2.setMovement((time) => {
+                poff2.scale(1 - time / 3);
+                return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(-4 * time, 5 * time * time);
+            });
         }
     }
     onKeyPress(key) {
@@ -8973,24 +9142,30 @@ class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] 
     }
     getSpriteUv() {
         if (!this.isGrounded) {
-            return _constants__WEBPACK_IMPORTED_MODULE_3__["spriteCoordinates"].SPRITE_PLAYER_JUMP;
+            return _constants__WEBPACK_IMPORTED_MODULE_4__["spriteCoordinates"].SPRITE_PLAYER_JUMP;
         }
         else if (this.moving) {
             return this.walkFrame % WALK_CYCLE_LENGTH < WALK_CYCLE_LENGTH / 2 ?
-                _constants__WEBPACK_IMPORTED_MODULE_3__["spriteCoordinates"].SPRITE_PLAYER_WALK_1 :
-                _constants__WEBPACK_IMPORTED_MODULE_3__["spriteCoordinates"].SPRITE_PLAYER_WALK_2;
+                _constants__WEBPACK_IMPORTED_MODULE_4__["spriteCoordinates"].SPRITE_PLAYER_WALK_1 :
+                _constants__WEBPACK_IMPORTED_MODULE_4__["spriteCoordinates"].SPRITE_PLAYER_WALK_2;
         }
         else if (this.sPressed) {
-            return _constants__WEBPACK_IMPORTED_MODULE_3__["spriteCoordinates"].SPRITE_PLAYER_CROUCH;
+            return _constants__WEBPACK_IMPORTED_MODULE_4__["spriteCoordinates"].SPRITE_PLAYER_CROUCH;
         }
-        return _constants__WEBPACK_IMPORTED_MODULE_3__["spriteCoordinates"].SPRITE_PLAYER_STAND;
+        else if (this.idleTime >= 20) {
+            return _constants__WEBPACK_IMPORTED_MODULE_4__["spriteCoordinates"].SPRITE_PLAYER_IDLE2;
+        }
+        else if (this.idleTime >= 10) {
+            return _constants__WEBPACK_IMPORTED_MODULE_4__["spriteCoordinates"].SPRITE_PLAYER_IDLE1;
+        }
+        return _constants__WEBPACK_IMPORTED_MODULE_4__["spriteCoordinates"].SPRITE_PLAYER_STAND;
     }
 }
 /* harmony default export */ __webpack_exports__["default"] = (Player);
 
 
 /***/ }),
-/* 31 */
+/* 34 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9011,7 +9186,9 @@ class GameObject {
         this.position = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
         this.velocity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
         this.inputVelocity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
+        this.prevInputVelocty = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
         this.direction = 1;
+        this.size = 1;
         _GameEngine__WEBPACK_IMPORTED_MODULE_1__["default"].getEngine().addGameObject(this);
     }
     destroy() {
@@ -9030,6 +9207,9 @@ class GameObject {
     setPosition(newPosition) {
         this.position[0] = newPosition[0];
         this.position[1] = newPosition[1];
+    }
+    scale(amount) {
+        this.size *= amount;
     }
     translate(amount) {
         gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(this.position, this.position, amount);
@@ -9052,7 +9232,7 @@ class GameObject {
         }
         // Apply non-physical motion
         if (Math.abs(this.inputVelocity[0]) > 0.001) {
-            let influence = this.grounded ? 0.18 : 0.12;
+            let influence = this.grounded ? 0.2 : 0.11;
             this.velocity[0] = (1 - influence) * this.velocity[0] + influence * this.inputVelocity[0];
         }
         else if (this.grounded) {
@@ -9089,7 +9269,12 @@ class GameObject {
                 }
             }
         }
-        this.grounded = this.checkIfGrounded();
+        let groundedCheck = this.checkIfGrounded();
+        if (!this.grounded && groundedCheck) {
+            this.onGrounded(this.velocity[1]);
+        }
+        this.grounded = groundedCheck;
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(this.prevInputVelocty, this.inputVelocity);
         this.inputVelocity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
     }
     getAdjacentTiles() {
@@ -9159,8 +9344,46 @@ class GameObject {
     onKeyDown(key) { }
     ;
     onKeyUp(key) { }
+    onGrounded(verticalVelocity) { }
 }
 /* harmony default export */ __webpack_exports__["default"] = (GameObject);
+
+
+/***/ }),
+/* 35 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Particle; });
+/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(34);
+
+
+class Particle extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] {
+    constructor(_spriteUv, _startingPos, _lifetime = Infinity) {
+        super(false);
+        this.spriteUv = _spriteUv;
+        this.lifetime = _lifetime;
+        this.time = 0;
+        this.startingPos = _startingPos;
+        this.movement = () => gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+        ;
+    }
+    setMovement(move) {
+        this.movement = move;
+    }
+    onUpdate(delta) {
+        this.time += delta;
+        if (this.time > this.lifetime) {
+            this.destroy();
+        }
+        this.setPosition(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create(), this.movement(this.time), this.startingPos));
+    }
+    getSpriteUv() {
+        return this.spriteUv;
+    }
+}
 
 
 /***/ })
