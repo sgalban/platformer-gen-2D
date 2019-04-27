@@ -10,6 +10,9 @@ import ShaderProgram, {Shader} from '../rendering/gl/ShaderProgram';
 import Texture2D from '../rendering/Texture2D';
 import LevelGenerator from '../LevelGenerator/LevelGenerator';
 
+const spriteSheet = require('../assets/sprites.png');
+const backgrounds = require('../assets/backgrounds.png');
+
 class GameEngine {
 
     private static engine: GameEngine;
@@ -55,7 +58,7 @@ class GameEngine {
             new Shader(gl.VERTEX_SHADER, require('../shaders/tile-vert.glsl')),
             new Shader(gl.FRAGMENT_SHADER, require('../shaders/tile-frag.glsl')),
         ]);
-        const spriteSheet = 'http://' + window.location.host + '/src/assets/sprites.png'
+        //const spriteSheet = 'http://' + window.location.host + '/src/assets/sprites.png'
         let spriteTex: Texture2D = new Texture2D(spriteSheet, 0)
         this.spriteShader.setSpriteTex(spriteTex);
 
@@ -63,7 +66,7 @@ class GameEngine {
             new Shader(gl.VERTEX_SHADER, require('../shaders/background-vert.glsl')),
             new Shader(gl.FRAGMENT_SHADER, require('../shaders/background-frag.glsl')),
         ])
-        const backgrounds = 'http://' + window.location.host + '/src/assets/backgrounds.png'
+        //const backgrounds = 'http://' + window.location.host + '/src/assets/backgrounds.png'
         let backgroundTex: Texture2D = new Texture2D(backgrounds, 1);
         this.backgroundShader.setSpriteTex(backgroundTex);
 

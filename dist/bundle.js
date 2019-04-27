@@ -95,7 +95,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var _rendering_gl_OpenGLRenderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
 /* harmony import */ var _engine_GameEngine__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(15);
-/* harmony import */ var _scene_Player__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(33);
+/* harmony import */ var _scene_Player__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(35);
 
 
 
@@ -7850,6 +7850,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+const spriteSheet = __webpack_require__(29);
+const backgrounds = __webpack_require__(30);
 class GameEngine {
     static getEngine() {
         if (GameEngine.engine) {
@@ -7874,17 +7876,17 @@ class GameEngine {
         this.downkeys = new Set();
         this.ticks = 0;
         this.spriteShader = new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["default"]([
-            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].VERTEX_SHADER, __webpack_require__(29)),
-            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].FRAGMENT_SHADER, __webpack_require__(30)),
-        ]);
-        const spriteSheet = 'http://' + window.location.host + '/src/assets/sprites.png';
-        let spriteTex = new _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_7__["default"](spriteSheet, 0);
-        this.spriteShader.setSpriteTex(spriteTex);
-        this.backgroundShader = new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["default"]([
             new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].VERTEX_SHADER, __webpack_require__(31)),
             new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].FRAGMENT_SHADER, __webpack_require__(32)),
         ]);
-        const backgrounds = 'http://' + window.location.host + '/src/assets/backgrounds.png';
+        //const spriteSheet = 'http://' + window.location.host + '/src/assets/sprites.png'
+        let spriteTex = new _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_7__["default"](spriteSheet, 0);
+        this.spriteShader.setSpriteTex(spriteTex);
+        this.backgroundShader = new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["default"]([
+            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].VERTEX_SHADER, __webpack_require__(33)),
+            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].FRAGMENT_SHADER, __webpack_require__(34)),
+        ]);
+        //const backgrounds = 'http://' + window.location.host + '/src/assets/backgrounds.png'
         let backgroundTex = new _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_7__["default"](backgrounds, 1);
         this.backgroundShader.setSpriteTex(backgroundTex);
         window.addEventListener("keydown", (keyEvent) => {
@@ -8963,38 +8965,50 @@ class GeometryGenerator {
 
 /***/ }),
 /* 29 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = "#version 300 es\nprecision highp float;\n\nuniform mat4 u_ViewProj;\nuniform mat4 u_Model;\n\nin vec2 vs_Pos;\nin vec2 vs_Offset;\nin vec2 vs_UV;\nin float vs_Scale;\nin int vs_MirrorUv;\nout vec2 fs_Pos;\nout vec2 fs_UV;\n\nvoid main() {\n    fs_Pos = vs_Pos;\n    bool mirrorUv = vs_MirrorUv == 1;\n    fs_UV = vs_UV + vec2(mirrorUv ? 1.0 - vs_Pos.x : vs_Pos.x, 1.0 - vs_Pos.y);\n\n    vec2 actualPos = vs_Pos * vs_Scale + vs_Offset;\n    gl_Position = u_ViewProj * u_Model * vec4(actualPos, 0.5, 1);\n}\n"
+module.exports = __webpack_require__.p + "edec54b5c54bf8097e627a107f5e0e53.png";
 
 /***/ }),
 /* 30 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = "#version 300 es\nprecision highp float;\n\nuniform sampler2D u_SpriteTex;\n\nin vec2 fs_Pos;\nin vec2 fs_UV;\n\nout vec4 out_Col;\n\nvoid main() {\n    vec4 color = texture(u_SpriteTex, fs_UV / 8.0);\n    if (color.a < 0.5) {\n        discard;\n    }\n    out_Col = color;\n}\n"
+module.exports = __webpack_require__.p + "ee6dced03346586918eef24f9eab9290.png";
 
 /***/ }),
 /* 31 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\nprecision highp float;\n\nuniform vec2 u_CameraPos;\n\nin vec2 vs_Pos;\nin vec2 vs_UV;\nout vec2 fs_Pos;\nout vec2 fs_UV1;\nout vec2 fs_UV2;\n\nvoid main() {\n    fs_Pos = vs_Pos;\n    const float squish1 = 1.8;\n    fs_UV1 = vec2(\n        vs_UV[0] / 1.5 - u_CameraPos[0] / 150.0,\n        (vs_UV[1] / 4.0) * squish1 - (squish1 / 4.0 - 0.25) + (u_CameraPos[1] + 2.0) / 100.0\n    );\n\n    const float squish2 = 1.0;\n    fs_UV2 = vec2(\n        vs_UV[0] / 2.0 - u_CameraPos[0] / 300.0,\n        (vs_UV[1] / 4.0 + 0.25) * squish2 - (squish2 / 4.0 - 0.25) + (u_CameraPos[1] + 2.0) / 200.0\n    );\n\n    gl_Position = vec4(vs_Pos, 0, 1);\n}\n"
+module.exports = "#version 300 es\nprecision highp float;\n\nuniform mat4 u_ViewProj;\nuniform mat4 u_Model;\n\nin vec2 vs_Pos;\nin vec2 vs_Offset;\nin vec2 vs_UV;\nin float vs_Scale;\nin int vs_MirrorUv;\nout vec2 fs_Pos;\nout vec2 fs_UV;\n\nvoid main() {\n    fs_Pos = vs_Pos;\n    bool mirrorUv = vs_MirrorUv == 1;\n    fs_UV = vs_UV + vec2(mirrorUv ? 1.0 - vs_Pos.x : vs_Pos.x, 1.0 - vs_Pos.y);\n\n    vec2 actualPos = vs_Pos * vs_Scale + vs_Offset;\n    gl_Position = u_ViewProj * u_Model * vec4(actualPos, 0.5, 1);\n}\n"
 
 /***/ }),
 /* 32 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\nprecision highp float;\n\nuniform sampler2D u_SpriteTex;\nuniform vec2 u_CameraPos;\nuniform float u_Time;\n\nin vec2 fs_Pos;\nin vec2 fs_UV1;\nin vec2 fs_UV2;\n\nout vec4 out_Col;\n\nconst vec2 SEED2 = vec2(0.31415, 0.6456);\n\nfloat random1(vec2 p) {\n    return fract(sin(dot(p + SEED2, vec2(127.1, 311.7))) * 43758.5453);\n}\n\nvec2 random2( vec2 p , vec2 seed) {\n    return fract(sin(vec2(dot(p + seed, vec2(311.7, 127.1)), dot(p + seed, vec2(269.5, 183.3)))) * 85734.3545);\n}\n\nfloat worley(vec2 noisePos, float frequency) {\n    vec2 point = noisePos * frequency;\n    vec2 cell = floor(point);\n\n    // Check the neighboring cells for the closest cell point\n    float closestDistance = 2.0;\n    for (int i = 0; i < 9; i++) {\n        vec2 curCell = cell + vec2(i % 3 - 1, floor(float(i / 3) - 1.0));\n        vec2 cellPoint = vec2(curCell) + random2(vec2(curCell), SEED2);\n        closestDistance = min(closestDistance, distance(cellPoint, point));\n    }\n    return clamp(0.0, 1.0, closestDistance);\n}\n\nvoid main() {\n    vec2 uv1 = vec2(fs_UV1.x, clamp(fs_UV1.y, 0.000, 0.249));\n    vec2 uv2 = vec2(fs_UV2.x, clamp(fs_UV2.y, 0.251, 0.499));\n    float starRadius = 0.01 + abs(sin(u_Time * 0.01 + random1(fs_Pos) * 100.0)) * 0.01;\n    vec3 stars = worley(fs_Pos, 10.0) < starRadius ? vec3(1) : vec3(0);\n    vec4 sky = mix(vec4(0.3, 0.3, 0.25, 1.0), vec4(stars, 1), pow((fs_Pos[1] + 1.0) / 2.0, 0.5));\n\n    vec4 layer1 = texture(u_SpriteTex, uv1);\n    vec4 layer2 = texture(u_SpriteTex, uv2);\n\n    vec4 color = \n        layer1.a > 0.5 ? layer1 :\n        layer2.a > 0.5 ? layer2 :\n        sky;\n\n    out_Col = vec4(color.rgb, 1);\n}\n"
+module.exports = "#version 300 es\nprecision highp float;\n\nuniform sampler2D u_SpriteTex;\n\nin vec2 fs_Pos;\nin vec2 fs_UV;\n\nout vec4 out_Col;\n\nvoid main() {\n    vec4 color = texture(u_SpriteTex, fs_UV / 8.0);\n    if (color.a < 0.5) {\n        discard;\n    }\n    out_Col = color;\n}\n"
 
 /***/ }),
 /* 33 */
+/***/ (function(module, exports) {
+
+module.exports = "#version 300 es\nprecision highp float;\n\nuniform vec2 u_CameraPos;\n\nin vec2 vs_Pos;\nin vec2 vs_UV;\nout vec2 fs_Pos;\nout vec2 fs_UV1;\nout vec2 fs_UV2;\n\nvoid main() {\n    fs_Pos = vs_Pos;\n    const float squish1 = 1.8;\n    fs_UV1 = vec2(\n        vs_UV[0] / 1.5 - u_CameraPos[0] / 150.0,\n        (vs_UV[1] / 4.0) * squish1 - (squish1 / 4.0 - 0.25) + (u_CameraPos[1] + 2.0) / 100.0\n    );\n\n    const float squish2 = 1.0;\n    fs_UV2 = vec2(\n        vs_UV[0] / 2.0 - u_CameraPos[0] / 300.0,\n        (vs_UV[1] / 4.0 + 0.25) * squish2 - (squish2 / 4.0 - 0.25) + (u_CameraPos[1] + 2.0) / 200.0\n    );\n\n    gl_Position = vec4(vs_Pos, 0, 1);\n}\n"
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports) {
+
+module.exports = "#version 300 es\nprecision highp float;\n\nuniform sampler2D u_SpriteTex;\nuniform vec2 u_CameraPos;\nuniform float u_Time;\n\nin vec2 fs_Pos;\nin vec2 fs_UV1;\nin vec2 fs_UV2;\n\nout vec4 out_Col;\n\nconst vec2 SEED2 = vec2(0.31415, 0.6456);\n\nfloat random1(vec2 p) {\n    return fract(sin(dot(p + SEED2, vec2(127.1, 311.7))) * 43758.5453);\n}\n\nvec2 random2( vec2 p , vec2 seed) {\n    return fract(sin(vec2(dot(p + seed, vec2(311.7, 127.1)), dot(p + seed, vec2(269.5, 183.3)))) * 85734.3545);\n}\n\nfloat worley(vec2 noisePos, float frequency) {\n    vec2 point = noisePos * frequency;\n    vec2 cell = floor(point);\n\n    // Check the neighboring cells for the closest cell point\n    float closestDistance = 2.0;\n    for (int i = 0; i < 9; i++) {\n        vec2 curCell = cell + vec2(i % 3 - 1, floor(float(i / 3) - 1.0));\n        vec2 cellPoint = vec2(curCell) + random2(vec2(curCell), SEED2);\n        closestDistance = min(closestDistance, distance(cellPoint, point));\n    }\n    return clamp(0.0, 1.0, closestDistance);\n}\n\nvoid main() {\n    vec2 uv1 = vec2(fs_UV1.x, clamp(fs_UV1.y, 0.000, 0.249));\n    vec2 uv2 = vec2(fs_UV2.x, clamp(fs_UV2.y, 0.251, 0.499));\n    float starRadius = 0.01 + abs(sin(u_Time * 0.01 + random1(fs_Pos) * 100.0)) * 0.01;\n    vec3 stars = worley(fs_Pos, 10.0) < starRadius ? vec3(1) : vec3(0);\n    vec4 sky = mix(vec4(0.3, 0.3, 0.25, 1.0), vec4(stars, 1), pow((fs_Pos[1] + 1.0) / 2.0, 0.5));\n\n    vec4 layer1 = texture(u_SpriteTex, uv1);\n    vec4 layer2 = texture(u_SpriteTex, uv2);\n\n    vec4 color = \n        layer1.a > 0.5 ? layer1 :\n        layer2.a > 0.5 ? layer2 :\n        sky;\n\n    out_Col = vec4(color.rgb, 1);\n}\n"
+
+/***/ }),
+/* 35 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
-/* harmony import */ var _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(34);
+/* harmony import */ var _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(36);
 /* harmony import */ var _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(17);
-/* harmony import */ var _Particle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(35);
+/* harmony import */ var _Particle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(37);
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(18);
 
 
@@ -9165,7 +9179,7 @@ class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] 
 
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9350,14 +9364,14 @@ class GameObject {
 
 
 /***/ }),
-/* 35 */
+/* 37 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Particle; });
 /* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
-/* harmony import */ var _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(34);
+/* harmony import */ var _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(36);
 
 
 class Particle extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] {
