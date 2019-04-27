@@ -12,8 +12,6 @@ import Player from './scene/Player';
 
 import RhythmGropuGenerator from './LevelGenerator/RhythmGroupGenerator';
 
-import Tile from './geometry/Tile';
-
 let time: number = 0.0;
 
 function loadScene() {

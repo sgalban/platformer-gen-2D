@@ -2,6 +2,7 @@ import {vec2} from 'gl-matrix';
 import GameObject from './GameObject';
 import Terrain from '../scene/Terrain';
 import Tile from '../geometry/Tile';
+import Background from '../geometry/Background';
 import {gl} from '../globals';
 import Camera from '../Camera';
 import OpenGlRenderer from '../rendering/gl/OpenGLRenderer';
@@ -19,8 +20,10 @@ class GameEngine {
         }
         else {
             let tile: Tile = new Tile();
+            let background: Background = new Background();
             tile.create();
-            GameEngine.engine = new GameEngine(tile);
+            background.create()
+            GameEngine.engine = new GameEngine(tile, background);
             return GameEngine.engine;
         }
     }
@@ -30,24 +33,39 @@ class GameEngine {
     private collidableObjects: GameObject[];
     private lastTick: number;
     private tile: Tile;
+    private background: Background;
     private spriteShader: ShaderProgram;
+    private backgroundShader: ShaderProgram;
     private renderer: OpenGlRenderer;
     private camera: Camera;
     private downkeys: Set<string>
+    private ticks: number;
 
-    private constructor(_tile: Tile) {
+    private constructor(_tile: Tile, _background: Background) {
         this.gameObjects = [];
         this.terrainObjects = [];
         this.collidableObjects = [];
         this.tile = _tile;
+        this.background = _background;
         this.camera = new Camera(vec2.fromValues(0, -3), 20);
         this.downkeys = new Set();
+        this.ticks = 0;
+
         this.spriteShader = new ShaderProgram([
             new Shader(gl.VERTEX_SHADER, require('../shaders/tile-vert.glsl')),
             new Shader(gl.FRAGMENT_SHADER, require('../shaders/tile-frag.glsl')),
         ]);
+        const spriteSheet = 'http://' + window.location.host + '/src/assets/sprites.png'
+        let spriteTex: Texture2D = new Texture2D(spriteSheet, 0)
+        this.spriteShader.setSpriteTex(spriteTex);
 
-        this.spriteShader.setSpriteTex(new Texture2D('http://' + window.location.host + '/src/assets/sprites.png'));
+        this.backgroundShader = new ShaderProgram([
+            new Shader(gl.VERTEX_SHADER, require('../shaders/background-vert.glsl')),
+            new Shader(gl.FRAGMENT_SHADER, require('../shaders/background-frag.glsl')),
+        ])
+        const backgrounds = 'http://' + window.location.host + '/src/assets/backgrounds.png'
+        let backgroundTex: Texture2D = new Texture2D(backgrounds, 1);
+        this.backgroundShader.setSpriteTex(backgroundTex);
 
         window.addEventListener("keydown", (keyEvent) => {
             if (!this.downkeys.has(keyEvent.key)) {
@@ -113,6 +131,7 @@ class GameEngine {
         this.tile.setInstanceVBOs(tilePositions, tileUvs, tileMirrors, tileScales);
         this.tile.setNumInstances(tilePositions.length);
 
+        this.renderer.render(this.camera, this.backgroundShader, [this.background]);
         this.renderer.render(this.camera, this.spriteShader, [this.tile]);
     }
 
@@ -149,6 +168,8 @@ class GameEngine {
     }
 
     tick() {
+        this.ticks++;
+        this.backgroundShader.setTime(this.ticks);
         let curTime = Date.now();
         let deltaTime = curTime - this.lastTick;
         this.lastTick = curTime;

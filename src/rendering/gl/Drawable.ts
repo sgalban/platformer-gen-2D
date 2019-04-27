@@ -2,7 +2,7 @@ import {gl} from '../../globals';
 
 abstract class Drawable {
     count: number = 0;
-  
+
     bufIdx: WebGLBuffer;
     bufPos: WebGLBuffer;
     bufOff: WebGLBuffer;
@@ -20,6 +20,8 @@ abstract class Drawable {
     numInstances: number = 0; // How many instances of this Drawable the shader program should draw
   
     abstract create() : void;
+
+    abstract isInstanced() : boolean;
   
     destroy() {
         gl.deleteBuffer(this.bufIdx);

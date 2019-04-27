@@ -7,6 +7,7 @@ import ShaderProgram from './ShaderProgram';
 // In this file, `gl` is accessible because it is imported above
 class OpenGLRenderer {
     constructor(public canvas: HTMLCanvasElement) {
+        gl.enable(gl.DEPTH_TEST);
     }
   
     setClearColor(r: number, g: number, b: number, a: number) {

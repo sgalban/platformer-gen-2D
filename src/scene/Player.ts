@@ -134,7 +134,6 @@ class Player extends GameObject {
     onGrounded(verticalVelocity: number) {
         if (verticalVelocity < -40) {
             let thisPos = this.getPosition();
-            console.log("ow");
             let poff1: Particle = new Particle(
                 spriteCoordinates.SPRITE_POFF,
                 vec2.fromValues(thisPos[0], thisPos[1] - 0.5),

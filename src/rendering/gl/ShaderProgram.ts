@@ -131,13 +131,13 @@ class ShaderProgram {
         if (this.attrUV != -1 && d.bindUV()) {
             gl.enableVertexAttribArray(this.attrUV);
             gl.vertexAttribPointer(this.attrUV, 2, gl.FLOAT, false, 0, 0);
-            gl.vertexAttribDivisor(this.attrUV, 1); // Advance 1 index in pos VBO for each vertex
+            gl.vertexAttribDivisor(this.attrUV, d.isInstanced() ? 1 : 0);
         }
 
         if (this.attrOff != -1 && d.bindOff()) {
             gl.enableVertexAttribArray(this.attrOff);
             gl.vertexAttribPointer(this.attrOff, 2, gl.FLOAT, false, 0, 0);
-            gl.vertexAttribDivisor(this.attrOff, 1); // Advance 1 index in pos VBO for each vertex
+            gl.vertexAttribDivisor(this.attrOff, 1);
         }
 
         if (this.attrMir != -1 && d.bindMir()) {
@@ -149,11 +149,16 @@ class ShaderProgram {
         if (this.attrScale != -1 && d.bindScale()) {
             gl.enableVertexAttribArray(this.attrScale);
             gl.vertexAttribPointer(this.attrScale, 1, gl.FLOAT, false, 0, 0);
-            gl.vertexAttribDivisor(this.attrScale, 1); // Advance 1 index in pos VBO for each vertex
+            gl.vertexAttribDivisor(this.attrScale, 1);
         }
         
         d.bindIdx();
-        gl.drawElementsInstanced(d.drawMode(), d.elemCount(), gl.UNSIGNED_INT, 0, d.numInstances);
+        if (d.isInstanced) {
+            gl.drawElementsInstanced(d.drawMode(), d.elemCount(), gl.UNSIGNED_INT, 0, d.numInstances);
+        }
+        else {
+            gl.drawElements(d.drawMode(), d.elemCount(), gl.UNSIGNED_INT, 0);
+        }
     
         if (this.attrPos != -1) {
             gl.disableVertexAttribArray(this.attrPos);

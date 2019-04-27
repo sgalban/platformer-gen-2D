@@ -22,9 +22,7 @@ class Tile extends Drawable {
             1, 1,
             0, 1
         ]);
-        this.uvs = new Float32Array([
-            0, 0, 1, 0, 1, 1, 0, 1
-        ]);
+
         this.count = this.indices.length;
 
         this.generateIdx();
@@ -39,6 +37,10 @@ class Tile extends Drawable {
     
         gl.bindBuffer(gl.ARRAY_BUFFER, this.bufPos);
         gl.bufferData(gl.ARRAY_BUFFER, this.positions, gl.STATIC_DRAW);
+    }
+
+    isInstanced() {
+        return true;
     }
 
     setInstanceVBOs(posOffsets: vec2[], uvOffsets: vec2[], mirrors: boolean[], scales: number[]) {
