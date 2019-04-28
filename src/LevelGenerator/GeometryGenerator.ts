@@ -101,7 +101,6 @@ export default class GeometryGenerator {
     private generateSimpleJump(jumpType: JumpType) {
         let height = this.jumpHeights.get(jumpType);
         let minHeight = Math.max(-4, sceneAttributes.deathHeight + 5 - this.currentPos[1]);
-        console.log(minHeight);
         let endHeight = Math.floor(Math.random() * (height.height - minHeight) + minHeight);
         let totalFrames = height.time * 60 + Math.sqrt((height.height - endHeight) / sceneAttributes.gravity);
         let totalDistance = Math.floor(sceneAttributes.playerSpeed * totalFrames / 60);
@@ -138,12 +137,9 @@ export default class GeometryGenerator {
             let prevX = this.currentPos[0];
             this.generateSimpleJump(jump.jumpHold);
             let jumpTime = (this.currentPos[0] - prevX) / playerSpeed;
-            //console.log("Jump Time: " + jumpTime);
             let remainingTime = beatDuration - jumpTime;
-            //console.log("Remaining Time: " + remainingTime);
             if (remainingTime > 0) {
                 let remainingLength = remainingTime * playerSpeed;
-                //console.log("Remaining Length: " + remainingLength);
                 this.generateStraightPath(remainingLength);
             }
             //console.log(curTime);
@@ -202,7 +198,7 @@ export default class GeometryGenerator {
 
         this.terrain.setColumnAt([this.currentPos[0] + 1, this.currentPos[1] - 2])
         this.terrain.setColumnAt([this.currentPos[0] + length, this.currentPos[1] - 2])
-        
+
         this.currentPos[0] += length;
         this.currentPos[1] -= 1;
     }

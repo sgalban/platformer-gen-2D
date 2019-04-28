@@ -29,13 +29,17 @@ function main() {
     setGL(gl);
     loadScene();
 
-    // Initial display for framerate
+    // Initial display for framerate (only for development)
+    let displayStats = false;
     const stats = Stats();
-    stats.setMode(0);
-    stats.domElement.style.position = 'absolute';
-    stats.domElement.style.left = '0px';
-    stats.domElement.style.top = '0px';
-    document.body.appendChild(stats.domElement);
+    if (window.location.hostname === "localhost") {
+        displayStats = true;
+        stats.setMode(0);
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.left = '0px';
+        stats.domElement.style.top = '0px';
+        document.body.appendChild(stats.domElement);
+    }
 
     let engine: GameEngine = GameEngine.getEngine();
     const camera: Camera = engine.getCamera();
@@ -50,7 +54,9 @@ function main() {
 
     // This function will be called every frame
     function tick() {
-        stats.begin();
+        if (displayStats) {
+            stats.begin();
+        }
         time++;
         engine.tick();
 
@@ -59,7 +65,9 @@ function main() {
         GameEngine.getEngine().drawGameObjects();
     
         // Tell the browser to call `tick` again whenever it renders a new frame
-        stats.end();
+        if (displayStats) {
+            stats.end();
+        }
         requestAnimationFrame(tick);
     }
   

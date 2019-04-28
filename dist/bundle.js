@@ -113,32 +113,40 @@ function main() {
     }
     Object(_globals__WEBPACK_IMPORTED_MODULE_1__["setGL"])(gl);
     loadScene();
-    // Initial display for framerate
+    // Initial display for framerate (only for development)
+    let displayStats = false;
     const stats = stats_js__WEBPACK_IMPORTED_MODULE_0__();
-    stats.setMode(0);
-    stats.domElement.style.position = 'absolute';
-    stats.domElement.style.left = '0px';
-    stats.domElement.style.top = '0px';
-    document.body.appendChild(stats.domElement);
+    if (window.location.hostname === "localhost") {
+        displayStats = true;
+        stats.setMode(0);
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.left = '0px';
+        stats.domElement.style.top = '0px';
+        document.body.appendChild(stats.domElement);
+    }
     let engine = _engine_GameEngine__WEBPACK_IMPORTED_MODULE_3__["default"].getEngine();
     const camera = engine.getCamera();
     const renderer = new _rendering_gl_OpenGLRenderer__WEBPACK_IMPORTED_MODULE_2__["default"](canvas);
     renderer.setClearColor(0.9, 0.9, 0.9, 1);
     engine.setRenderer(renderer);
-    let player = new _scene_Player__WEBPACK_IMPORTED_MODULE_4__["default"]();
+    let player = new _scene_Player__WEBPACK_IMPORTED_MODULE_4__["default"]([0, 1]);
     engine.addGameObject(player);
     camera.makeParent(player);
     //new RhythmGropuGenerator(20, 20, 0.5, 0.6, [1, 0, 0]).generateRhythmGroup();
     // This function will be called every frame
     function tick() {
-        stats.begin();
+        if (displayStats) {
+            stats.begin();
+        }
         time++;
         engine.tick();
         gl.viewport(0, 0, window.innerWidth, window.innerHeight);
         renderer.clear();
         _engine_GameEngine__WEBPACK_IMPORTED_MODULE_3__["default"].getEngine().drawGameObjects();
         // Tell the browser to call `tick` again whenever it renders a new frame
-        stats.end();
+        if (displayStats) {
+            stats.end();
+        }
         requestAnimationFrame(tick);
     }
     window.addEventListener('resize', function () {
@@ -7890,7 +7898,6 @@ class GameEngine {
         let backgroundTex = new _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_7__["default"](backgrounds, 1);
         this.backgroundShader.setSpriteTex(backgroundTex);
         window.addEventListener("keydown", (keyEvent) => {
-            console.log(keyEvent);
             if (!this.downkeys.has(keyEvent.key)) {
                 this.gameObjects.forEach((go) => { go.onKeyDown(keyEvent.key); });
             }
@@ -7902,7 +7909,7 @@ class GameEngine {
         });
         let terrain = new _scene_Terrain__WEBPACK_IMPORTED_MODULE_1__["default"]();
         this.setTerrain(terrain);
-        let levelGen = new _LevelGenerator_LevelGenerator__WEBPACK_IMPORTED_MODULE_8__["default"](3, terrain, 15, 15, 1, 0.7, [1, 0, 0]);
+        let levelGen = new _LevelGenerator_LevelGenerator__WEBPACK_IMPORTED_MODULE_8__["default"](5, terrain, 20, 20, 1.3, 1.0, [1, 0, 0]);
         levelGen.generateRhythms();
         levelGen.generateGeometry();
     }
@@ -8005,19 +8012,19 @@ class Terrain {
         let terrain = new Terrain();
         for (let i = -2; i < 15; i++) {
             if (i < 4 || i > 7) {
-                terrain.setTileAt(i, -3);
-                terrain.setTileAt(i, -4);
+                terrain.setTileAt([i, -3]);
+                terrain.setTileAt([i, -4]);
             }
             if (i > 9) {
-                terrain.setTileAt(i, -2);
+                terrain.setTileAt([i, -2]);
             }
             if (i > 11) {
-                terrain.setTileAt(i, -1);
-                terrain.setTileAt(i, 0);
+                terrain.setTileAt([i, -1]);
+                terrain.setTileAt([i, 0]);
             }
         }
-        terrain.setTileAt(18, 0);
-        terrain.setTileAt(23, 2);
+        terrain.setTileAt([18, 0]);
+        terrain.setTileAt([23, 2]);
         return terrain;
     }
     tileAt(x, y) {
@@ -8028,7 +8035,8 @@ class Terrain {
         }
         return false;
     }
-    setTileAt(x, y) {
+    setTileAt(pos) {
+        let [x, y] = pos;
         x = Math.floor(x);
         y = Math.floor(y);
         if (this.tiles.has(x)) {
@@ -8038,9 +8046,10 @@ class Terrain {
             this.tiles.set(x, new Set([y]));
         }
     }
-    setColumnAt(x, y) {
+    setColumnAt(pos) {
+        let [x, y] = pos;
         for (let i = _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_0__["default"].deathHeight - 1; i <= y; i++) {
-            this.setTileAt(x, i);
+            this.setTileAt([x, i]);
         }
     }
     getSpritePosition(x, y) {
@@ -8113,7 +8122,7 @@ let sceneAttributes = {
     playerJump: 5.5,
     maxJumpHold: 0.4,
     maxObjectSpeed: 55,
-    deathHeight: -15,
+    deathHeight: -25,
     maxHeight: 30
 };
 /* harmony default export */ __webpack_exports__["default"] = (sceneAttributes);
@@ -8654,10 +8663,10 @@ class LevelGenerator {
         }
     }
     generateGeometry() {
-        this.geometryGenerator.generateRestArea(10);
+        this.geometryGenerator.generateStartArea();
         for (let group of this.rhythmGroups) {
             this.geometryGenerator.generateGroupGeometry(group);
-            this.geometryGenerator.generateRestArea(6);
+            this.geometryGenerator.generateRestArea(14);
         }
     }
 }
@@ -8696,7 +8705,6 @@ class RhythmGroupGenerator {
     getBeatTimes(groupDuration, pattern) {
         let out = [];
         let amount = Math.floor(groupDuration * this.density);
-        //console.log(amount);
         for (let i = 0; i < amount; i++) {
             if (pattern === BeatPattern.REGULAR) {
                 out.push(i * (groupDuration * 1.0 / amount));
@@ -8730,7 +8738,7 @@ class RhythmGroupGenerator {
         let lastJumpDuration = 0;
         group.addAction(_RhythmGroup__WEBPACK_IMPORTED_MODULE_0__["Verb"].MOVE, 0, groupDuration);
         for (let time of beatTimes) {
-            if (time > lastJumpTime + lastJumpDuration + 1) {
+            if (time > lastJumpTime + lastJumpDuration) {
                 if (Math.random() < this.jumpFrequency) {
                     let jumpType = Math.floor(Math.random() * jumpLengths.length);
                     group.addAction(_RhythmGroup__WEBPACK_IMPORTED_MODULE_0__["Verb"].JUMP, time, jumpLengths[jumpType]);
@@ -8889,26 +8897,42 @@ class GeometryGenerator {
     }
     generateSimpleJump(jumpType) {
         let height = this.jumpHeights.get(jumpType);
-        let endHeight = Math.floor(Math.random() * (height.height + 2) - 2);
+        let minHeight = Math.max(-4, _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].deathHeight + 5 - this.currentPos[1]);
+        let endHeight = Math.floor(Math.random() * (height.height - minHeight) + minHeight);
         let totalFrames = height.time * 60 + Math.sqrt((height.height - endHeight) / _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].gravity);
         let totalDistance = Math.floor(_scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed * totalFrames / 60);
         if (totalDistance === 2 && endHeight === 0) {
             endHeight = 1;
         }
-        this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
-        this.currentPos[0] += 1;
-        this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
         this.currentPos[0] += totalDistance;
         this.currentPos[1] += endHeight;
-        this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
+        this.terrain.setTileAt(this.currentPos);
+    }
+    generateStraightPath(length) {
+        for (let i = 0; i < Math.round(length); i++) {
+            this.terrain.setColumnAt(this.currentPos);
+            this.currentPos[0] += 1;
+        }
     }
     generateGroupGeometry(rhythm) {
         let playerSpeed = _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed;
         let queues = this.queuesFromRhythm(rhythm);
-        for (let jump of queues.jumpStates) {
+        let curTime = 0;
+        for (let i = 0; i < queues.jumpStates.length; i++) {
+            let jump = queues.jumpStates[i];
+            let beatDuration = rhythm.duration - jump.startTime;
+            if (i < queues.jumpStates.length - 1) {
+                beatDuration = queues.jumpStates[i + 1].startTime - jump.startTime;
+            }
             let prevX = this.currentPos[0];
             this.generateSimpleJump(jump.jumpHold);
-            this.curTime += (this.currentPos[0] - prevX) / playerSpeed;
+            let jumpTime = (this.currentPos[0] - prevX) / playerSpeed;
+            let remainingTime = beatDuration - jumpTime;
+            if (remainingTime > 0) {
+                let remainingLength = remainingTime * playerSpeed;
+                this.generateStraightPath(remainingLength);
+            }
+            //console.log(curTime);
             /*if (jump.jumpHold === JumpType.SHORT) {
 
                 if (Math.random() < 0.5) {
@@ -8955,11 +8979,31 @@ class GeometryGenerator {
         }
     }
     generateRestArea(length) {
-        for (let i = 0; i < length; i++) {
-            this.terrain.setTileAt(this.currentPos[0] + i, this.currentPos[1]);
-            this.terrain.setTileAt(this.currentPos[0] + i, this.currentPos[1] - 1);
+        for (let i = 1; i <= length; i++) {
+            this.terrain.setTileAt([this.currentPos[0] + i, this.currentPos[1] - 1]);
+            this.terrain.setTileAt([this.currentPos[0] + i, this.currentPos[1] - 2]);
         }
-        this.currentPos[0] += length + 2;
+        this.terrain.setColumnAt([this.currentPos[0] + 1, this.currentPos[1] - 2]);
+        this.terrain.setColumnAt([this.currentPos[0] + length, this.currentPos[1] - 2]);
+        this.currentPos[0] += length;
+        this.currentPos[1] -= 1;
+    }
+    generateStartArea() {
+        for (let i = -4; i <= 4; i++) {
+            this.terrain.setTileAt([i, 0]);
+            this.terrain.setTileAt([i, -1]);
+            this.terrain.setTileAt([i, -3]);
+            this.terrain.setTileAt([i, -4]);
+            if (i !== -2 && i !== 2) {
+                this.terrain.setTileAt([i, -2]);
+            }
+            this.currentPos[0] = 4;
+            this.currentPos[1] = 0;
+        }
+        for (let i = _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].deathHeight; i < -4; i++) {
+            this.terrain.setTileAt([-4, i]);
+            this.terrain.setTileAt([4, i]);
+        }
     }
 }
 
@@ -8968,7 +9012,7 @@ class GeometryGenerator {
 /* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "edec54b5c54bf8097e627a107f5e0e53.png";
+module.exports = __webpack_require__.p + "cc2ef96c519ec2567184f8de8c65dd08.png";
 
 /***/ }),
 /* 30 */
@@ -9018,7 +9062,7 @@ __webpack_require__.r(__webpack_exports__);
 
 const WALK_CYCLE_LENGTH = 10;
 class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] {
-    constructor() {
+    constructor(_startPos) {
         super(true);
         this.jumping = false;
         this.groundedImmunity = false;
@@ -9028,7 +9072,9 @@ class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] 
         this.aPressed = false;
         this.dPressed = false;
         this.sPressed = false;
-        this.setPosition([0, 0]);
+        this.startPos = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(this.startPos, _startPos);
+        this.setPosition(this.startPos);
         this.idleTime = 0;
         this.zTime = 0;
     }
@@ -9071,7 +9117,7 @@ class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] 
         }
         ;
         if (this.getPosition()[1] < _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].deathHeight) {
-            this.setPosition([0, 0]);
+            this.setPosition(this.startPos);
         }
         if (!this.isGrounded || this.sPressed || this.moving) {
             this.idleTime = 0;
