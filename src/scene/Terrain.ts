@@ -15,20 +15,20 @@ class Terrain {
         let terrain: Terrain = new Terrain();
         for (let i = -2; i < 15; i++) {
             if (i < 4 || i > 7) {
-                terrain.setTileAt(i, -3);
-                terrain.setTileAt(i, -4);
+                terrain.setTileAt([i, -3]);
+                terrain.setTileAt([i, -4]);
             }
             if (i > 9) {
-                terrain.setTileAt(i, -2);
+                terrain.setTileAt([i, -2]);
             }
             if (i > 11) {
-                terrain.setTileAt(i, -1);
-                terrain.setTileAt(i, 0);
+                terrain.setTileAt([i, -1]);
+                terrain.setTileAt([i, 0]);
             }
         }
 
-        terrain.setTileAt(18, 0);
-        terrain.setTileAt(23, 2);
+        terrain.setTileAt([18, 0]);
+        terrain.setTileAt([23, 2]);
         return terrain;
     }
 
@@ -41,7 +41,8 @@ class Terrain {
         return false;
     }
 
-    setTileAt(x: number, y: number) {
+    setTileAt(pos: number[] | vec2) {
+        let [x, y] = pos;
         x = Math.floor(x);
         y = Math.floor(y);
         if (this.tiles.has(x)) {
@@ -52,9 +53,10 @@ class Terrain {
         }
     }
 
-    setColumnAt(x: number, y: number) {
+    setColumnAt(pos: number[] | vec2) {
+        let [x, y] = pos;
         for (let i = sceneAttributes.deathHeight - 1; i <= y; i++) {
-            this.setTileAt(x, i);
+            this.setTileAt([x, i]);
         }
     }
 

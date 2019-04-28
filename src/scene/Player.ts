@@ -30,10 +30,12 @@ class Player extends GameObject {
     dPressed: boolean;
     sPressed: boolean;
 
+    private startPos: vec2;
+
     private idleTime: number;
     private zTime: number;
 
-    constructor() {
+    constructor(_startPos: vec2 | number[]) {
         super(true);
         this.jumping = false;
         this.groundedImmunity = false;
@@ -43,7 +45,9 @@ class Player extends GameObject {
         this.aPressed = false;
         this.dPressed = false;
         this.sPressed = false;
-        this.setPosition([0, 0]);
+        this.startPos = vec2.create();
+        vec2.copy(this.startPos, _startPos);
+        this.setPosition(this.startPos);
         this.idleTime = 0;
         this.zTime = 0;
     }
@@ -99,7 +103,7 @@ class Player extends GameObject {
         };
 
         if (this.getPosition()[1] < sceneAttributes.deathHeight) {
-            this.setPosition([0, 0]);
+            this.setPosition(this.startPos);
         }
 
         if (!this.isGrounded || this.sPressed || this.moving) {

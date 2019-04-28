@@ -43,7 +43,7 @@ function main() {
     const renderer = new OpenGLRenderer(canvas);
     renderer.setClearColor(0.9, 0.9, 0.9, 1);
     engine.setRenderer(renderer);
-    let player: Player = new Player();
+    let player: Player = new Player([0, 1]);
     engine.addGameObject(player);
     camera.makeParent(player);
     //new RhythmGropuGenerator(20, 20, 0.5, 0.6, [1, 0, 0]).generateRhythmGroup();

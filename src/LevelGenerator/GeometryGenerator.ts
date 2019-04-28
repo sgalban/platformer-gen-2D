@@ -100,7 +100,9 @@ export default class GeometryGenerator {
 
     private generateSimpleJump(jumpType: JumpType) {
         let height = this.jumpHeights.get(jumpType);
-        let endHeight = Math.floor(Math.random() * (height.height + 2) - 2);
+        let minHeight = Math.max(-4, sceneAttributes.deathHeight + 5 - this.currentPos[1]);
+        console.log(minHeight);
+        let endHeight = Math.floor(Math.random() * (height.height - minHeight) + minHeight);
         let totalFrames = height.time * 60 + Math.sqrt((height.height - endHeight) / sceneAttributes.gravity);
         let totalDistance = Math.floor(sceneAttributes.playerSpeed * totalFrames / 60);
 
@@ -108,24 +110,43 @@ export default class GeometryGenerator {
             endHeight = 1
         }
 
-        this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
-        this.currentPos[0] += 1;
-        this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
         this.currentPos[0] += totalDistance;
         this.currentPos[1] += endHeight;
-        this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
+        this.terrain.setTileAt(this.currentPos);
+    }
+
+    private generateStraightPath(length: number) {
+        for (let i = 0; i < Math.round(length); i++) {
+            this.terrain.setColumnAt(this.currentPos);
+            this.currentPos[0] += 1;
+        }
     }
 
     generateGroupGeometry(rhythm: RhythmGroup) {
         let playerSpeed = sceneAttributes.playerSpeed;
         let queues = this.queuesFromRhythm(rhythm);
-        for (let jump of queues.jumpStates) {
+        let curTime = 0;
 
-            
+        for (let i = 0; i < queues.jumpStates.length; i++) {
+
+            let jump = queues.jumpStates[i];
+            let beatDuration = rhythm.duration - jump.startTime;
+            if (i < queues.jumpStates.length - 1) {
+                beatDuration = queues.jumpStates[i + 1].startTime - jump.startTime;
+            }
 
             let prevX = this.currentPos[0];
             this.generateSimpleJump(jump.jumpHold);
-            this.curTime += (this.currentPos[0] - prevX) / playerSpeed;
+            let jumpTime = (this.currentPos[0] - prevX) / playerSpeed;
+            //console.log("Jump Time: " + jumpTime);
+            let remainingTime = beatDuration - jumpTime;
+            //console.log("Remaining Time: " + remainingTime);
+            if (remainingTime > 0) {
+                let remainingLength = remainingTime * playerSpeed;
+                //console.log("Remaining Length: " + remainingLength);
+                this.generateStraightPath(remainingLength);
+            }
+            //console.log(curTime);
             /*if (jump.jumpHold === JumpType.SHORT) {
 
                 if (Math.random() < 0.5) {
@@ -174,10 +195,35 @@ export default class GeometryGenerator {
 
 
     generateRestArea(length: number) {
-        for (let i = 0; i < length; i++) {
-            this.terrain.setTileAt(this.currentPos[0] + i, this.currentPos[1]);
-            this.terrain.setTileAt(this.currentPos[0] + i, this.currentPos[1] - 1);
+        for (let i = 1; i <= length; i++) {
+            this.terrain.setTileAt([this.currentPos[0] + i, this.currentPos[1] - 1]);
+            this.terrain.setTileAt([this.currentPos[0] + i, this.currentPos[1] - 2]);
         }
-        this.currentPos[0] += length + 2;
+
+        this.terrain.setColumnAt([this.currentPos[0] + 1, this.currentPos[1] - 2])
+        this.terrain.setColumnAt([this.currentPos[0] + length, this.currentPos[1] - 2])
+        
+        this.currentPos[0] += length;
+        this.currentPos[1] -= 1;
+    }
+
+    generateStartArea() {
+        for (let i = -4; i <= 4; i++) {
+            this.terrain.setTileAt([i,  0]);
+            this.terrain.setTileAt([i, -1]);
+            this.terrain.setTileAt([i, -3]);
+            this.terrain.setTileAt([i, -4]);
+
+            if (i !== -2 && i !== 2) {
+                this.terrain.setTileAt([i, -2]);
+            }
+            this.currentPos[0] = 4;
+            this.currentPos[1] = 0;
+        }
+
+        for (let i = sceneAttributes.deathHeight; i < -4; i++) {
+            this.terrain.setTileAt([-4, i]);
+            this.terrain.setTileAt([4, i]);
+        }
     }
 }

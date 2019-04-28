@@ -44,10 +44,10 @@ export default class LevelGenerator {
     }
 
     generateGeometry() {
-        this.geometryGenerator.generateRestArea(10);
+        this.geometryGenerator.generateStartArea();
         for (let group of this.rhythmGroups) {
             this.geometryGenerator.generateGroupGeometry(group);
-            this.geometryGenerator.generateRestArea(6);
+            this.geometryGenerator.generateRestArea(14);
         }
     }
 }

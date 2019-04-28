@@ -37,7 +37,6 @@ class RhythmGroupGenerator {
     private getBeatTimes(groupDuration: number, pattern: BeatPattern): number[] {
         let out: number[] = [];
         let amount = Math.floor(groupDuration * this.density);
-        //console.log(amount);
 
         for (let i = 0; i < amount; i++) {
             if (pattern === BeatPattern.REGULAR) {
@@ -77,7 +76,7 @@ class RhythmGroupGenerator {
         let lastJumpDuration = 0;
         group.addAction(Verb.MOVE, 0, groupDuration);
         for (let time of beatTimes) {
-            if (time > lastJumpTime + lastJumpDuration + 1) {
+            if (time > lastJumpTime + lastJumpDuration) {
                 if (Math.random() < this.jumpFrequency) {
                     let jumpType = Math.floor(Math.random() * jumpLengths.length);
                     group.addAction(Verb.JUMP, time, jumpLengths[jumpType]);

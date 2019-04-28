@@ -71,7 +71,6 @@ class GameEngine {
         this.backgroundShader.setSpriteTex(backgroundTex);
 
         window.addEventListener("keydown", (keyEvent) => {
-            console.log(keyEvent);
             if (!this.downkeys.has(keyEvent.key)) {
                 this.gameObjects.forEach((go: GameObject) => {go.onKeyDown(keyEvent.key)});
             }
@@ -85,7 +84,7 @@ class GameEngine {
         let terrain: Terrain = new Terrain();
         this.setTerrain(terrain);
 
-        let levelGen = new LevelGenerator(3, terrain, 15, 15, 1, 0.7, [1, 0, 0]);
+        let levelGen = new LevelGenerator(5, terrain, 20, 20, 1.3, 1.0, [1, 0, 0]);
         levelGen.generateRhythms();
         levelGen.generateGeometry();
     }

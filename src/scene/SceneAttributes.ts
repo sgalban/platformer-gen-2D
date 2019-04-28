@@ -4,7 +4,7 @@ let sceneAttributes = {
     playerJump: 5.5,
     maxJumpHold: 0.4,
     maxObjectSpeed: 55,
-    deathHeight: -15,
+    deathHeight: -25,
     maxHeight: 30
 }
 
