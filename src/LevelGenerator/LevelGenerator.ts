@@ -4,6 +4,7 @@ import RhythmGroupGenerator from './RhythmGroupGenerator';
 import GeometryGenerator from './GeometryGenerator';
 import Terrain from '../scene/Terrain';
 import Coin from '../scene/Coin';
+import Spike from '../scene/Spike';
 
 export default class LevelGenerator {
     

@@ -196,6 +196,15 @@ abstract class GameObject {
         let tY = other.getPosition()[1];
         let pX = this.position[0];
         let pY = this.position[1];
+
+        // Anti-frustration feature
+        if (other.constructor.name === "Spike") {
+            tX += 0.5;
+            tY += 0.5;
+            let xIntersect: boolean = tX > pX && tX < pX + 1;
+            let yIntersect: boolean = tY > pY && tY < pY + 1;
+            return xIntersect && yIntersect;;
+        }
         
         let xIntersect: boolean = pX < (tX + 0.99) && tX < (pX + 0.99);
         let yIntersect: boolean = pY < (tY + 0.99) && tY < (pY + 0.99);

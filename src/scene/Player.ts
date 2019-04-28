@@ -103,7 +103,7 @@ class Player extends GameObject {
         };
 
         if (this.getPosition()[1] < sceneAttributes.deathHeight) {
-            this.setPosition(this.startPos);
+            this.onDeath();
         }
 
         if (!this.isGrounded || this.sPressed || this.moving) {
@@ -221,6 +221,13 @@ class Player extends GameObject {
             }
             other.destroy();
         }
+        else if (other.constructor.name === "Spike") {
+            this.onDeath();
+        }
+    }
+
+    onDeath() {
+        this.setPosition(this.startPos);
     }
 
     getSpriteUv() {

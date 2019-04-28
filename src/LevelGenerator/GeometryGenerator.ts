@@ -3,6 +3,8 @@ import RhythmGroupGenerator from './RhythmGroupGenerator'
 import RhythmGroup, {Action, Verb, JumpType} from './RhythmGroup';
 import sceneAttributes from '../scene/SceneAttributes';
 import Terrain from '../scene/Terrain';
+import Spike from '../scene/Spike';
+import Coin from '../scene/Coin';
 
 type MovementState = {state: string, duration: number}
 type JumpState = {startTime: number, jumpHold: number};
@@ -121,6 +123,49 @@ export default class GeometryGenerator {
         this.addTopTile(this.currentPos);
     }
 
+    private generateSpikeJump(jumpType: JumpType) {
+        let height = this.jumpHeights.get(jumpType);
+        let peakDistance = Math.floor(sceneAttributes.playerSpeed * height.time);
+        let totalFrames = height.time * 60 + Math.sqrt(height.height / sceneAttributes.gravity);
+        let totalDistance = Math.floor(sceneAttributes.playerSpeed * totalFrames / 60);
+
+        console.log(peakDistance + " " + totalDistance);
+        
+        for (let i = 0; i <= totalDistance; i++) {
+            if (i === peakDistance) {
+                this.terrain.setColumnAt([this.currentPos[0] + i, this.currentPos[1] - 1]);
+            }
+            else {
+                this.terrain.setColumnAt([this.currentPos[0] + i, this.currentPos[1]]);
+                this.addTopTile([this.currentPos[0] + i, this.currentPos[1]]);
+            }
+        }
+
+        for (let i = 0; i < height.height; i++) {
+            new Spike([this.currentPos[0] + peakDistance, this.currentPos[1] + i]);
+        }
+        for (let i = 0; i < 4; i++) {
+            new Spike([
+                this.currentPos[0] + peakDistance,
+                height.height + this.currentPos[1] + 4 + i]);
+        }
+
+        if (Math.random() < 1.25) {
+            new Coin([this.currentPos[0] + peakDistance + 0, this.currentPos[1] + height.height + 1]);
+        }
+
+        for (let i = -1; i <= 1; i++) {
+            for (let j = 0; j <= 1; j++) {
+                this.terrain.setTileAt([
+                    this.currentPos[0] + peakDistance + i,
+                    height.height + this.currentPos[1] + 9 + j
+                ]);
+            }
+        }
+
+        this.currentPos[0] += totalDistance + 1;
+    }
+
     private generateStraightPath(length: number) {
         for (let i = 0; i < Math.round(length); i++) {
             this.terrain.setColumnAt(this.currentPos);
@@ -143,7 +188,13 @@ export default class GeometryGenerator {
             }
 
             let prevX = this.currentPos[0];
-            this.generateSimpleJump(jump.jumpHold);
+            let obstacleType = Math.random();
+            if (obstacleType < 0.7) {
+                this.generateSimpleJump(jump.jumpHold);
+            }
+            else {
+                this.generateSpikeJump(jump.jumpHold);
+            }
             let jumpTime = (this.currentPos[0] - prevX) / playerSpeed;
             let remainingTime = beatDuration - jumpTime;
             if (remainingTime > 0) {
