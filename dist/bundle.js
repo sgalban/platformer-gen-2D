@@ -95,7 +95,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var _rendering_gl_OpenGLRenderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
 /* harmony import */ var _engine_GameEngine__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(15);
-/* harmony import */ var _scene_Player__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(35);
+/* harmony import */ var _scene_Player__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(38);
 
 
 
@@ -129,8 +129,8 @@ function main() {
     const renderer = new _rendering_gl_OpenGLRenderer__WEBPACK_IMPORTED_MODULE_2__["default"](canvas);
     renderer.setClearColor(0.9, 0.9, 0.9, 1);
     engine.setRenderer(renderer);
+    engine.generateLevel();
     let player = new _scene_Player__WEBPACK_IMPORTED_MODULE_4__["default"]([0, 1]);
-    engine.addGameObject(player);
     camera.makeParent(player);
     //new RhythmGropuGenerator(20, 20, 0.5, 0.6, [1, 0, 0]).generateRhythmGroup();
     // This function will be called every frame
@@ -7858,8 +7858,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const spriteSheet = __webpack_require__(29);
-const backgrounds = __webpack_require__(30);
+const spriteSheet = __webpack_require__(32);
+const backgrounds = __webpack_require__(33);
 class GameEngine {
     static getEngine() {
         if (GameEngine.engine) {
@@ -7884,15 +7884,15 @@ class GameEngine {
         this.downkeys = new Set();
         this.ticks = 0;
         this.spriteShader = new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["default"]([
-            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].VERTEX_SHADER, __webpack_require__(31)),
-            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].FRAGMENT_SHADER, __webpack_require__(32)),
+            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].VERTEX_SHADER, __webpack_require__(34)),
+            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].FRAGMENT_SHADER, __webpack_require__(35)),
         ]);
         //const spriteSheet = 'http://' + window.location.host + '/src/assets/sprites.png'
         let spriteTex = new _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_7__["default"](spriteSheet, 0);
         this.spriteShader.setSpriteTex(spriteTex);
         this.backgroundShader = new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["default"]([
-            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].VERTEX_SHADER, __webpack_require__(33)),
-            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].FRAGMENT_SHADER, __webpack_require__(34)),
+            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].VERTEX_SHADER, __webpack_require__(36)),
+            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].FRAGMENT_SHADER, __webpack_require__(37)),
         ]);
         //const backgrounds = 'http://' + window.location.host + '/src/assets/backgrounds.png'
         let backgroundTex = new _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_7__["default"](backgrounds, 1);
@@ -7907,11 +7907,14 @@ class GameEngine {
             this.downkeys.delete(keyEvent.key);
             this.gameObjects.forEach((go) => { go.onKeyUp(keyEvent.key); });
         });
+    }
+    generateLevel() {
         let terrain = new _scene_Terrain__WEBPACK_IMPORTED_MODULE_1__["default"]();
         this.setTerrain(terrain);
-        let levelGen = new _LevelGenerator_LevelGenerator__WEBPACK_IMPORTED_MODULE_8__["default"](5, terrain, 20, 20, 1.3, 1.0, [1, 0, 0]);
+        let levelGen = new _LevelGenerator_LevelGenerator__WEBPACK_IMPORTED_MODULE_8__["default"](1, terrain, 20, 20, 1.3, 1.0, [1, 0, 0]);
         levelGen.generateRhythms();
-        levelGen.generateGeometry();
+        let topTiles = levelGen.generateGeometry();
+        levelGen.addCoins(topTiles);
     }
     setRenderer(renderer) {
         this.renderer = renderer;
@@ -7927,7 +7930,8 @@ class GameEngine {
         let tileUvs = [];
         let tileMirrors = [];
         let tileScales = [];
-        for (let go of this.gameObjects) {
+        for (let i = 0; i < this.gameObjects.length; i++) {
+            let go = this.gameObjects[this.gameObjects.length - i - 1];
             tilePositions.push(go.getPosition());
             tileUvs.push(go.getSpriteUv());
             tileMirrors.push(go.facingLeft());
@@ -7976,9 +7980,19 @@ class GameEngine {
                 go.onKeyPress(key);
             }
         }
+        for (let go1 of this.gameObjects) {
+            if (go1.isPassive() || !go1.isCollidable) {
+                continue;
+            }
+            for (let go2 of this.gameObjects) {
+                if (!go2.isCollidable) {
+                    continue;
+                }
+                go1.checkObjectCollisions(go2);
+            }
+        }
         this.camera.update();
     }
-    // Maybe integrate this with the main tick()
     startGame() {
         this.lastTick = Date.now();
     }
@@ -8164,9 +8178,16 @@ const spriteCoordinates = {
     SPRITE_PLAYER_CROUCH: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(4, 7),
     SPRITE_PLAYER_IDLE1: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(5, 7),
     SPRITE_PLAYER_IDLE2: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(6, 7),
+    // Coin
+    SPRITE_COIN_1: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 3),
+    SPRITE_COIN_2: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(1, 3),
+    SPRITE_COIN_3: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(2, 3),
+    SPRITE_COIN_4: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(3, 3),
+    SPRITE_COIN_5: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(4, 3),
     // Particles
     SPRITE_Z: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(6, 6),
     SPRITE_POFF: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(7, 6),
+    SPRITE_SPARKLE: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(5, 6),
 };
 
 
@@ -8645,6 +8666,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LevelGenerator; });
 /* harmony import */ var _RhythmGroupGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(26);
 /* harmony import */ var _GeometryGenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(28);
+/* harmony import */ var _scene_Coin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(29);
+
 
 
 class LevelGenerator {
@@ -8667,6 +8690,46 @@ class LevelGenerator {
         for (let group of this.rhythmGroups) {
             this.geometryGenerator.generateGroupGeometry(group);
             this.geometryGenerator.generateRestArea(14);
+        }
+        return this.geometryGenerator.topTiles;
+    }
+    addCoins(topTiles) {
+        let topTileCopy = new Map();
+        for (let tt of topTiles) {
+            let tile = [tt[0], tt[1]];
+            topTileCopy.set(tile.toString(), tile);
+        }
+        let platforms = [];
+        let leftmost = -1;
+        let rightmost = -1;
+        while (topTileCopy.size > 0) {
+            let curPlatform = [];
+            let curTile = topTileCopy.values().next().value;
+            let curKey = curTile.toString();
+            curPlatform.push(curTile);
+            leftmost = curTile[0];
+            rightmost = curTile[0];
+            topTileCopy.delete(curKey);
+            while (topTileCopy.has([leftmost - 1, curTile[1]].toString())) {
+                let leftTile = [leftmost - 1, curTile[1]];
+                curPlatform.push(leftTile);
+                topTileCopy.delete(leftTile.toString());
+                leftmost--;
+            }
+            while (topTileCopy.has([rightmost + 1, curTile[1]].toString())) {
+                let rightTile = [rightmost + 1, curTile[1]];
+                curPlatform.push(rightTile);
+                topTileCopy.delete(rightTile.toString());
+                rightmost++;
+            }
+            platforms.push(curPlatform);
+        }
+        for (let platform of platforms) {
+            if (Math.random() < 0.25) {
+                for (let tile of platform) {
+                    new _scene_Coin__WEBPACK_IMPORTED_MODULE_2__["default"]([tile[0], tile[1] + 1]);
+                }
+            }
         }
     }
 }
@@ -8822,6 +8885,7 @@ class GeometryGenerator {
         this.jumpHeights.set(_RhythmGroup__WEBPACK_IMPORTED_MODULE_1__["JumpType"].SHORT, this.getJumpHeight(_RhythmGroup__WEBPACK_IMPORTED_MODULE_1__["JumpType"].SHORT));
         this.jumpHeights.set(_RhythmGroup__WEBPACK_IMPORTED_MODULE_1__["JumpType"].MEDIUM, this.getJumpHeight(_RhythmGroup__WEBPACK_IMPORTED_MODULE_1__["JumpType"].MEDIUM));
         this.jumpHeights.set(_RhythmGroup__WEBPACK_IMPORTED_MODULE_1__["JumpType"].LONG, this.getJumpHeight(_RhythmGroup__WEBPACK_IMPORTED_MODULE_1__["JumpType"].LONG));
+        this.topTiles = new Set();
     }
     queuesFromRhythm(rhythm) {
         let movement = [];
@@ -8895,6 +8959,9 @@ class GeometryGenerator {
         }
         return { height: pos, time: totalTime };
     }
+    addTopTile(tile) {
+        this.topTiles.add([tile[0], tile[1]]);
+    }
     generateSimpleJump(jumpType) {
         let height = this.jumpHeights.get(jumpType);
         let minHeight = Math.max(-4, _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].deathHeight + 5 - this.currentPos[1]);
@@ -8907,10 +8974,12 @@ class GeometryGenerator {
         this.currentPos[0] += totalDistance;
         this.currentPos[1] += endHeight;
         this.terrain.setTileAt(this.currentPos);
+        this.addTopTile(this.currentPos);
     }
     generateStraightPath(length) {
         for (let i = 0; i < Math.round(length); i++) {
             this.terrain.setColumnAt(this.currentPos);
+            this.addTopTile(this.currentPos);
             this.currentPos[0] += 1;
         }
     }
@@ -8932,54 +9001,11 @@ class GeometryGenerator {
                 let remainingLength = remainingTime * playerSpeed;
                 this.generateStraightPath(remainingLength);
             }
-            //console.log(curTime);
-            /*if (jump.jumpHold === JumpType.SHORT) {
-
-                if (Math.random() < 0.5) {
-                    this.currentPos[0] += 5;
-                    this.terrain.setColumnAt(this.currentPos[0] - 4, this.currentPos[1]);
-                    this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
-                }
-                else {
-                    this.currentPos[0] += 3;
-                    this.currentPos[1] += 1;
-                    this.terrain.setColumnAt(this.currentPos[0] - 2, this.currentPos[1] - 1);
-                    this.terrain.setColumnAt(this.currentPos[0] - 1, this.currentPos[1]);
-                    this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
-                }
-            }
-
-            if (jump.jumpHold === JumpType.MEDIUM) {
-                if (Math.random() < 0.5) {
-                    this.currentPos[0] += 6;
-                    this.terrain.setColumnAt(this.currentPos[0] - 5, this.currentPos[1]);
-                    this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
-                }
-                else {
-                    this.currentPos[0] += 7;
-                    this.currentPos[1] -= 1;
-                    this.terrain.setColumnAt(this.currentPos[0] - 6, this.currentPos[1] + 1);
-                    this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
-                }
-            }
-
-            else if (jump.jumpHold === JumpType.LONG) {
-                if (Math.random() < 0.5) {
-                    this.currentPos[0] += 8;
-                    this.terrain.setColumnAt(this.currentPos[0] - 7, this.currentPos[1]);
-                    this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
-                }
-                else {
-                    this.currentPos[0] += 9;
-                    this.currentPos[1] -= 3;
-                    this.terrain.setColumnAt(this.currentPos[0] - 8, this.currentPos[1] + 3);
-                    this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
-                }
-            }*/
         }
     }
     generateRestArea(length) {
         for (let i = 1; i <= length; i++) {
+            this.addTopTile([this.currentPos[0] + i, this.currentPos[1] - 1]);
             this.terrain.setTileAt([this.currentPos[0] + i, this.currentPos[1] - 1]);
             this.terrain.setTileAt([this.currentPos[0] + i, this.currentPos[1] - 2]);
         }
@@ -8990,6 +9016,7 @@ class GeometryGenerator {
     }
     generateStartArea() {
         for (let i = -4; i <= 4; i++) {
+            //this.addTopTile([i, 0]);
             this.terrain.setTileAt([i, 0]);
             this.terrain.setTileAt([i, -1]);
             this.terrain.setTileAt([i, -3]);
@@ -9010,50 +9037,358 @@ class GeometryGenerator {
 
 /***/ }),
 /* 29 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "cc2ef96c519ec2567184f8de8c65dd08.png";
-
-/***/ }),
-/* 30 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "ee6dced03346586918eef24f9eab9290.png";
-
-/***/ }),
-/* 31 */
-/***/ (function(module, exports) {
-
-module.exports = "#version 300 es\nprecision highp float;\n\nuniform mat4 u_ViewProj;\nuniform mat4 u_Model;\n\nin vec2 vs_Pos;\nin vec2 vs_Offset;\nin vec2 vs_UV;\nin float vs_Scale;\nin int vs_MirrorUv;\nout vec2 fs_Pos;\nout vec2 fs_UV;\n\nvoid main() {\n    fs_Pos = vs_Pos;\n    bool mirrorUv = vs_MirrorUv == 1;\n    fs_UV = vs_UV + vec2(mirrorUv ? 1.0 - vs_Pos.x : vs_Pos.x, 1.0 - vs_Pos.y);\n\n    vec2 actualPos = vs_Pos * vs_Scale + vs_Offset;\n    gl_Position = u_ViewProj * u_Model * vec4(actualPos, 0.5, 1);\n}\n"
-
-/***/ }),
-/* 32 */
-/***/ (function(module, exports) {
-
-module.exports = "#version 300 es\nprecision highp float;\n\nuniform sampler2D u_SpriteTex;\n\nin vec2 fs_Pos;\nin vec2 fs_UV;\n\nout vec4 out_Col;\n\nvoid main() {\n    vec4 color = texture(u_SpriteTex, fs_UV / 8.0);\n    if (color.a < 0.5) {\n        discard;\n    }\n    out_Col = color;\n}\n"
-
-/***/ }),
-/* 33 */
-/***/ (function(module, exports) {
-
-module.exports = "#version 300 es\nprecision highp float;\n\nuniform vec2 u_CameraPos;\n\nin vec2 vs_Pos;\nin vec2 vs_UV;\nout vec2 fs_Pos;\nout vec2 fs_UV1;\nout vec2 fs_UV2;\n\nvoid main() {\n    fs_Pos = vs_Pos;\n    const float squish1 = 1.8;\n    fs_UV1 = vec2(\n        vs_UV[0] / 1.5 - u_CameraPos[0] / 150.0,\n        (vs_UV[1] / 4.0) * squish1 - (squish1 / 4.0 - 0.25) + (u_CameraPos[1] + 2.0) / 100.0\n    );\n\n    const float squish2 = 1.0;\n    fs_UV2 = vec2(\n        vs_UV[0] / 2.0 - u_CameraPos[0] / 300.0,\n        (vs_UV[1] / 4.0 + 0.25) * squish2 - (squish2 / 4.0 - 0.25) + (u_CameraPos[1] + 2.0) / 200.0\n    );\n\n    gl_Position = vec4(vs_Pos, 0, 1);\n}\n"
-
-/***/ }),
-/* 34 */
-/***/ (function(module, exports) {
-
-module.exports = "#version 300 es\nprecision highp float;\n\nuniform sampler2D u_SpriteTex;\nuniform vec2 u_CameraPos;\nuniform float u_Time;\n\nin vec2 fs_Pos;\nin vec2 fs_UV1;\nin vec2 fs_UV2;\n\nout vec4 out_Col;\n\nconst vec2 SEED2 = vec2(0.31415, 0.6456);\n\nfloat random1(vec2 p) {\n    return fract(sin(dot(p + SEED2, vec2(127.1, 311.7))) * 43758.5453);\n}\n\nvec2 random2( vec2 p , vec2 seed) {\n    return fract(sin(vec2(dot(p + seed, vec2(311.7, 127.1)), dot(p + seed, vec2(269.5, 183.3)))) * 85734.3545);\n}\n\nfloat worley(vec2 noisePos, float frequency) {\n    vec2 point = noisePos * frequency;\n    vec2 cell = floor(point);\n\n    // Check the neighboring cells for the closest cell point\n    float closestDistance = 2.0;\n    for (int i = 0; i < 9; i++) {\n        vec2 curCell = cell + vec2(i % 3 - 1, floor(float(i / 3) - 1.0));\n        vec2 cellPoint = vec2(curCell) + random2(vec2(curCell), SEED2);\n        closestDistance = min(closestDistance, distance(cellPoint, point));\n    }\n    return clamp(0.0, 1.0, closestDistance);\n}\n\nvoid main() {\n    vec2 uv1 = vec2(fs_UV1.x, clamp(fs_UV1.y, 0.000, 0.249));\n    vec2 uv2 = vec2(fs_UV2.x, clamp(fs_UV2.y, 0.251, 0.499));\n    float starRadius = 0.01 + abs(sin(u_Time * 0.01 + random1(fs_Pos) * 100.0)) * 0.01;\n    vec3 stars = worley(fs_Pos, 10.0) < starRadius ? vec3(1) : vec3(0);\n    vec4 sky = mix(vec4(0.3, 0.3, 0.25, 1.0), vec4(stars, 1), pow((fs_Pos[1] + 1.0) / 2.0, 0.5));\n\n    vec4 layer1 = texture(u_SpriteTex, uv1);\n    vec4 layer2 = texture(u_SpriteTex, uv2);\n\n    vec4 color = \n        layer1.a > 0.5 ? layer1 :\n        layer2.a > 0.5 ? layer2 :\n        sky;\n\n    out_Col = vec4(color.rgb, 1);\n}\n"
-
-/***/ }),
-/* 35 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
-/* harmony import */ var _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(36);
+/* harmony import */ var _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(30);
+/* harmony import */ var _Particle__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(31);
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(18);
+
+
+
+
+const ANIMATION_FRAME_LENGTH = 5;
+class Coin extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] {
+    constructor(pos) {
+        super(false, true, true);
+        this.animationFrame = 0;
+        this.setPosition(pos);
+        this.direction = 1;
+    }
+    onUpdate(delta) {
+        this.animationFrame = (this.animationFrame + 1) % (ANIMATION_FRAME_LENGTH * 8);
+        if (Math.random() < 0.01) {
+            let sparkle = new _Particle__WEBPACK_IMPORTED_MODULE_2__["default"](_constants__WEBPACK_IMPORTED_MODULE_3__["spriteCoordinates"].SPRITE_SPARKLE, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(this.getPosition()[0] + Math.random() - 0.5, this.getPosition()[1] + Math.random() - 0.5), 0.5);
+            sparkle.setMovement((time) => {
+                sparkle.setSize(time * (0.5 - time) * 8);
+                return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+            });
+        }
+    }
+    getSpriteUv() {
+        if (this.animationFrame < ANIMATION_FRAME_LENGTH * 1) {
+            return _constants__WEBPACK_IMPORTED_MODULE_3__["spriteCoordinates"].SPRITE_COIN_1;
+        }
+        else if (this.animationFrame < ANIMATION_FRAME_LENGTH * 2) {
+            return _constants__WEBPACK_IMPORTED_MODULE_3__["spriteCoordinates"].SPRITE_COIN_2;
+        }
+        else if (this.animationFrame < ANIMATION_FRAME_LENGTH * 3) {
+            return _constants__WEBPACK_IMPORTED_MODULE_3__["spriteCoordinates"].SPRITE_COIN_3;
+        }
+        else if (this.animationFrame < ANIMATION_FRAME_LENGTH * 4) {
+            return _constants__WEBPACK_IMPORTED_MODULE_3__["spriteCoordinates"].SPRITE_COIN_4;
+        }
+        else if (this.animationFrame < ANIMATION_FRAME_LENGTH * 5) {
+            //this.direction = this.direction = -1;
+            return _constants__WEBPACK_IMPORTED_MODULE_3__["spriteCoordinates"].SPRITE_COIN_5;
+        }
+        else if (this.animationFrame < ANIMATION_FRAME_LENGTH * 6) {
+            return _constants__WEBPACK_IMPORTED_MODULE_3__["spriteCoordinates"].SPRITE_COIN_4;
+        }
+        else if (this.animationFrame < ANIMATION_FRAME_LENGTH * 7) {
+            return _constants__WEBPACK_IMPORTED_MODULE_3__["spriteCoordinates"].SPRITE_COIN_3;
+        }
+        else if (this.animationFrame < ANIMATION_FRAME_LENGTH * 8) {
+            return _constants__WEBPACK_IMPORTED_MODULE_3__["spriteCoordinates"].SPRITE_COIN_2;
+        }
+    }
+}
+/* harmony default export */ __webpack_exports__["default"] = (Coin);
+
+
+/***/ }),
+/* 30 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _GameEngine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(15);
+/* harmony import */ var _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(17);
+
+
+
+class GameObject {
+    get isGrounded() {
+        return this.grounded;
+    }
+    constructor(isDynamic, isPassive, isCollidable) {
+        this.dynamic = isDynamic;
+        this.passive = isPassive;
+        this.collidable = isCollidable;
+        this.position = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
+        this.velocity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
+        this.inputVelocity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
+        this.prevInputVelocty = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
+        this.direction = 1;
+        this.size = 1;
+        _GameEngine__WEBPACK_IMPORTED_MODULE_1__["default"].getEngine().addGameObject(this);
+    }
+    destroy() {
+        _GameEngine__WEBPACK_IMPORTED_MODULE_1__["default"].getEngine().destroyGameObject(this);
+        this.drawable = null;
+    }
+    isPassive() {
+        return this.passive;
+    }
+    isCollidable() {
+        return this.collidable;
+    }
+    facingLeft() {
+        return this.direction === -1;
+    }
+    getPosition() {
+        return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(this.position[0], this.position[1]);
+    }
+    setPosition(newPosition) {
+        this.position[0] = newPosition[0];
+        this.position[1] = newPosition[1];
+    }
+    scale(amount) {
+        this.size *= amount;
+    }
+    setSize(size) {
+        this.size = size;
+    }
+    translate(amount) {
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(this.position, this.position, amount);
+    }
+    getVelocity() {
+        return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(this.velocity[0], this.velocity[1]);
+    }
+    physicsUpdate(delta) {
+        if (!this.dynamic) {
+            return;
+        }
+        let prevVelocity = this.velocity;
+        //this.velocity = vec2.fromValues(0, 0);
+        // Apply gravity
+        if (this.grounded) {
+            this.velocity[1] = 0;
+        }
+        else {
+            this.velocity[1] -= _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].gravity;
+        }
+        // Apply non-physical motion
+        if (Math.abs(this.inputVelocity[0]) > 0.001) {
+            let influence = this.grounded ? 0.2 : 0.11;
+            this.velocity[0] = (1 - influence) * this.velocity[0] + influence * this.inputVelocity[0];
+        }
+        else if (this.grounded) {
+            this.velocity[0] *= 0.7;
+        }
+        else {
+            this.velocity[0] *= 0.95;
+        }
+        this.velocity[1] += this.inputVelocity[1];
+        // Scale back velocity if it's too high
+        let speed = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].length(this.velocity);
+        if (speed > _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].maxObjectSpeed) {
+            gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].scale(this.velocity, this.velocity, _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].maxObjectSpeed / speed);
+        }
+        // Update the object position, accounting for collisions
+        // We assume that before applying any motion this frame, the object is not intersecting anything
+        // We will use the following technique to do this:
+        //   - Apply the velocity vector to our position in the x axis only
+        //   - Check if, in this new position, the object intersects with the terrain (in all axes)
+        //   - If the object is now intersecting with a tile, we respond by pushing back the object by
+        //     the amount of the overlap
+        //     - Note that this pushback will only have to be in the x axis
+        //   - Repeat with the y-axis
+        let deltaPos = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].scale(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create(), this.velocity, 1.0 / 60);
+        for (let axis = 0; axis < 2; axis++) {
+            if (Math.abs(deltaPos[axis]) > 10e-6) {
+                this.position[axis] += deltaPos[axis];
+                let adjacentTiles = this.getAdjacentTiles();
+                for (let tile of adjacentTiles) {
+                    for (let terrain of _GameEngine__WEBPACK_IMPORTED_MODULE_1__["default"].getEngine().terrainObjects) {
+                        let response = this.testTerrainCollision(terrain, tile, axis);
+                        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(this.position, this.position, response);
+                    }
+                }
+            }
+        }
+        let groundedCheck = this.checkIfGrounded();
+        if (!this.grounded && groundedCheck) {
+            this.onGrounded(this.velocity[1]);
+        }
+        this.grounded = groundedCheck;
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(this.prevInputVelocty, this.inputVelocity);
+        this.inputVelocity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
+    }
+    checkObjectCollisions(other) {
+        if (this.testGameObjectCollision(other)) {
+            this.onCollision(other);
+        }
+    }
+    getAdjacentTiles() {
+        let x = Math.floor(this.position[0]);
+        let y = Math.floor(this.position[1]);
+        return [
+            [x - 1, y + 1], [x + 0, y + 1], [x + 1, y + 1],
+            [x - 1, y + 0], [x + 0, y + 0], [x + 1, y + 0],
+            [x - 1, y - 1], [x + 0, y - 1], [x + 1, y - 1]
+        ];
+    }
+    testTerrainCollision(terrain, tile, axis) {
+        let tX = tile[0];
+        let tY = tile[1];
+        let pX = this.position[0];
+        let pY = this.position[1];
+        if (!terrain.tileAt(tX, tY)) {
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+        }
+        let xIntersect = pX < (tX + 1) && tX < (pX + 1);
+        let yIntersect = pY < (tY + 1) && tY < (pY + 1);
+        let isIntersecting = xIntersect && yIntersect;
+        let axisVelocity = this.velocity[axis];
+        if (isIntersecting) {
+            let pushback = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+            if (axisVelocity > 0) {
+                let isY = (axis == 1) ? 0 : 0;
+                pushback[axis] = tile[axis] - (this.position[axis] + 1 + isY);
+            }
+            else {
+                pushback[axis] = (tile[axis] + 1) - this.position[axis];
+            }
+            return pushback;
+        }
+        else {
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+        }
+    }
+    testGameObjectCollision(other) {
+        let tX = other.getPosition()[0];
+        let tY = other.getPosition()[1];
+        let pX = this.position[0];
+        let pY = this.position[1];
+        let xIntersect = pX < (tX + 0.99) && tX < (pX + 0.99);
+        let yIntersect = pY < (tY + 0.99) && tY < (pY + 0.99);
+        let isIntersecting = xIntersect && yIntersect;
+        return isIntersecting;
+    }
+    checkIfGrounded() {
+        // Check if we would be colliding with a block if we were just a teensy bit lower
+        let newPos = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].subtract(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create(), this.position, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0.05));
+        let gridPosition = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(Math.floor(newPos[0]), Math.floor(newPos[1]));
+        for (let x = 0; x < 2; x++) {
+            let tX = gridPosition[0] + x;
+            let tY = gridPosition[1];
+            let existsTile = false;
+            for (let terrain of _GameEngine__WEBPACK_IMPORTED_MODULE_1__["default"].getEngine().terrainObjects) {
+                if (terrain.tileAt(tX, tY)) {
+                    existsTile = true;
+                    break;
+                }
+            }
+            if (!existsTile) {
+                continue;
+            }
+            if (newPos[0] < (tX + 1) && tX < (newPos[0] + 1) &&
+                newPos[1] < (tY + 1) && tY < (newPos[1] + 1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    onUpdate(delta) { }
+    ;
+    onKeyPress(key) { }
+    ;
+    onKeyDown(key) { }
+    ;
+    onKeyUp(key) { }
+    onGrounded(verticalVelocity) { }
+    onCollision(other) { }
+}
+/* harmony default export */ __webpack_exports__["default"] = (GameObject);
+
+
+/***/ }),
+/* 31 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Particle; });
+/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(30);
+
+
+class Particle extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] {
+    constructor(_spriteUv, _startingPos, _lifetime = Infinity) {
+        super(false, true, false);
+        this.spriteUv = _spriteUv;
+        this.lifetime = _lifetime;
+        this.time = 0;
+        this.startingPos = _startingPos;
+        this.movement = () => gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+        ;
+    }
+    setMovement(move) {
+        this.movement = move;
+    }
+    onUpdate(delta) {
+        this.time += delta;
+        if (this.time > this.lifetime) {
+            this.destroy();
+        }
+        this.setPosition(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create(), this.movement(this.time), this.startingPos));
+    }
+    getSpriteUv() {
+        return this.spriteUv;
+    }
+}
+
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "766b1a07fa18709bb90032f8bd9683c4.png";
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "ee6dced03346586918eef24f9eab9290.png";
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports) {
+
+module.exports = "#version 300 es\nprecision highp float;\n\nuniform mat4 u_ViewProj;\nuniform mat4 u_Model;\n\nin vec2 vs_Pos;\nin vec2 vs_Offset;\nin vec2 vs_UV;\nin float vs_Scale;\nin int vs_MirrorUv;\nout vec2 fs_Pos;\nout vec2 fs_UV;\n\nvoid main() {\n    fs_Pos = vs_Pos;\n    bool mirrorUv = vs_MirrorUv == 1;\n    fs_UV = vs_UV + vec2(mirrorUv ? 1.0 - vs_Pos.x : vs_Pos.x, 1.0 - vs_Pos.y);\n\n    vec2 actualPos = (vs_Pos - vec2(0.5, 0.5)) * vs_Scale + vs_Offset + vec2(0.0, 0.0);\n    gl_Position = u_ViewProj * u_Model * vec4(actualPos, 0.5, 1);\n}\n"
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports) {
+
+module.exports = "#version 300 es\nprecision highp float;\n\nuniform sampler2D u_SpriteTex;\n\nin vec2 fs_Pos;\nin vec2 fs_UV;\n\nout vec4 out_Col;\n\nvoid main() {\n    vec4 color = texture(u_SpriteTex, fs_UV / 8.0);\n    if (color.a < 0.5) {\n        discard;\n    }\n    out_Col = color;\n}\n"
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports) {
+
+module.exports = "#version 300 es\nprecision highp float;\n\nuniform vec2 u_CameraPos;\n\nin vec2 vs_Pos;\nin vec2 vs_UV;\nout vec2 fs_Pos;\nout vec2 fs_UV1;\nout vec2 fs_UV2;\n\nvoid main() {\n    fs_Pos = vs_Pos;\n    const float squish1 = 1.8;\n    fs_UV1 = vec2(\n        vs_UV[0] / 1.5 - u_CameraPos[0] / 150.0,\n        (vs_UV[1] / 4.0) * squish1 - (squish1 / 4.0 - 0.25) + (u_CameraPos[1] + 2.0) / 100.0\n    );\n\n    const float squish2 = 1.0;\n    fs_UV2 = vec2(\n        vs_UV[0] / 2.0 - u_CameraPos[0] / 300.0,\n        (vs_UV[1] / 4.0 + 0.25) * squish2 - (squish2 / 4.0 - 0.25) + (u_CameraPos[1] + 2.0) / 200.0\n    );\n\n    gl_Position = vec4(vs_Pos, 0, 1);\n}\n"
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports) {
+
+module.exports = "#version 300 es\nprecision highp float;\n\nuniform sampler2D u_SpriteTex;\nuniform vec2 u_CameraPos;\nuniform float u_Time;\n\nin vec2 fs_Pos;\nin vec2 fs_UV1;\nin vec2 fs_UV2;\n\nout vec4 out_Col;\n\nconst vec2 SEED2 = vec2(0.31415, 0.6456);\n\nfloat random1(vec2 p) {\n    return fract(sin(dot(p + SEED2, vec2(127.1, 311.7))) * 43758.5453);\n}\n\nvec2 random2( vec2 p , vec2 seed) {\n    return fract(sin(vec2(dot(p + seed, vec2(311.7, 127.1)), dot(p + seed, vec2(269.5, 183.3)))) * 85734.3545);\n}\n\nfloat worley(vec2 noisePos, float frequency) {\n    vec2 point = noisePos * frequency;\n    vec2 cell = floor(point);\n\n    // Check the neighboring cells for the closest cell point\n    float closestDistance = 2.0;\n    for (int i = 0; i < 9; i++) {\n        vec2 curCell = cell + vec2(i % 3 - 1, floor(float(i / 3) - 1.0));\n        vec2 cellPoint = vec2(curCell) + random2(vec2(curCell), SEED2);\n        closestDistance = min(closestDistance, distance(cellPoint, point));\n    }\n    return clamp(0.0, 1.0, closestDistance);\n}\n\nvoid main() {\n    vec2 uv1 = vec2(fs_UV1.x, clamp(fs_UV1.y, 0.000, 0.249));\n    vec2 uv2 = vec2(fs_UV2.x, clamp(fs_UV2.y, 0.251, 0.499));\n    float starRadius = 0.01 + abs(sin(u_Time * 0.01 + random1(fs_Pos) * 100.0)) * 0.01;\n    vec3 stars = worley(fs_Pos, 10.0) < starRadius ? vec3(1) : vec3(0);\n    vec4 sky = mix(vec4(0.3, 0.3, 0.25, 1.0), vec4(stars, 1), pow((fs_Pos[1] + 1.0) / 2.0, 0.5));\n\n    vec4 layer1 = texture(u_SpriteTex, uv1);\n    vec4 layer2 = texture(u_SpriteTex, uv2);\n\n    vec4 color = \n        layer1.a > 0.5 ? layer1 :\n        layer2.a > 0.5 ? layer2 :\n        sky;\n\n    out_Col = vec4(color.rgb, 1);\n}\n"
+
+/***/ }),
+/* 38 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(30);
 /* harmony import */ var _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(17);
-/* harmony import */ var _Particle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(37);
+/* harmony import */ var _Particle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(31);
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(18);
 
 
@@ -9063,7 +9398,7 @@ __webpack_require__.r(__webpack_exports__);
 const WALK_CYCLE_LENGTH = 10;
 class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] {
     constructor(_startPos) {
-        super(true);
+        super(true, false, true);
         this.jumping = false;
         this.groundedImmunity = false;
         this.direction = 1;
@@ -9150,7 +9485,7 @@ class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] 
                 poff1.scale(1 - time / 3);
                 return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(4 * time, 5 * time * time);
             });
-            let poff2 = new _Particle__WEBPACK_IMPORTED_MODULE_3__["default"](_constants__WEBPACK_IMPORTED_MODULE_4__["spriteCoordinates"].SPRITE_POFF, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(thisPos[0] + 0.5, thisPos[1] - 0.5), 3);
+            let poff2 = new _Particle__WEBPACK_IMPORTED_MODULE_3__["default"](_constants__WEBPACK_IMPORTED_MODULE_4__["spriteCoordinates"].SPRITE_POFF, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(thisPos[0], thisPos[1] - 0.5), 3);
             poff2.setMovement((time) => {
                 poff2.scale(1 - time / 3);
                 return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(-4 * time, 5 * time * time);
@@ -9201,6 +9536,20 @@ class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] 
             this.sPressed = false;
         }
     }
+    onCollision(other) {
+        if (other.constructor.name === "Coin") {
+            for (let i = 0; i < 8; i++) {
+                let angle = i * Math.PI * 2 / 8;
+                let direction = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(Math.cos(angle), Math.sin(angle));
+                let sparkle = new _Particle__WEBPACK_IMPORTED_MODULE_3__["default"](_constants__WEBPACK_IMPORTED_MODULE_4__["spriteCoordinates"].SPRITE_SPARKLE, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create(), other.getPosition(), gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].scale(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create(), direction, 0.3)), 0.2);
+                sparkle.setSize(0.5);
+                sparkle.setMovement((time) => {
+                    return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].scale(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create(), direction, time * 2);
+                });
+            }
+            other.destroy();
+        }
+    }
     getSpriteUv() {
         if (!this.isGrounded) {
             return _constants__WEBPACK_IMPORTED_MODULE_4__["spriteCoordinates"].SPRITE_PLAYER_JUMP;
@@ -9223,228 +9572,6 @@ class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] 
     }
 }
 /* harmony default export */ __webpack_exports__["default"] = (Player);
-
-
-/***/ }),
-/* 36 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
-/* harmony import */ var _GameEngine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(15);
-/* harmony import */ var _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(17);
-
-
-
-class GameObject {
-    get isGrounded() {
-        return this.grounded;
-    }
-    constructor(isDynamic) {
-        this.dynamic = isDynamic;
-        this.passive = false;
-        this.position = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
-        this.velocity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
-        this.inputVelocity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
-        this.prevInputVelocty = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
-        this.direction = 1;
-        this.size = 1;
-        _GameEngine__WEBPACK_IMPORTED_MODULE_1__["default"].getEngine().addGameObject(this);
-    }
-    destroy() {
-        _GameEngine__WEBPACK_IMPORTED_MODULE_1__["default"].getEngine().destroyGameObject(this);
-        this.drawable = null;
-    }
-    isPassive() {
-        return this.passive;
-    }
-    facingLeft() {
-        return this.direction === -1;
-    }
-    getPosition() {
-        return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(this.position[0], this.position[1]);
-    }
-    setPosition(newPosition) {
-        this.position[0] = newPosition[0];
-        this.position[1] = newPosition[1];
-    }
-    scale(amount) {
-        this.size *= amount;
-    }
-    translate(amount) {
-        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(this.position, this.position, amount);
-    }
-    getVelocity() {
-        return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(this.velocity[0], this.velocity[1]);
-    }
-    physicsUpdate(delta) {
-        if (!this.dynamic) {
-            return;
-        }
-        let prevVelocity = this.velocity;
-        //this.velocity = vec2.fromValues(0, 0);
-        // Apply gravity
-        if (this.grounded) {
-            this.velocity[1] = 0;
-        }
-        else {
-            this.velocity[1] -= _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].gravity;
-        }
-        // Apply non-physical motion
-        if (Math.abs(this.inputVelocity[0]) > 0.001) {
-            let influence = this.grounded ? 0.2 : 0.11;
-            this.velocity[0] = (1 - influence) * this.velocity[0] + influence * this.inputVelocity[0];
-        }
-        else if (this.grounded) {
-            this.velocity[0] *= 0.7;
-        }
-        else {
-            this.velocity[0] *= 0.95;
-        }
-        this.velocity[1] += this.inputVelocity[1];
-        // Scale back velocity if it's too high
-        let speed = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].length(this.velocity);
-        if (speed > _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].maxObjectSpeed) {
-            gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].scale(this.velocity, this.velocity, _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].maxObjectSpeed / speed);
-        }
-        // Update the object position, accounting for collisions
-        // We assume that before applying any motion this frame, the object is not intersecting anything
-        // We will use the following technique to do this:
-        //   - Apply the velocity vector to our position in the x axis only
-        //   - Check if, in this new position, the object intersects with the terrain (in all axes)
-        //   - If the object is now intersecting with a tile, we respond by pushing back the object by
-        //     the amount of the overlap
-        //     - Note that this pushback will only have to be in the x axis
-        //   - Repeat with the y-axis
-        let deltaPos = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].scale(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create(), this.velocity, 1.0 / 60);
-        for (let axis = 0; axis < 2; axis++) {
-            if (Math.abs(deltaPos[axis]) > 10e-6) {
-                this.position[axis] += deltaPos[axis];
-                let adjacentTiles = this.getAdjacentTiles();
-                for (let tile of adjacentTiles) {
-                    for (let terrain of _GameEngine__WEBPACK_IMPORTED_MODULE_1__["default"].getEngine().terrainObjects) {
-                        let response = this.testTerrainCollision(terrain, tile, axis);
-                        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(this.position, this.position, response);
-                    }
-                }
-            }
-        }
-        let groundedCheck = this.checkIfGrounded();
-        if (!this.grounded && groundedCheck) {
-            this.onGrounded(this.velocity[1]);
-        }
-        this.grounded = groundedCheck;
-        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(this.prevInputVelocty, this.inputVelocity);
-        this.inputVelocity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0);
-    }
-    getAdjacentTiles() {
-        let x = Math.floor(this.position[0]);
-        let y = Math.floor(this.position[1]);
-        return [
-            [x - 1, y + 1], [x + 0, y + 1], [x + 1, y + 1],
-            [x - 1, y + 0], [x + 0, y + 0], [x + 1, y + 0],
-            [x - 1, y - 1], [x + 0, y - 1], [x + 1, y - 1]
-        ];
-    }
-    testTerrainCollision(terrain, tile, axis) {
-        let tX = tile[0];
-        let tY = tile[1];
-        let pX = this.position[0];
-        let pY = this.position[1];
-        if (!terrain.tileAt(tX, tY)) {
-            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
-        }
-        let xIntersect = pX < (tX + 1) && tX < (pX + 1);
-        let yIntersect = pY < (tY + 1) && tY < (pY + 2);
-        let isIntersecting = xIntersect && yIntersect;
-        let axisVelocity = this.velocity[axis];
-        if (isIntersecting) {
-            let pushback = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
-            if (axisVelocity > 0) {
-                let isY = (axis == 1) ? 0 : 0;
-                pushback[axis] = tile[axis] - (this.position[axis] + 1 + isY);
-            }
-            else {
-                pushback[axis] = (tile[axis] + 1) - this.position[axis];
-            }
-            return pushback;
-        }
-        else {
-            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
-        }
-    }
-    checkIfGrounded() {
-        // Check if we would be colliding with a block if we were just a teensy bit lower
-        let newPos = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].subtract(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create(), this.position, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0.05));
-        let gridPosition = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(Math.floor(newPos[0]), Math.floor(newPos[1]));
-        for (let x = 0; x < 2; x++) {
-            let tX = gridPosition[0] + x;
-            let tY = gridPosition[1];
-            let existsTile = false;
-            for (let terrain of _GameEngine__WEBPACK_IMPORTED_MODULE_1__["default"].getEngine().terrainObjects) {
-                if (terrain.tileAt(tX, tY)) {
-                    existsTile = true;
-                    break;
-                }
-            }
-            if (!existsTile) {
-                continue;
-            }
-            if (newPos[0] < (tX + 1) && tX < (newPos[0] + 1) &&
-                newPos[1] < (tY + 1) && tY < (newPos[1] + 1)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    onUpdate(delta) { }
-    ;
-    onKeyPress(key) { }
-    ;
-    onKeyDown(key) { }
-    ;
-    onKeyUp(key) { }
-    onGrounded(verticalVelocity) { }
-}
-/* harmony default export */ __webpack_exports__["default"] = (GameObject);
-
-
-/***/ }),
-/* 37 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Particle; });
-/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
-/* harmony import */ var _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(36);
-
-
-class Particle extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] {
-    constructor(_spriteUv, _startingPos, _lifetime = Infinity) {
-        super(false);
-        this.spriteUv = _spriteUv;
-        this.lifetime = _lifetime;
-        this.time = 0;
-        this.startingPos = _startingPos;
-        this.movement = () => gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
-        ;
-    }
-    setMovement(move) {
-        this.movement = move;
-    }
-    onUpdate(delta) {
-        this.time += delta;
-        if (this.time > this.lifetime) {
-            this.destroy();
-        }
-        this.setPosition(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create(), this.movement(this.time), this.startingPos));
-    }
-    getSpriteUv() {
-        return this.spriteUv;
-    }
-}
 
 
 /***/ })

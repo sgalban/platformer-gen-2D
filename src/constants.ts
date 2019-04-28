@@ -31,7 +31,15 @@ export const spriteCoordinates = {
     SPRITE_PLAYER_IDLE1:  vec2.fromValues(5, 7),
     SPRITE_PLAYER_IDLE2:  vec2.fromValues(6, 7),
 
+    // Coin
+    SPRITE_COIN_1: vec2.fromValues(0, 3),
+    SPRITE_COIN_2: vec2.fromValues(1, 3),
+    SPRITE_COIN_3: vec2.fromValues(2, 3),
+    SPRITE_COIN_4: vec2.fromValues(3, 3),
+    SPRITE_COIN_5: vec2.fromValues(4, 3),
+
     // Particles
-    SPRITE_Z:    vec2.fromValues(6, 6),
-    SPRITE_POFF: vec2.fromValues(7, 6),
+    SPRITE_Z:       vec2.fromValues(6, 6),
+    SPRITE_POFF:    vec2.fromValues(7, 6),
+    SPRITE_SPARKLE: vec2.fromValues(5, 6),
 }

@@ -36,7 +36,7 @@ class Player extends GameObject {
     private zTime: number;
 
     constructor(_startPos: vec2 | number[]) {
-        super(true);
+        super(true, false, true);
         this.jumping = false;
         this.groundedImmunity = false;
         this.direction = 1;
@@ -148,7 +148,7 @@ class Player extends GameObject {
             })
             let poff2: Particle = new Particle(
                 spriteCoordinates.SPRITE_POFF,
-                vec2.fromValues(thisPos[0] + 0.5, thisPos[1] - 0.5),
+                vec2.fromValues(thisPos[0], thisPos[1] - 0.5),
             3);
             poff2.setMovement((time: number) => {
                 poff2.scale(1 - time / 3);
@@ -201,6 +201,25 @@ class Player extends GameObject {
         }
         else if (key === 's' || key === "ArrowDown") {
             this.sPressed = false;
+        }
+    }
+
+    onCollision(other: GameObject) {
+        if (other.constructor.name === "Coin") {
+            for (let i = 0; i < 8; i++) {
+                let angle = i * Math.PI * 2 / 8;
+                let direction = vec2.fromValues(Math.cos(angle), Math.sin(angle));
+                let sparkle = new Particle(
+                    spriteCoordinates.SPRITE_SPARKLE,
+                    vec2.add(vec2.create(), other.getPosition(), vec2.scale(vec2.create(), direction, 0.3)),
+                    0.2
+                );
+                sparkle.setSize(0.5);
+                sparkle.setMovement((time: number) => {
+                    return vec2.scale(vec2.create(), direction, time * 2);
+                })
+            }
+            other.destroy();
         }
     }
 

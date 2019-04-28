@@ -1,7 +1,9 @@
+import {vec2} from 'gl-matrix';
 import RhythmGroup from './RhythmGroup';
 import RhythmGroupGenerator from './RhythmGroupGenerator';
 import GeometryGenerator from './GeometryGenerator';
 import Terrain from '../scene/Terrain';
+import Coin from '../scene/Coin';
 
 export default class LevelGenerator {
     
@@ -43,11 +45,53 @@ export default class LevelGenerator {
         }
     }
 
-    generateGeometry() {
+    generateGeometry(): Set<vec2|number[]> {
         this.geometryGenerator.generateStartArea();
         for (let group of this.rhythmGroups) {
             this.geometryGenerator.generateGroupGeometry(group);
             this.geometryGenerator.generateRestArea(14);
+        }
+        return this.geometryGenerator.topTiles;
+    }
+
+    addCoins(topTiles: Set<vec2|number[]>) {
+        let topTileCopy = new Map<string, number[]>();
+        for (let tt of topTiles) {
+            let tile = [tt[0], tt[1]];
+            topTileCopy.set(tile.toString(), tile);
+        }
+        let platforms = [];
+        let leftmost = -1;
+        let rightmost = -1;
+        while (topTileCopy.size > 0) {
+            let curPlatform: number[][] = [];
+            let curTile = topTileCopy.values().next().value;
+            let curKey = curTile.toString();
+            curPlatform.push(curTile);
+            leftmost = curTile[0];
+            rightmost = curTile[0];
+            topTileCopy.delete(curKey);
+            while (topTileCopy.has([leftmost - 1, curTile[1]].toString())) {
+                let leftTile = [leftmost - 1, curTile[1]];
+                curPlatform.push(leftTile)
+                topTileCopy.delete(leftTile.toString());
+                leftmost--;
+            }
+            while (topTileCopy.has([rightmost + 1, curTile[1]].toString())) {
+                let rightTile = [rightmost + 1, curTile[1]];
+                curPlatform.push(rightTile)
+                topTileCopy.delete(rightTile.toString());
+                rightmost++;
+            }
+            platforms.push(curPlatform);
+        }
+
+        for (let platform of platforms) {
+            if (Math.random() < 0.25) {
+                for (let tile of platform) {
+                    new Coin([tile[0], tile[1] + 1]);
+                }
+            }
         }
     }
 }

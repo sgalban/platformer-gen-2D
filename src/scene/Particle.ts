@@ -11,7 +11,7 @@ export default class Particle extends GameObject {
 
 
     constructor (_spriteUv: vec2, _startingPos: vec2, _lifetime: number = Infinity) {
-        super(false);
+        super(false, true, false);
         this.spriteUv = _spriteUv;
         this.lifetime = _lifetime;
         this.time = 0;

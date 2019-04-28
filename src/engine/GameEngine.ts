@@ -1,6 +1,8 @@
 import {vec2} from 'gl-matrix';
 import GameObject from './GameObject';
 import Terrain from '../scene/Terrain';
+import Coin from '../scene/Coin';
+import Particle from '../scene/Particle';
 import Tile from '../geometry/Tile';
 import Background from '../geometry/Background';
 import {gl} from '../globals';
@@ -80,13 +82,15 @@ class GameEngine {
             this.downkeys.delete(keyEvent.key);
             this.gameObjects.forEach((go: GameObject) => {go.onKeyUp(keyEvent.key)});
         });
+    }
 
+    generateLevel() {
         let terrain: Terrain = new Terrain();
         this.setTerrain(terrain);
-
-        let levelGen = new LevelGenerator(5, terrain, 20, 20, 1.3, 1.0, [1, 0, 0]);
+        let levelGen = new LevelGenerator(1, terrain, 20, 20, 1.3, 1.0, [1, 0, 0]);
         levelGen.generateRhythms();
-        levelGen.generateGeometry();
+        let topTiles = levelGen.generateGeometry();
+        levelGen.addCoins(topTiles);
     }
 
     setRenderer(renderer: OpenGlRenderer) {
@@ -106,7 +110,8 @@ class GameEngine {
         let tileUvs: vec2[] = [];
         let tileMirrors: boolean[] = [];
         let tileScales: number[] = [];
-        for (let go of this.gameObjects) {
+        for (let i = 0; i < this.gameObjects.length; i++) {
+            let go: GameObject = this.gameObjects[this.gameObjects.length - i - 1];
             tilePositions.push(go.getPosition());
             tileUvs.push(go.getSpriteUv());
             tileMirrors.push(go.facingLeft());
@@ -162,10 +167,22 @@ class GameEngine {
                 go.onKeyPress(key);
             }
         }
+
+        for (let go1 of this.gameObjects) {
+            if (go1.isPassive() || !go1.isCollidable) {
+                continue;
+            }
+            for (let go2 of this.gameObjects) {
+                if (!go2.isCollidable) {
+                    continue;
+                }
+                go1.checkObjectCollisions(go2);
+            }
+        }
+
         this.camera.update();
     }
 
-    // Maybe integrate this with the main tick()
     startGame() {
         this.lastTick = Date.now();
     }

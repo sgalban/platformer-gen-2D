@@ -12,6 +12,7 @@ abstract class GameObject {
     protected inputVelocity: vec2;
     protected prevInputVelocty: vec2;
     private passive: boolean;
+    protected collidable: boolean;
     private dynamic: boolean;
     private grounded: boolean;
     protected direction: number;
@@ -19,9 +20,10 @@ abstract class GameObject {
         return this.grounded;
     }
 
-    constructor(isDynamic: boolean) {
+    constructor(isDynamic: boolean, isPassive: boolean, isCollidable: boolean) {
         this.dynamic = isDynamic;
-        this.passive = false;
+        this.passive = isPassive;
+        this.collidable = isCollidable;
         this.position = vec2.fromValues(0, 0);
         this.velocity = vec2.fromValues(0, 0);
         this.inputVelocity = vec2.fromValues(0, 0);
@@ -41,6 +43,10 @@ abstract class GameObject {
         return this.passive;
     }
 
+    isCollidable(): boolean {
+        return this.collidable;
+    }
+
     facingLeft(): boolean {
         return this.direction === -1;
     }
@@ -56,6 +62,10 @@ abstract class GameObject {
 
     scale(amount: number) {
         this.size *= amount;
+    }
+
+    setSize(size: number) {
+        this.size = size;
     }
 
     abstract getSpriteUv(): vec2;
@@ -125,7 +135,6 @@ abstract class GameObject {
             }
         }
 
-
         let groundedCheck = this.checkIfGrounded();
         if (!this.grounded && groundedCheck) {
             this.onGrounded(this.velocity[1]);
@@ -133,6 +142,12 @@ abstract class GameObject {
         this.grounded = groundedCheck;
         vec2.copy(this.prevInputVelocty, this.inputVelocity);
         this.inputVelocity = vec2.fromValues(0, 0);
+    }
+
+    checkObjectCollisions(other: GameObject) {
+        if (this.testGameObjectCollision(other)) {
+            this.onCollision(other);
+        }
     }
 
     private getAdjacentTiles(): number[][] {
@@ -156,7 +171,7 @@ abstract class GameObject {
         }
         
         let xIntersect: boolean = pX < (tX + 1) && tX < (pX + 1);
-        let yIntersect: boolean = pY < (tY + 1) && tY < (pY + 2);
+        let yIntersect: boolean = pY < (tY + 1) && tY < (pY + 1);
         let isIntersecting: boolean = xIntersect && yIntersect;
 
         let axisVelocity: number = this.velocity[axis];
@@ -174,6 +189,18 @@ abstract class GameObject {
         else {
             return vec2.create();
         }
+    }
+
+    private testGameObjectCollision(other: GameObject): boolean {
+        let tX = other.getPosition()[0];
+        let tY = other.getPosition()[1];
+        let pX = this.position[0];
+        let pY = this.position[1];
+        
+        let xIntersect: boolean = pX < (tX + 0.99) && tX < (pX + 0.99);
+        let yIntersect: boolean = pY < (tY + 0.99) && tY < (pY + 0.99);
+        let isIntersecting: boolean = xIntersect && yIntersect;
+        return isIntersecting;
     }
 
     private checkIfGrounded(): boolean {
@@ -215,6 +242,8 @@ abstract class GameObject {
     onKeyUp(key: string): void {/* I'm just holding out til graduation at this point */}
 
     protected onGrounded(verticalVelocity: number): void {}
+
+    protected onCollision(other: GameObject): void {}
 
 }
 

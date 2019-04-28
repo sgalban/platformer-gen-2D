@@ -17,6 +17,6 @@ void main() {
     bool mirrorUv = vs_MirrorUv == 1;
     fs_UV = vs_UV + vec2(mirrorUv ? 1.0 - vs_Pos.x : vs_Pos.x, 1.0 - vs_Pos.y);
 
-    vec2 actualPos = vs_Pos * vs_Scale + vs_Offset;
+    vec2 actualPos = (vs_Pos - vec2(0.5, 0.5)) * vs_Scale + vs_Offset + vec2(0.0, 0.0);
     gl_Position = u_ViewProj * u_Model * vec4(actualPos, 0.5, 1);
 }

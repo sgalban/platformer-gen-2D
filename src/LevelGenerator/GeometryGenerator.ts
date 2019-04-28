@@ -13,6 +13,7 @@ export default class GeometryGenerator {
     currentPos: vec2;
     jumpHeights: Map<JumpType, {height: number, time: number}>
     curTime: number;
+    topTiles: Set<vec2|number[]>;
 
     constructor(_terrain: Terrain) {
         this.terrain = _terrain;
@@ -21,6 +22,7 @@ export default class GeometryGenerator {
         this.jumpHeights.set(JumpType.SHORT, this.getJumpHeight(JumpType.SHORT));
         this.jumpHeights.set(JumpType.MEDIUM, this.getJumpHeight(JumpType.MEDIUM));
         this.jumpHeights.set(JumpType.LONG, this.getJumpHeight(JumpType.LONG));
+        this.topTiles = new Set<vec2|number[]>();
     }
 
     private queuesFromRhythm(rhythm: RhythmGroup): {moveStates: MovementState[], jumpStates: JumpState[]} {
@@ -98,6 +100,10 @@ export default class GeometryGenerator {
         return {height: pos, time: totalTime};
     }
 
+    private addTopTile(tile: number[]|vec2) {
+        this.topTiles.add([tile[0], tile[1]]);
+    }
+
     private generateSimpleJump(jumpType: JumpType) {
         let height = this.jumpHeights.get(jumpType);
         let minHeight = Math.max(-4, sceneAttributes.deathHeight + 5 - this.currentPos[1]);
@@ -112,11 +118,13 @@ export default class GeometryGenerator {
         this.currentPos[0] += totalDistance;
         this.currentPos[1] += endHeight;
         this.terrain.setTileAt(this.currentPos);
+        this.addTopTile(this.currentPos);
     }
 
     private generateStraightPath(length: number) {
         for (let i = 0; i < Math.round(length); i++) {
             this.terrain.setColumnAt(this.currentPos);
+            this.addTopTile(this.currentPos);
             this.currentPos[0] += 1;
         }
     }
@@ -142,56 +150,13 @@ export default class GeometryGenerator {
                 let remainingLength = remainingTime * playerSpeed;
                 this.generateStraightPath(remainingLength);
             }
-            //console.log(curTime);
-            /*if (jump.jumpHold === JumpType.SHORT) {
-
-                if (Math.random() < 0.5) {
-                    this.currentPos[0] += 5;
-                    this.terrain.setColumnAt(this.currentPos[0] - 4, this.currentPos[1]);
-                    this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
-                }
-                else {
-                    this.currentPos[0] += 3;
-                    this.currentPos[1] += 1;
-                    this.terrain.setColumnAt(this.currentPos[0] - 2, this.currentPos[1] - 1);
-                    this.terrain.setColumnAt(this.currentPos[0] - 1, this.currentPos[1]);
-                    this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
-                }
-            }
-
-            if (jump.jumpHold === JumpType.MEDIUM) {
-                if (Math.random() < 0.5) {
-                    this.currentPos[0] += 6;
-                    this.terrain.setColumnAt(this.currentPos[0] - 5, this.currentPos[1]);
-                    this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
-                }
-                else {
-                    this.currentPos[0] += 7;
-                    this.currentPos[1] -= 1;
-                    this.terrain.setColumnAt(this.currentPos[0] - 6, this.currentPos[1] + 1);
-                    this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
-                }
-            }
-
-            else if (jump.jumpHold === JumpType.LONG) {
-                if (Math.random() < 0.5) {
-                    this.currentPos[0] += 8;
-                    this.terrain.setColumnAt(this.currentPos[0] - 7, this.currentPos[1]);
-                    this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
-                }
-                else {
-                    this.currentPos[0] += 9;
-                    this.currentPos[1] -= 3;
-                    this.terrain.setColumnAt(this.currentPos[0] - 8, this.currentPos[1] + 3);
-                    this.terrain.setColumnAt(this.currentPos[0], this.currentPos[1]);
-                }
-            }*/
         }
     }
 
 
     generateRestArea(length: number) {
         for (let i = 1; i <= length; i++) {
+            this.addTopTile([this.currentPos[0] + i, this.currentPos[1] - 1]);
             this.terrain.setTileAt([this.currentPos[0] + i, this.currentPos[1] - 1]);
             this.terrain.setTileAt([this.currentPos[0] + i, this.currentPos[1] - 2]);
         }
@@ -205,6 +170,7 @@ export default class GeometryGenerator {
 
     generateStartArea() {
         for (let i = -4; i <= 4; i++) {
+            //this.addTopTile([i, 0]);
             this.terrain.setTileAt([i,  0]);
             this.terrain.setTileAt([i, -1]);
             this.terrain.setTileAt([i, -3]);
