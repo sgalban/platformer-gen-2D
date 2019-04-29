@@ -35,7 +35,7 @@ class Baddie extends GameObject {
         ) {
             this.direction *= -1;
         }
-        this.translate([ENEMY_SPEED * delta * this.direction, 0]);
+        this.translate([ENEMY_SPEED * 1.0 / 60 * this.direction, 0]);
     }
 
     getSpriteUv() {

@@ -3,12 +3,22 @@ import GameObject from '../engine/GameObject';
 import sceneAttributes from '../scene/SceneAttributes';
 import {spriteCoordinates} from '../constants';
 
+function random1(p: vec2, seed: vec2) : number {
+    let fract = (n: number) => n - Math.floor(n);
+    return fract(Math.sin(vec2.dot(
+        vec2.add(vec2.create(), p, seed),
+        vec2.fromValues(127.1, 311.7))
+    ) * 41352.5245);
+} 
+
 class Terrain {
 
     tiles: Map<number, Set<number>>;
+    randomOffset: number;
 
     constructor() {
         this.tiles = new Map();
+        this.randomOffset = Math.random();
     }
 
     static makeTestTerrain(): Terrain {
@@ -112,7 +122,22 @@ class Terrain {
             return spriteCoordinates.SPRITE_TERRAIN_RIGHT_INNER_CORNER;
         }
         else {
-            return spriteCoordinates.SPRITE_TERRAIN_MIDDLE;
+            let tileRng = random1(vec2.fromValues(x, y), vec2.fromValues(0.1324, 0.4234 + this.randomOffset));
+            if (tileRng < 0.05) {
+                return spriteCoordinates.SPRITE_TERRAIN_MIDDLE_ALT_1;
+            }
+            else if (tileRng < 0.10) {
+                return spriteCoordinates.SPRITE_TERRAIN_MIDDLE_ALT_2;
+            }
+            else if (tileRng < 0.15) {
+                return spriteCoordinates.SPRITE_TERRAIN_MIDDLE_ALT_3;
+            }
+            else if (tileRng < 0.20) {
+                return spriteCoordinates.SPRITE_TERRAIN_MIDDLE_ALT_4;
+            }
+            else {
+                return spriteCoordinates.SPRITE_TERRAIN_MIDDLE;
+            }
         }
     }
 }
