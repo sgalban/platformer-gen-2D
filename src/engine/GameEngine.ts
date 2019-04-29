@@ -87,7 +87,7 @@ class GameEngine {
     generateLevel() {
         let terrain: Terrain = new Terrain();
         this.setTerrain(terrain);
-        let levelGen = new LevelGenerator(1, terrain, 20, 20, 1.3, 1.0, [1, 0, 0]);
+        let levelGen = new LevelGenerator(1, terrain, 20, 20, 1.3, 1.0, [0, 0, 1]);
         levelGen.generateRhythms();
         let topTiles = levelGen.generateGeometry();
         levelGen.addCoins(topTiles);
@@ -147,6 +147,9 @@ class GameEngine {
     addGameObject(go: GameObject) {
         if (this.gameObjects.indexOf(go) < 0) {
             this.gameObjects.push(go);
+            if (go.isCollidable() && !go.isPassive()) {
+                this.collidableObjects.push(go);
+            }
         }
     }
 
@@ -156,6 +159,14 @@ class GameEngine {
         if (idx >= 0) {
             this.gameObjects.splice(idx, 1);
         }
+        idx = this.collidableObjects.indexOf(go);
+        if (idx >= 0) {
+            this.collidableObjects.splice(idx, 1);
+        }
+    }
+
+    getCollidableObjects() {
+        return this.collidableObjects;
     }
 
     private updateGameObjects(deltaTime: number) {

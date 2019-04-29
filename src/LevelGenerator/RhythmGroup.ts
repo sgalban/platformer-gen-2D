@@ -40,7 +40,7 @@ class RhythmGroup {
             return false;
         }
 
-        if (startTime + actionDuration > groupDuration) {
+        if (startTime + actionDuration > groupDuration && type !== Verb.JUMP) {
             actionDuration = groupDuration - startTime;
         }
         let newAction = new Action(type, startTime, actionDuration);

@@ -5,6 +5,8 @@ import sceneAttributes from '../scene/SceneAttributes';
 import Terrain from '../scene/Terrain';
 import Spike from '../scene/Spike';
 import Coin from '../scene/Coin';
+import Platform from '../scene/Platform';
+import {spriteCoordinates} from '../constants';
 
 type MovementState = {state: string, duration: number}
 type JumpState = {startTime: number, jumpHold: number};
@@ -127,9 +129,7 @@ export default class GeometryGenerator {
         let height = this.jumpHeights.get(jumpType);
         let peakDistance = Math.floor(sceneAttributes.playerSpeed * height.time);
         let totalFrames = height.time * 60 + Math.sqrt(height.height / sceneAttributes.gravity);
-        let totalDistance = Math.floor(sceneAttributes.playerSpeed * totalFrames / 60);
-
-        console.log(peakDistance + " " + totalDistance);
+        let totalDistance = Math.floor(sceneAttributes.playerSpeed * totalFrames / 60) + 2;
         
         for (let i = 0; i <= totalDistance; i++) {
             if (i === peakDistance) {
@@ -150,7 +150,7 @@ export default class GeometryGenerator {
                 height.height + this.currentPos[1] + 4 + i]);
         }
 
-        if (Math.random() < 1.25) {
+        if (Math.random() < 0.25) {
             new Coin([this.currentPos[0] + peakDistance + 0, this.currentPos[1] + height.height + 1]);
         }
 
@@ -163,7 +163,7 @@ export default class GeometryGenerator {
             }
         }
 
-        this.currentPos[0] += totalDistance + 1;
+        this.currentPos[0] += totalDistance;
     }
 
     private generateStraightPath(length: number) {
@@ -189,7 +189,7 @@ export default class GeometryGenerator {
 
             let prevX = this.currentPos[0];
             let obstacleType = Math.random();
-            if (obstacleType < 0.7) {
+            if (obstacleType < 0.8) {
                 this.generateSimpleJump(jump.jumpHold);
             }
             else {
@@ -238,5 +238,13 @@ export default class GeometryGenerator {
             this.terrain.setTileAt([-4, i]);
             this.terrain.setTileAt([4, i]);
         }
+
+        let m = (time: number) => {
+            return vec2.fromValues(
+                0,
+                1 - Math.cos(time)
+            );
+        }
+
     }
 }

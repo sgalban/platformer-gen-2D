@@ -16,6 +16,7 @@ abstract class GameObject {
     private dynamic: boolean;
     private grounded: boolean;
     protected direction: number;
+    protected goCollide: boolean;
     get isGrounded() : boolean {
         return this.grounded;
     }
@@ -122,6 +123,7 @@ abstract class GameObject {
         //     - Note that this pushback will only have to be in the x axis
         //   - Repeat with the y-axis
         let deltaPos: vec2 = vec2.scale(vec2.create(), this.velocity, 1.0 / 60);
+        this.goCollide = false;
         for (let axis = 0; axis < 2; axis++) {
             if (Math.abs(deltaPos[axis]) > 10e-6) {
                 this.position[axis] += deltaPos[axis];
@@ -130,6 +132,15 @@ abstract class GameObject {
                     for (let terrain of GameEngine.getEngine().terrainObjects) {
                         let response: vec2 = this.testTerrainCollision(terrain, tile, axis);
                         vec2.add(this.position, this.position, response)
+                    }
+                }
+                for (let go of GameEngine.getEngine().getCollidableObjects()) {
+                    if (go.constructor.name === "Platform") {
+                        let response: vec2 = this.goCollisionResponse(go, axis);
+                        if (response[1] > 0.0001) {
+                            this.goCollide = true;
+                        }
+                        vec2.add(this.position, this.position, response);
                     }
                 }
             }
@@ -212,7 +223,39 @@ abstract class GameObject {
         return isIntersecting;
     }
 
+    private goCollisionResponse(other: GameObject, axis: number): vec2 {
+        let tX = other.position[0];
+        let tY = other.position[1];
+        let pX = this.position[0];
+        let pY = this.position[1];
+
+        if (other.passive || !other.collidable) {
+            return vec2.create();
+        }
+        
+        let xIntersect: boolean = pX < (tX + 1) && tX < (pX + 1);
+        let yIntersect: boolean = pY < (tY + 1) && tY < (pY + 1);
+        let isIntersecting: boolean = xIntersect && yIntersect;
+
+        let axisVelocity: number = this.velocity[axis];
+        if (isIntersecting) {
+            let pushback: vec2 = vec2.create();
+            if (axisVelocity > 0) {
+                let isY = (axis == 1) ? 0 : 0;
+                pushback[axis] = other.position[axis] - (this.position[axis] + 1 + isY);
+            }
+            else {
+                pushback[axis] = (other.position[axis] + 1) - this.position[axis];
+            }
+            return pushback;
+        }
+        else {
+            return vec2.create();
+        }
+    }
+
     private checkIfGrounded(): boolean {
+
         // Check if we would be colliding with a block if we were just a teensy bit lower
         let newPos: vec2 = vec2.subtract(vec2.create(), this.position, vec2.fromValues(0, 0.05));
         let gridPosition: vec2 = vec2.fromValues(
@@ -239,6 +282,16 @@ abstract class GameObject {
                 return true;
             }
         }
+
+        let oldPos = [this.position[0], this.position[1]];
+        this.setPosition(newPos);
+        for (let go of GameEngine.getEngine().getCollidableObjects()) {
+            if (go.constructor.name === "Platform" && this.testGameObjectCollision(go)) {
+                this.setPosition(oldPos);
+                return true;
+            }
+        }
+        this.setPosition(oldPos);
         return false;
     }
 

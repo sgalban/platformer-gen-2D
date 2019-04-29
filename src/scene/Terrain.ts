@@ -93,10 +93,10 @@ class Terrain {
         else if (!cl && tc && bc) {
             return spriteCoordinates.SPRITE_TERRAIN_LEFT;
         }
-        else if (!tl && !tc && !cl) {
+        else if (!tc && !cl) {
             return spriteCoordinates.SPRITE_TERRAIN_TOP_LEFT;
         }
-        else if (!tr && !tc && !cr) {
+        else if (!tc && !cr) {
             return spriteCoordinates.SPRITE_TERRAIN_TOP_RIGHT;
         }
         else if (!br && !bc && !cr) {

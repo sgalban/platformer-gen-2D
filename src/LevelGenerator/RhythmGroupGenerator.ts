@@ -38,12 +38,23 @@ class RhythmGroupGenerator {
         let out: number[] = [];
         let amount = Math.floor(groupDuration * this.density);
 
+        let shortBeat = groupDuration / (2 * amount - 1.0);
+        let longBeat = 3 * shortBeat;
+
         for (let i = 0; i < amount; i++) {
             if (pattern === BeatPattern.REGULAR) {
                 out.push(i * (groupDuration * 1.0 / amount))
             }
             else if (pattern === BeatPattern.RANDOM) {
                 out.push(Math.random() * groupDuration);
+            }
+            else if (pattern === BeatPattern.SWING) {
+                if (i % 2 == 0) {
+                    out.push((i / 2) * (longBeat + shortBeat));
+                }
+                else {
+                    out.push(((i - 1) / 2) * (longBeat + shortBeat) + longBeat);
+                }
             }
         }
         return out;
