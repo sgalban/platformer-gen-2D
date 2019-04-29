@@ -10,25 +10,86 @@ import GameObject from './engine/GameObject';
 
 import Player from './scene/Player';
 import Coin from './scene/Coin';
+import sceneAttributes from './scene/SceneAttributes';
 
 import RhythmGropuGenerator from './LevelGenerator/RhythmGroupGenerator';
 
 let time: number = 0.0;
-
-function loadScene() {
-
-}
+let gameStart: boolean = false;
 
 function main() {
 
+    // Rhythm Type
+    let rhythmTypeSelect = <HTMLSelectElement> document.getElementById("rhythmSelect");
+    rhythmTypeSelect.onchange = () => {
+        sceneAttributes.rhythmType = parseInt(rhythmTypeSelect.value);
+    }
+
+    // Rhythm Group Length
+    let groupLengthSlider = <HTMLInputElement> document.getElementById("timeSelect");
+    let groupLengthOutput = document.getElementById("timeSelectDisplay");
+    groupLengthOutput.innerHTML = groupLengthSlider.value + " sec";
+    groupLengthSlider.oninput = () => {
+        groupLengthOutput.innerHTML = groupLengthSlider.value + " sec";
+        sceneAttributes.rhythmGroupLength = parseInt(groupLengthSlider.value);
+    }
+
+    // Rhythm Group Number
+    let groupNumberSelect = <HTMLInputElement> document.getElementById("numberSelect");
+    let groupNumberOutput = document.getElementById("numberDisplay");
+    groupNumberOutput.innerHTML = groupNumberSelect.value;
+    groupNumberSelect.oninput = () => {
+        groupNumberOutput.innerHTML = groupNumberSelect.value;
+        sceneAttributes.numberOfGroups = parseInt(groupNumberSelect.value);
+    }
+
+    // Gravity
+    let gravitySelect = <HTMLSelectElement> document.getElementById("gravitySelect");
+    gravitySelect.onchange = function() {
+        sceneAttributes.gravity = parseFloat(gravitySelect.value);
+    }
+
+    // Jump
+    let jumpSelect = <HTMLSelectElement> document.getElementById("jumpSelect");
+    jumpSelect.onchange = () => {
+        sceneAttributes.playerJump = parseFloat(jumpSelect.value);
+    }
+
+    // Speed
+    let speedSelect = <HTMLSelectElement> document.getElementById("speedSelect");
+    speedSelect.onchange = () => {
+        sceneAttributes.playerSpeed = parseFloat(speedSelect.value);
+    }
+
+    // Density
+    let densitySelect = <HTMLSelectElement> document.getElementById("densitySelect");
+    densitySelect.onchange = () => {
+        sceneAttributes.levelDensity = parseFloat(densitySelect.value);
+    }
+
+    // Generate Level
+    let startButton = <HTMLButtonElement> document.getElementById("generateLevelButton");
+    startButton.onclick = () => {
+        document.body.innerHTML = "";
+        BeginGame();
+    }
+
+    //BeginGame();
+}
+
+function BeginGame() {
+    let canvas = document.createElement("canvas");
+    canvas.setAttribute("id", "canvas");
+
+    document.body.appendChild(canvas);
+
     // get canvas and webgl context
-    const canvas = <HTMLCanvasElement> document.getElementById('canvas');
+    //const canvas = <HTMLCanvasElement> document.getElementById('canvas');
     const gl = <WebGL2RenderingContext> canvas.getContext('webgl2');
     if (!gl) {
         alert('WebGL 2 not supported!');
     }
     setGL(gl);
-    loadScene();
 
     // Initial display for framerate (only for development)
     let displayStats = false;

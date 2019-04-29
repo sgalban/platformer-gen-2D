@@ -2,9 +2,9 @@ import RhythmGroup, {Verb, JumpType} from './RhythmGroup';
 import sceneAttributes from '../scene/SceneAttributes';
 
 export enum BeatPattern {
-    REGULAR,
-    RANDOM,
-    SWING
+    REGULAR = 0,
+    RANDOM = 1,
+    SWING = 2
 }
 
 class RhythmGroupGenerator {

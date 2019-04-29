@@ -1,20 +1,197 @@
 <!doctype html>
 <html>
-  <head>
-      <title>2D Platformer Level Generator</title>
-      <style>
-        html, body {
-          margin: 0;
-          overflow: hidden;
-        }
-        #canvas {
-          width: 100%;
-          height: 100%;
-        }
-      </style>
-  </head>
-  <body>
-    <canvas id="canvas"></canvas>
-    <script type="text/javascript" src="dist/bundle.js"></script>
-  </body>
+    <head>
+        <title>2D Platformer Level Generator</title>
+        <style>
+            html, body {
+                margin: 0;
+                overflow: hidden;
+                display: flex;
+                flex: 1;
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+                font-family: "Helvetica";
+                text-align: "center";
+                background-color: #DDDDEE
+            }
+            #canvas {
+                width: 100%;
+                height: 100%;
+            }
+            .sliders {
+                display: flex;
+                flex: 1;
+                flex-direction: row;
+                width: 100%;
+            }
+            .slider-square {
+                -webkit-appearance: none;
+                height: 15px;
+                width: 90%;
+                border-radius: 5px;
+                background: #D3D3D3;
+                outline: none;
+            }
+            .slider-square::-moz-range-thumb, .slider-square::-moz-range-thumb {
+                width: 25px;
+                height: 25px;
+                border-radius: 25%;
+                background: #4CAF50;
+                cursor: pointer;
+            }
+
+            #groupNumberContainer, #groupLengthContainer {
+                width: 50%;
+                display: flex;
+                flex: 1;
+                flex-direction: column;
+                align-items: center;
+            }
+            #groupNumberSlider, #groupLengthSlider {
+                display: flex;
+                flex: 1;
+                flex-direction: row;
+                align-items: center;
+                width: 85%;
+                background: #AAAABB;
+                border-radius: 10px;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            .slider-display {
+                margin-left: 5px;
+                text-align: center;
+                vertical-align: middle;
+                font-size: 14pt;
+                font-family: "Helvetica";
+                background: #BBBBCC;
+                width: 15%;
+                height: 50%;
+                line-height: 42px;
+                border-radius: 5px;
+                color: #444444;
+            }
+
+            select {
+                position: relative;
+                font-family: "Helvetica";
+                height: 30px;
+                width: 100%;
+            }
+
+            .selects {
+                display: flex;
+                flex: 1;
+                flex-direction: row;
+                margin-top: 30px;
+                padding-bottom: 15px;
+                width: 94%;
+                border-radius: 10px;
+                background: #AAAABB;
+            }
+
+            .selectContainer {
+                display: flex;;
+                flex: 1;
+                flex-direction: column;
+                width: 20%;
+                margin-left: 10px;
+                margin-right: 10px;
+                align-items: center;
+            }
+
+            button {
+                margin-top: 30px;
+                height: 50px;
+                width: 50%;
+                border-radius: 5px;
+                border-style: none;
+                background-color: #AABBCC;
+                font-size: 20pt;
+                color: #DEDEDE;
+                font-weight: bold;
+            }
+
+
+        </style>
+    </head>
+
+    <body>
+        <h1>Level Generator</h1>
+
+        <div class="sliders">
+            <div id="groupLengthContainer">
+                <h3>Rhythm Group Length</h3>
+                <div id="groupLengthSlider">
+                    <input id="timeSelect" type="range" min=10 max=30 value=20 autocomplete="off" class="slider-square">
+                    <p id="timeSelectDisplay" class="slider-display">20 sec</p>
+                </div>
+            </div>
+
+            <div id="groupNumberContainer">
+                <h3>Number of Rhythm Groups</h3>
+                <div id="groupNumberSlider">
+                    <input id="numberSelect" type="range" min=1 max=10 value=3 autocomplete="off" class="slider-square">
+                    <p id="numberDisplay" class="slider-display">3</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="selects">
+            <div class="selectContainer">
+                <h3>Rhythm Type</h3>
+                <select id="rhythmSelect" autocomplete="off">
+                    <option value="0" selected="selected">Regular</option>
+                    <option value="1">Random</option>
+                    <option value="2">Swing</option>
+                    <option value="3">Regular and Swing</option>
+                </select>
+            </div>
+
+            <div class="selectContainer">
+                <h3>Gravity</h3>
+                <select id="gravitySelect" autocomplete="off">
+                    <option value="1.75">Low</option>
+                    <option value="2.50" selected="selected">Normal</option>
+                    <option value="3.25">High</option>
+                </select>
+            </div>
+
+            <div class="selectContainer">
+                <h3>Player Jump</h3>
+                <select id="jumpSelect" autocomplete="off">
+                    <option value="4.5">Weak</option>
+                    <option value="5.5" selected="selected">Normal</option>
+                    <option value="6.5">Strong</option>
+                </select>
+            </div>
+
+            <div class="selectContainer">
+                <h3>Player Speed</h3>
+                <select id="speedSelect" autocomplete="off">
+                    <option value="7.5">Sluggish</option>
+                    <option value="9.5" selected="selected">Normal</option>
+                    <option value="14.5">Speedy</option>
+                </select>
+            </div>
+
+            <div class="selectContainer">
+                <h3>Level Density</h3>
+                <select id="densitySelect" autocomplete="off">
+                    <option value="0.5">Light</option>
+                    <option value="1.0" selected="selected">Normal</option>
+                    <option value="2.0">Dense</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="generateLevelButton">
+            Generate Level
+        </button>
+
+        <script type="text/javascript" src="dist/bundle.js"></script>
+
+    </body>
 </html>

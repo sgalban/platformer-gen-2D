@@ -96,23 +96,76 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _rendering_gl_OpenGLRenderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
 /* harmony import */ var _engine_GameEngine__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(15);
 /* harmony import */ var _scene_Player__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(39);
+/* harmony import */ var _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(17);
+
 
 
 
 
 
 let time = 0.0;
-function loadScene() {
-}
+let gameStart = false;
 function main() {
+    // Rhythm Type
+    let rhythmTypeSelect = document.getElementById("rhythmSelect");
+    rhythmTypeSelect.onchange = () => {
+        _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_5__["default"].rhythmType = parseInt(rhythmTypeSelect.value);
+    };
+    // Rhythm Group Length
+    let groupLengthSlider = document.getElementById("timeSelect");
+    let groupLengthOutput = document.getElementById("timeSelectDisplay");
+    groupLengthOutput.innerHTML = groupLengthSlider.value + " sec";
+    groupLengthSlider.oninput = () => {
+        groupLengthOutput.innerHTML = groupLengthSlider.value + " sec";
+        _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_5__["default"].rhythmGroupLength = parseInt(groupLengthSlider.value);
+    };
+    // Rhythm Group Number
+    let groupNumberSelect = document.getElementById("numberSelect");
+    let groupNumberOutput = document.getElementById("numberDisplay");
+    groupNumberOutput.innerHTML = groupNumberSelect.value;
+    groupNumberSelect.oninput = () => {
+        groupNumberOutput.innerHTML = groupNumberSelect.value;
+        _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_5__["default"].numberOfGroups = parseInt(groupNumberSelect.value);
+    };
+    // Gravity
+    let gravitySelect = document.getElementById("gravitySelect");
+    gravitySelect.onchange = function () {
+        _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_5__["default"].gravity = parseFloat(gravitySelect.value);
+    };
+    // Jump
+    let jumpSelect = document.getElementById("jumpSelect");
+    jumpSelect.onchange = () => {
+        _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_5__["default"].playerJump = parseFloat(jumpSelect.value);
+    };
+    // Speed
+    let speedSelect = document.getElementById("speedSelect");
+    speedSelect.onchange = () => {
+        _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_5__["default"].playerSpeed = parseFloat(speedSelect.value);
+    };
+    // Density
+    let densitySelect = document.getElementById("densitySelect");
+    densitySelect.onchange = () => {
+        _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_5__["default"].levelDensity = parseFloat(densitySelect.value);
+    };
+    // Generate Level
+    let startButton = document.getElementById("generateLevelButton");
+    startButton.onclick = () => {
+        document.body.innerHTML = "";
+        BeginGame();
+    };
+    //BeginGame();
+}
+function BeginGame() {
+    let canvas = document.createElement("canvas");
+    canvas.setAttribute("id", "canvas");
+    document.body.appendChild(canvas);
     // get canvas and webgl context
-    const canvas = document.getElementById('canvas');
+    //const canvas = <HTMLCanvasElement> document.getElementById('canvas');
     const gl = canvas.getContext('webgl2');
     if (!gl) {
         alert('WebGL 2 not supported!');
     }
     Object(_globals__WEBPACK_IMPORTED_MODULE_1__["setGL"])(gl);
-    loadScene();
     // Initial display for framerate (only for development)
     let displayStats = false;
     const stats = stats_js__WEBPACK_IMPORTED_MODULE_0__();
@@ -7849,6 +7902,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(23);
 /* harmony import */ var _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(24);
 /* harmony import */ var _LevelGenerator_LevelGenerator__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(25);
+/* harmony import */ var _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(17);
+
 
 
 
@@ -7911,7 +7966,16 @@ class GameEngine {
     generateLevel() {
         let terrain = new _scene_Terrain__WEBPACK_IMPORTED_MODULE_1__["default"]();
         this.setTerrain(terrain);
-        let levelGen = new _LevelGenerator_LevelGenerator__WEBPACK_IMPORTED_MODULE_8__["default"](1, terrain, 20, 20, 1.3, 1.0, [1, 0, 0]);
+        let densities = [];
+        if (_scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_9__["default"].rhythmType === 3) {
+            densities = [0.5, 0, 0.5];
+        }
+        else {
+            for (let i = 0; i < 3; i++) {
+                densities.push(_scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_9__["default"].rhythmType === i ? 1 : 0);
+            }
+        }
+        let levelGen = new _LevelGenerator_LevelGenerator__WEBPACK_IMPORTED_MODULE_8__["default"](_scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_9__["default"].numberOfGroups, terrain, _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_9__["default"].rhythmGroupLength, _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_9__["default"].rhythmGroupLength, _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_9__["default"].levelDensity, 1.0, densities);
         levelGen.generateRhythms();
         let topTiles = levelGen.generateGeometry();
         levelGen.addCoins(topTiles);
@@ -7963,6 +8027,9 @@ class GameEngine {
     addGameObject(go) {
         if (this.gameObjects.indexOf(go) < 0) {
             this.gameObjects.push(go);
+            if (go.isCollidable() && !go.isPassive()) {
+                this.collidableObjects.push(go);
+            }
         }
     }
     // Only call from the GameObject cass
@@ -7971,6 +8038,13 @@ class GameEngine {
         if (idx >= 0) {
             this.gameObjects.splice(idx, 1);
         }
+        idx = this.collidableObjects.indexOf(go);
+        if (idx >= 0) {
+            this.collidableObjects.splice(idx, 1);
+        }
+    }
+    getCollidableObjects() {
+        return this.collidableObjects;
     }
     updateGameObjects(deltaTime) {
         for (let go of this.gameObjects) {
@@ -8098,10 +8172,10 @@ class Terrain {
         else if (!cl && tc && bc) {
             return _constants__WEBPACK_IMPORTED_MODULE_1__["spriteCoordinates"].SPRITE_TERRAIN_LEFT;
         }
-        else if (!tl && !tc && !cl) {
+        else if (!tc && !cl) {
             return _constants__WEBPACK_IMPORTED_MODULE_1__["spriteCoordinates"].SPRITE_TERRAIN_TOP_LEFT;
         }
-        else if (!tr && !tc && !cr) {
+        else if (!tc && !cr) {
             return _constants__WEBPACK_IMPORTED_MODULE_1__["spriteCoordinates"].SPRITE_TERRAIN_TOP_RIGHT;
         }
         else if (!br && !bc && !cr) {
@@ -8131,13 +8205,16 @@ class Terrain {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 let sceneAttributes = {
+    rhythmType: 0,
+    rhythmGroupLength: 20,
+    levelDensity: 1,
+    numberOfGroups: 3,
     gravity: 2.5,
     playerSpeed: 9.5,
     playerJump: 5.5,
     maxJumpHold: 0.4,
     maxObjectSpeed: 55,
     deathHeight: -25,
-    maxHeight: 30
 };
 /* harmony default export */ __webpack_exports__["default"] = (sceneAttributes);
 
@@ -8170,6 +8247,8 @@ const spriteCoordinates = {
     // Entities
     SPRITE_PICKUP: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 3),
     SPRITE_SPIKE: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(3, 2),
+    SPRITE_PLATFORM_LEFT: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(5, 4),
+    SPRITE_PLATFORM_RIGHT: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(6, 4),
     // Player
     SPRITE_PLAYER_STAND: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 7),
     SPRITE_PLAYER_JUMP: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(1, 7),
@@ -8459,10 +8538,10 @@ class Camera {
             let offset = this.child.sPressed && this.child.isGrounded ? -3 : 2;
             let goalPos = -Math.max(this.child.getPosition()[1] + offset, _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_1__["default"].deathHeight + 10);
             if (this.child.isGrounded && Math.abs(yPos - goalPos) > 0.01) {
-                yPos += (goalPos - yPos) * 0.05;
+                yPos += (goalPos - yPos) * 0.06;
             }
             else {
-                yPos += (goalPos - yPos) * 0.01;
+                yPos += (goalPos - yPos) * 0.015;
             }
             this.setPosition([-this.child.getPosition()[0], yPos]);
         }
@@ -8768,12 +8847,22 @@ class RhythmGroupGenerator {
     getBeatTimes(groupDuration, pattern) {
         let out = [];
         let amount = Math.floor(groupDuration * this.density);
+        let shortBeat = groupDuration / (2 * amount - 1.0);
+        let longBeat = 3 * shortBeat;
         for (let i = 0; i < amount; i++) {
             if (pattern === BeatPattern.REGULAR) {
                 out.push(i * (groupDuration * 1.0 / amount));
             }
             else if (pattern === BeatPattern.RANDOM) {
                 out.push(Math.random() * groupDuration);
+            }
+            else if (pattern === BeatPattern.SWING) {
+                if (i % 2 == 0) {
+                    out.push((i / 2) * (longBeat + shortBeat));
+                }
+                else {
+                    out.push(((i - 1) / 2) * (longBeat + shortBeat) + longBeat);
+                }
             }
         }
         return out;
@@ -8853,7 +8942,7 @@ class RhythmGroup {
         if (startTime > groupDuration) {
             return false;
         }
-        if (startTime + actionDuration > groupDuration) {
+        if (startTime + actionDuration > groupDuration && type !== Verb.JUMP) {
             actionDuration = groupDuration - startTime;
         }
         let newAction = new Action(type, startTime, actionDuration);
@@ -8984,8 +9073,7 @@ class GeometryGenerator {
         let height = this.jumpHeights.get(jumpType);
         let peakDistance = Math.floor(_scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed * height.time);
         let totalFrames = height.time * 60 + Math.sqrt(height.height / _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].gravity);
-        let totalDistance = Math.floor(_scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed * totalFrames / 60);
-        console.log(peakDistance + " " + totalDistance);
+        let totalDistance = Math.floor(_scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed * totalFrames / 60) + 2;
         for (let i = 0; i <= totalDistance; i++) {
             if (i === peakDistance) {
                 this.terrain.setColumnAt([this.currentPos[0] + i, this.currentPos[1] - 1]);
@@ -9004,7 +9092,7 @@ class GeometryGenerator {
                 height.height + this.currentPos[1] + 4 + i
             ]);
         }
-        if (Math.random() < 1.25) {
+        if (Math.random() < 0.25) {
             new _scene_Coin__WEBPACK_IMPORTED_MODULE_4__["default"]([this.currentPos[0] + peakDistance + 0, this.currentPos[1] + height.height + 1]);
         }
         for (let i = -1; i <= 1; i++) {
@@ -9015,7 +9103,7 @@ class GeometryGenerator {
                 ]);
             }
         }
-        this.currentPos[0] += totalDistance + 1;
+        this.currentPos[0] += totalDistance;
     }
     generateStraightPath(length) {
         for (let i = 0; i < Math.round(length); i++) {
@@ -9036,7 +9124,7 @@ class GeometryGenerator {
             }
             let prevX = this.currentPos[0];
             let obstacleType = Math.random();
-            if (obstacleType < 0.7) {
+            if (obstacleType < 0.8) {
                 this.generateSimpleJump(jump.jumpHold);
             }
             else {
@@ -9078,6 +9166,9 @@ class GeometryGenerator {
             this.terrain.setTileAt([-4, i]);
             this.terrain.setTileAt([4, i]);
         }
+        let m = (time) => {
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 1 - Math.cos(time));
+        };
     }
 }
 
@@ -9204,6 +9295,7 @@ class GameObject {
         //     - Note that this pushback will only have to be in the x axis
         //   - Repeat with the y-axis
         let deltaPos = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].scale(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create(), this.velocity, 1.0 / 60);
+        this.goCollide = false;
         for (let axis = 0; axis < 2; axis++) {
             if (Math.abs(deltaPos[axis]) > 10e-6) {
                 this.position[axis] += deltaPos[axis];
@@ -9211,6 +9303,15 @@ class GameObject {
                 for (let tile of adjacentTiles) {
                     for (let terrain of _GameEngine__WEBPACK_IMPORTED_MODULE_1__["default"].getEngine().terrainObjects) {
                         let response = this.testTerrainCollision(terrain, tile, axis);
+                        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(this.position, this.position, response);
+                    }
+                }
+                for (let go of _GameEngine__WEBPACK_IMPORTED_MODULE_1__["default"].getEngine().getCollidableObjects()) {
+                    if (go.constructor.name === "Platform") {
+                        let response = this.goCollisionResponse(go, axis);
+                        if (response[1] > 0.0001) {
+                            this.goCollide = true;
+                        }
                         gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].add(this.position, this.position, response);
                     }
                 }
@@ -9284,6 +9385,33 @@ class GameObject {
         let isIntersecting = xIntersect && yIntersect;
         return isIntersecting;
     }
+    goCollisionResponse(other, axis) {
+        let tX = other.position[0];
+        let tY = other.position[1];
+        let pX = this.position[0];
+        let pY = this.position[1];
+        if (other.passive || !other.collidable) {
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+        }
+        let xIntersect = pX < (tX + 1) && tX < (pX + 1);
+        let yIntersect = pY < (tY + 1) && tY < (pY + 1);
+        let isIntersecting = xIntersect && yIntersect;
+        let axisVelocity = this.velocity[axis];
+        if (isIntersecting) {
+            let pushback = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+            if (axisVelocity > 0) {
+                let isY = (axis == 1) ? 0 : 0;
+                pushback[axis] = other.position[axis] - (this.position[axis] + 1 + isY);
+            }
+            else {
+                pushback[axis] = (other.position[axis] + 1) - this.position[axis];
+            }
+            return pushback;
+        }
+        else {
+            return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+        }
+    }
     checkIfGrounded() {
         // Check if we would be colliding with a block if we were just a teensy bit lower
         let newPos = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].subtract(gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create(), this.position, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 0.05));
@@ -9306,6 +9434,15 @@ class GameObject {
                 return true;
             }
         }
+        let oldPos = [this.position[0], this.position[1]];
+        this.setPosition(newPos);
+        for (let go of _GameEngine__WEBPACK_IMPORTED_MODULE_1__["default"].getEngine().getCollidableObjects()) {
+            if (go.constructor.name === "Platform" && this.testGameObjectCollision(go)) {
+                this.setPosition(oldPos);
+                return true;
+            }
+        }
+        this.setPosition(oldPos);
         return false;
     }
     onUpdate(delta) { }
@@ -9425,7 +9562,7 @@ class Particle extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"
 /* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "3af61d2822a3f8b570a89c4ac6e3bfe7.png";
+module.exports = __webpack_require__.p + "7cf1d08ea71b2f1e2e1278d34c0b54b5.png";
 
 /***/ }),
 /* 34 */

@@ -11,6 +11,7 @@ import OpenGlRenderer from '../rendering/gl/OpenGLRenderer';
 import ShaderProgram, {Shader} from '../rendering/gl/ShaderProgram';
 import Texture2D from '../rendering/Texture2D';
 import LevelGenerator from '../LevelGenerator/LevelGenerator';
+import sceneAttributes from '../scene/SceneAttributes';
 
 const spriteSheet = require('../assets/sprites.png');
 const backgrounds = require('../assets/backgrounds.png');
@@ -87,7 +88,24 @@ class GameEngine {
     generateLevel() {
         let terrain: Terrain = new Terrain();
         this.setTerrain(terrain);
-        let levelGen = new LevelGenerator(1, terrain, 20, 20, 1.3, 1.0, [0, 0, 1]);
+        let densities = [];
+        if (sceneAttributes.rhythmType === 3) {
+            densities = [0.5, 0, 0.5];
+        }
+        else {
+            for (let i = 0; i < 3; i++) {
+                densities.push(sceneAttributes.rhythmType === i ? 1 : 0);
+            }
+        }
+        let levelGen = new LevelGenerator(
+            sceneAttributes.numberOfGroups,
+            terrain,
+            sceneAttributes.rhythmGroupLength,
+            sceneAttributes.rhythmGroupLength,
+            sceneAttributes.levelDensity,
+            1.0,
+            densities
+        );
         levelGen.generateRhythms();
         let topTiles = levelGen.generateGeometry();
         levelGen.addCoins(topTiles);

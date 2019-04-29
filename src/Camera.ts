@@ -60,10 +60,10 @@ class Camera {
             let goalPos = -Math.max(this.child.getPosition()[1] + offset, sceneAttributes.deathHeight + 10);
 
             if (this.child.isGrounded && Math.abs(yPos - goalPos) > 0.01) {
-                yPos += (goalPos - yPos) * 0.05;
+                yPos += (goalPos - yPos) * 0.06;
             }
             else {
-                yPos += (goalPos - yPos) * 0.01;
+                yPos += (goalPos - yPos) * 0.015;
             }
             this.setPosition([-this.child.getPosition()[0], yPos]);            
         }
