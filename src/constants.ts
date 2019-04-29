@@ -44,4 +44,8 @@ export const spriteCoordinates = {
     SPRITE_Z:       vec2.fromValues(6, 6),
     SPRITE_POFF:    vec2.fromValues(7, 6),
     SPRITE_SPARKLE: vec2.fromValues(5, 6),
+
+    // Enemy
+    SPRITE_BADDIE_1: vec2.fromValues(0, 5),
+    SPRITE_BADDIE_2: vec2.fromValues(1, 5),
 }

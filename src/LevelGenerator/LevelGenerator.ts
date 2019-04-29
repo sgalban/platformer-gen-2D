@@ -5,6 +5,7 @@ import GeometryGenerator from './GeometryGenerator';
 import Terrain from '../scene/Terrain';
 import Coin from '../scene/Coin';
 import Spike from '../scene/Spike';
+import Baddie from '../scene/Baddie';
 
 export default class LevelGenerator {
     
@@ -87,12 +88,23 @@ export default class LevelGenerator {
             platforms.push(curPlatform);
         }
 
+        let firstPlatform = true;
         for (let platform of platforms) {
             if (Math.random() < 0.25) {
                 for (let tile of platform) {
                     new Coin([tile[0], tile[1] + 1]);
                 }
             }
+            else if (
+                platform.length >= 3 &&
+                Math.random() < 0.2 &&
+                !firstPlatform &&
+                !this.geometryGenerator.isRestTile(platform[0])
+            ) {
+                let pos = platform[Math.floor(Math.random() * platform.length)];
+                new Baddie([pos[0], pos[1] + 1], this.terrain);
+            }
+            firstPlatform = false;
         }
     }
 }

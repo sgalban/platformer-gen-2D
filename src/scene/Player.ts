@@ -221,7 +221,7 @@ class Player extends GameObject {
             }
             other.destroy();
         }
-        else if (other.constructor.name === "Spike") {
+        else if (other.constructor.name === "Spike" || other.constructor.name === "Baddie") {
             this.onDeath();
         }
     }

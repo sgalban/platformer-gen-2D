@@ -18,6 +18,7 @@ export default class GeometryGenerator {
     jumpHeights: Map<JumpType, {height: number, time: number}>
     curTime: number;
     topTiles: Set<vec2|number[]>;
+    restTiles: Map<number, Set<Number>>;
 
     constructor(_terrain: Terrain) {
         this.terrain = _terrain;
@@ -27,6 +28,7 @@ export default class GeometryGenerator {
         this.jumpHeights.set(JumpType.MEDIUM, this.getJumpHeight(JumpType.MEDIUM));
         this.jumpHeights.set(JumpType.LONG, this.getJumpHeight(JumpType.LONG));
         this.topTiles = new Set<vec2|number[]>();
+        this.restTiles = new Map();
     }
 
     private queuesFromRhythm(rhythm: RhythmGroup): {moveStates: MovementState[], jumpStates: JumpState[]} {
@@ -104,8 +106,23 @@ export default class GeometryGenerator {
         return {height: pos, time: totalTime};
     }
 
-    private addTopTile(tile: number[]|vec2) {
+    private addTopTile(tile: number[]|vec2, rest: boolean = false) {
         this.topTiles.add([tile[0], tile[1]]);
+        if (rest) {
+            if (this.restTiles.has(tile[0])) {
+                this.restTiles.get(tile[0]).add(tile[1]);
+            }
+            else {
+                this.restTiles.set(tile[0], new Set<number>([tile[1]]));
+            }
+        }
+    }
+
+    isRestTile(tile: vec2|number[]): boolean {
+        if (this.restTiles.has(tile[0])) {
+            return this.restTiles.get(tile[0]).has(tile[1]);
+        }
+        return false;
     }
 
     private generateSimpleJump(jumpType: JumpType) {
@@ -207,7 +224,7 @@ export default class GeometryGenerator {
 
     generateRestArea(length: number) {
         for (let i = 1; i <= length; i++) {
-            this.addTopTile([this.currentPos[0] + i, this.currentPos[1] - 1]);
+            this.addTopTile([this.currentPos[0] + i, this.currentPos[1] - 1], true);
             this.terrain.setTileAt([this.currentPos[0] + i, this.currentPos[1] - 1]);
             this.terrain.setTileAt([this.currentPos[0] + i, this.currentPos[1] - 2]);
         }
@@ -221,7 +238,6 @@ export default class GeometryGenerator {
 
     generateStartArea() {
         for (let i = -4; i <= 4; i++) {
-            //this.addTopTile([i, 0]);
             this.terrain.setTileAt([i,  0]);
             this.terrain.setTileAt([i, -1]);
             this.terrain.setTileAt([i, -3]);

@@ -71,7 +71,7 @@ abstract class GameObject {
 
     abstract getSpriteUv(): vec2;
 
-    translate(amount: vec2): void {
+    translate(amount: vec2|number[]): void {
         vec2.add(this.position, this.position, amount);
     }
 
@@ -209,7 +209,7 @@ abstract class GameObject {
         let pY = this.position[1];
 
         // Anti-frustration feature
-        if (other.constructor.name === "Spike") {
+        if (other.constructor.name === "Spike" || other.constructor.name === "Baddie") {
             tX += 0.5;
             tY += 0.5;
             let xIntersect: boolean = tX > pX && tX < pX + 1;

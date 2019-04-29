@@ -3,6 +3,7 @@ import GameObject from './GameObject';
 import Terrain from '../scene/Terrain';
 import Coin from '../scene/Coin';
 import Particle from '../scene/Particle';
+import Baddie from '../scene/Baddie';
 import Tile from '../geometry/Tile';
 import Background from '../geometry/Background';
 import {gl} from '../globals';
