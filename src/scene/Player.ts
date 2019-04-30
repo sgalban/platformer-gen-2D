@@ -35,7 +35,7 @@ class Player extends GameObject {
     private idleTime: number;
     private zTime: number;
     private deathTimer: number;
-
+    win: boolean;
 
     constructor(_startPos: vec2 | number[]) {
         super(true, false, true);
@@ -54,9 +54,13 @@ class Player extends GameObject {
         this.zTime = 0;
         this.dead = false;
         this.deathTimer = 0;
+        this.win = false;
     }
 
     onUpdate(delta: number) {
+        if (this.win) {
+            return
+        }
         if (this.dead) {
             this.dynamic = false;
             this.grounded = true;
@@ -174,7 +178,7 @@ class Player extends GameObject {
     }
 
     onKeyPress(key: string) {
-        if (this.dead) {
+        if (this.dead || this.win) {
             return;
         }
         let playerMovement = this.isGrounded ? sceneAttributes.playerSpeed : sceneAttributes.playerSpeed;
@@ -191,7 +195,7 @@ class Player extends GameObject {
     }
 
     onKeyDown(key: string) {
-        if (this.dead) {
+        if (this.dead || this.win) {
             return;
         }
         if ((key === 'w' || key === " " || key === "ArrowUp") && this.isGrounded) {
@@ -248,6 +252,9 @@ class Player extends GameObject {
         }
         else if (other.constructor.name === "Checkpoint") {
             vec2.copy(this.startPos, other.getPosition());
+        }
+        else if (other.constructor.name === "Gem") {
+            this.win = true;
         }
     }
 

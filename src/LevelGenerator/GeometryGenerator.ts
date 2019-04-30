@@ -6,6 +6,7 @@ import Terrain from '../scene/Terrain';
 import Spike from '../scene/Spike';
 import Coin from '../scene/Coin';
 import Checkpoint from '../scene/Checkpoint';
+import Gem from '../scene/Gem';
 import Platform from '../scene/Platform';
 import {spriteCoordinates} from '../constants';
 
@@ -268,7 +269,7 @@ export default class GeometryGenerator {
     }
 
 
-    generateRestArea(length: number) {
+    generateRestArea(length: number, lastRest: boolean = false) {
         for (let i = 1; i <= length; i++) {
             this.addTopTile([this.currentPos[0] + i, this.currentPos[1] - 1], true);
             this.terrain.setTileAt([this.currentPos[0] + i, this.currentPos[1] - 1]);
@@ -281,10 +282,18 @@ export default class GeometryGenerator {
         this.currentPos[0] += length;
         this.currentPos[1] -= 1;
 
-        new Checkpoint([
-            Math.floor(this.currentPos[0] - length / 2),
-            this.currentPos[1] + 1
-        ]);
+        if (lastRest) {
+            new Gem([
+                Math.floor(this.currentPos[0] - length / 2),
+                this.currentPos[1] + 1
+            ]);
+        }
+        else {
+            new Checkpoint([
+                Math.floor(this.currentPos[0] - length / 2),
+                this.currentPos[1] + 2
+            ]);
+        }  
     }
 
     generateStartArea() {

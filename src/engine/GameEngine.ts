@@ -47,6 +47,7 @@ class GameEngine {
     private camera: Camera;
     private downkeys: Set<string>
     private ticks: number;
+    private win: boolean = false;
 
     private constructor(_tile: Tile, _background: Background) {
         this.gameObjects = [];
@@ -124,6 +125,10 @@ class GameEngine {
         return this.camera;
     }
 
+    onWin() {
+        this.win = true;
+    }
+
     drawGameObjects() {
         let tilePositions: vec2[] = [];
         let tileUvs: vec2[] = [];
@@ -158,6 +163,9 @@ class GameEngine {
         this.tile.setInstanceVBOs(tilePositions, tileUvs, tileMirrors, tileScales);
         this.tile.setNumInstances(tilePositions.length);
 
+        this.backgroundShader.setWin(this.win);
+        this.spriteShader.setWin(this.win);
+
         this.renderer.render(this.camera, this.backgroundShader, [this.background]);
         this.renderer.render(this.camera, this.spriteShader, [this.tile]);
     }
@@ -191,7 +199,9 @@ class GameEngine {
     private updateGameObjects(deltaTime: number) {
 
         for (let go of this.gameObjects) {
-            go.physicsUpdate(deltaTime);
+            if (!this.win) {
+                go.physicsUpdate(deltaTime);
+            }
             go.onUpdate(deltaTime);
             for (let key of this.downkeys) {
                 go.onKeyPress(key);
@@ -220,6 +230,7 @@ class GameEngine {
     tick() {
         this.ticks++;
         this.backgroundShader.setTime(this.ticks);
+        this.spriteShader.setTime(this.ticks);
         let curTime = Date.now();
         let deltaTime = curTime - this.lastTick;
         this.lastTick = curTime;

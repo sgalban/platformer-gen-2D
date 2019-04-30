@@ -11,7 +11,7 @@ export const spriteCoordinates = {
     SPRITE_TERRAIN_MIDDLE_ALT_1:       vec2.fromValues(5, 2),
     SPRITE_TERRAIN_MIDDLE_ALT_2:       vec2.fromValues(5, 3),
     SPRITE_TERRAIN_MIDDLE_ALT_3:       vec2.fromValues(6, 3),
-    SPRITE_TERRAIN_MIDDLE_ALT_4:       vec2.fromValues(7, 3),
+    SPRITE_TERRAIN_MIDDLE_ALT_4:       vec2.fromValues(6, 1),
     SPRITE_TERRAIN_RIGHT:              vec2.fromValues(2, 1),
     SPRITE_TERRAIN_BOTTOM_LEFT:        vec2.fromValues(0, 2),
     SPRITE_TERRAIN_BOTTOM:             vec2.fromValues(1, 2),
@@ -44,6 +44,7 @@ export const spriteCoordinates = {
     SPRITE_COIN_3: vec2.fromValues(2, 3),
     SPRITE_COIN_4: vec2.fromValues(0, 4),
     SPRITE_COIN_5: vec2.fromValues(1, 4),
+    SPRITE_GEM:    vec2.fromValues(6, 5),
 
     // Particles
     SPRITE_Z:       vec2.fromValues(6, 6),

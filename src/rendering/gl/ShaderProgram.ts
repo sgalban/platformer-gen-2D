@@ -35,6 +35,7 @@ class ShaderProgram {
     unifCam: WebGLUniformLocation;
     unifDimensions: WebGLUniformLocation;
     unifSpriteTex: WebGLUniformLocation;
+    unifWin: WebGLUniformLocation;
   
     constructor(shaders: Array<Shader>) {
         this.prog = gl.createProgram();
@@ -60,6 +61,7 @@ class ShaderProgram {
         this.unifTime       = gl.getUniformLocation(this.prog, "u_Time");
         this.unifCam        = gl.getUniformLocation(this.prog, "u_CameraPos");
         this.unifSpriteTex  = gl.getUniformLocation(this.prog, "u_SpriteTex");
+        this.unifWin        = gl.getUniformLocation(this.prog, "u_Win");
     }
   
     use() {
@@ -82,7 +84,14 @@ class ShaderProgram {
             gl.uniform2f(this.unifDimensions, width, height);
         }
     }
-  
+
+    setWin(win: boolean) {
+        this.use();
+        if (this.unifWin !== -1) {
+            gl.uniform1i(this.unifWin, win ? 1 : 0);
+        }
+    }  
+    
     setModelMatrix(model: mat4) {
         this.use();
         if (this.unifModel !== -1) {

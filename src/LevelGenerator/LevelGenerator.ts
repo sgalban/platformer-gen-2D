@@ -49,9 +49,10 @@ export default class LevelGenerator {
 
     generateGeometry(): Set<vec2|number[]> {
         this.geometryGenerator.generateStartArea();
-        for (let group of this.rhythmGroups) {
+        for (let i = 0; i < this.rhythmGroups.length; i++) {
+            let group = this.rhythmGroups[i];
             this.geometryGenerator.generateGroupGeometry(group);
-            this.geometryGenerator.generateRestArea(14);
+            this.geometryGenerator.generateRestArea(14, i == this.rhythmGroups.length - 1);
         }
         return this.geometryGenerator.topTiles;
     }

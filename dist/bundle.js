@@ -95,7 +95,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _globals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var _rendering_gl_OpenGLRenderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
 /* harmony import */ var _engine_GameEngine__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(15);
-/* harmony import */ var _scene_Player__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(41);
+/* harmony import */ var _scene_Player__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(42);
 /* harmony import */ var _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(17);
 
 
@@ -7913,23 +7913,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const spriteSheet = __webpack_require__(35);
-const backgrounds = __webpack_require__(36);
+const spriteSheet = __webpack_require__(36);
+const backgrounds = __webpack_require__(37);
 class GameEngine {
-    static getEngine() {
-        if (GameEngine.engine) {
-            return GameEngine.engine;
-        }
-        else {
-            let tile = new _geometry_Tile__WEBPACK_IMPORTED_MODULE_2__["default"]();
-            let background = new _geometry_Background__WEBPACK_IMPORTED_MODULE_3__["default"]();
-            tile.create();
-            background.create();
-            GameEngine.engine = new GameEngine(tile, background);
-            return GameEngine.engine;
-        }
-    }
     constructor(_tile, _background) {
+        this.win = false;
         this.gameObjects = [];
         this.terrainObjects = [];
         this.collidableObjects = [];
@@ -7939,15 +7927,15 @@ class GameEngine {
         this.downkeys = new Set();
         this.ticks = 0;
         this.spriteShader = new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["default"]([
-            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].VERTEX_SHADER, __webpack_require__(37)),
-            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].FRAGMENT_SHADER, __webpack_require__(38)),
+            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].VERTEX_SHADER, __webpack_require__(38)),
+            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].FRAGMENT_SHADER, __webpack_require__(39)),
         ]);
         //const spriteSheet = 'http://' + window.location.host + '/src/assets/sprites.png'
         let spriteTex = new _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_7__["default"](spriteSheet, 0);
         this.spriteShader.setSpriteTex(spriteTex);
         this.backgroundShader = new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["default"]([
-            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].VERTEX_SHADER, __webpack_require__(39)),
-            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].FRAGMENT_SHADER, __webpack_require__(40)),
+            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].VERTEX_SHADER, __webpack_require__(40)),
+            new _rendering_gl_ShaderProgram__WEBPACK_IMPORTED_MODULE_6__["Shader"](_globals__WEBPACK_IMPORTED_MODULE_4__["gl"].FRAGMENT_SHADER, __webpack_require__(41)),
         ]);
         //const backgrounds = 'http://' + window.location.host + '/src/assets/backgrounds.png'
         let backgroundTex = new _rendering_Texture2D__WEBPACK_IMPORTED_MODULE_7__["default"](backgrounds, 1);
@@ -7962,6 +7950,19 @@ class GameEngine {
             this.downkeys.delete(keyEvent.key);
             this.gameObjects.forEach((go) => { go.onKeyUp(keyEvent.key); });
         });
+    }
+    static getEngine() {
+        if (GameEngine.engine) {
+            return GameEngine.engine;
+        }
+        else {
+            let tile = new _geometry_Tile__WEBPACK_IMPORTED_MODULE_2__["default"]();
+            let background = new _geometry_Background__WEBPACK_IMPORTED_MODULE_3__["default"]();
+            tile.create();
+            background.create();
+            GameEngine.engine = new GameEngine(tile, background);
+            return GameEngine.engine;
+        }
     }
     generateLevel() {
         let terrain = new _scene_Terrain__WEBPACK_IMPORTED_MODULE_1__["default"]();
@@ -7988,6 +7989,9 @@ class GameEngine {
     }
     getCamera() {
         return this.camera;
+    }
+    onWin() {
+        this.win = true;
     }
     drawGameObjects() {
         let tilePositions = [];
@@ -8020,6 +8024,8 @@ class GameEngine {
         let totalPositions;
         this.tile.setInstanceVBOs(tilePositions, tileUvs, tileMirrors, tileScales);
         this.tile.setNumInstances(tilePositions.length);
+        this.backgroundShader.setWin(this.win);
+        this.spriteShader.setWin(this.win);
         this.renderer.render(this.camera, this.backgroundShader, [this.background]);
         this.renderer.render(this.camera, this.spriteShader, [this.tile]);
     }
@@ -8048,7 +8054,9 @@ class GameEngine {
     }
     updateGameObjects(deltaTime) {
         for (let go of this.gameObjects) {
-            go.physicsUpdate(deltaTime);
+            if (!this.win) {
+                go.physicsUpdate(deltaTime);
+            }
             go.onUpdate(deltaTime);
             for (let key of this.downkeys) {
                 go.onKeyPress(key);
@@ -8073,6 +8081,7 @@ class GameEngine {
     tick() {
         this.ticks++;
         this.backgroundShader.setTime(this.ticks);
+        this.spriteShader.setTime(this.ticks);
         let curTime = Date.now();
         let deltaTime = curTime - this.lastTick;
         this.lastTick = curTime;
@@ -8260,7 +8269,7 @@ const spriteCoordinates = {
     SPRITE_TERRAIN_MIDDLE_ALT_1: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(5, 2),
     SPRITE_TERRAIN_MIDDLE_ALT_2: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(5, 3),
     SPRITE_TERRAIN_MIDDLE_ALT_3: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(6, 3),
-    SPRITE_TERRAIN_MIDDLE_ALT_4: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(7, 3),
+    SPRITE_TERRAIN_MIDDLE_ALT_4: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(6, 1),
     SPRITE_TERRAIN_RIGHT: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(2, 1),
     SPRITE_TERRAIN_BOTTOM_LEFT: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 2),
     SPRITE_TERRAIN_BOTTOM: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(1, 2),
@@ -8290,6 +8299,7 @@ const spriteCoordinates = {
     SPRITE_COIN_3: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(2, 3),
     SPRITE_COIN_4: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(0, 4),
     SPRITE_COIN_5: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(1, 4),
+    SPRITE_GEM: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(6, 5),
     // Particles
     SPRITE_Z: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(6, 6),
     SPRITE_POFF: gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(7, 6),
@@ -8633,6 +8643,7 @@ class ShaderProgram {
         this.unifTime = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getUniformLocation(this.prog, "u_Time");
         this.unifCam = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getUniformLocation(this.prog, "u_CameraPos");
         this.unifSpriteTex = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getUniformLocation(this.prog, "u_SpriteTex");
+        this.unifWin = _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].getUniformLocation(this.prog, "u_Win");
     }
     use() {
         if (activeProgram !== this.prog) {
@@ -8650,6 +8661,12 @@ class ShaderProgram {
         this.use();
         if (this.unifDimensions !== -1) {
             _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].uniform2f(this.unifDimensions, width, height);
+        }
+    }
+    setWin(win) {
+        this.use();
+        if (this.unifWin !== -1) {
+            _globals__WEBPACK_IMPORTED_MODULE_1__["gl"].uniform1i(this.unifWin, win ? 1 : 0);
         }
     }
     setModelMatrix(model) {
@@ -8783,7 +8800,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _RhythmGroupGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(26);
 /* harmony import */ var _GeometryGenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(28);
 /* harmony import */ var _scene_Coin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(31);
-/* harmony import */ var _scene_Baddie__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(34);
+/* harmony import */ var _scene_Baddie__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(35);
 
 
 
@@ -8805,9 +8822,10 @@ class LevelGenerator {
     }
     generateGeometry() {
         this.geometryGenerator.generateStartArea();
-        for (let group of this.rhythmGroups) {
+        for (let i = 0; i < this.rhythmGroups.length; i++) {
+            let group = this.rhythmGroups[i];
             this.geometryGenerator.generateGroupGeometry(group);
-            this.geometryGenerator.generateRestArea(14);
+            this.geometryGenerator.generateRestArea(14, i == this.rhythmGroups.length - 1);
         }
         return this.geometryGenerator.topTiles;
     }
@@ -9014,6 +9032,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scene_Spike__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(29);
 /* harmony import */ var _scene_Coin__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(31);
 /* harmony import */ var _scene_Checkpoint__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(33);
+/* harmony import */ var _scene_Gem__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(34);
+
 
 
 
@@ -9244,7 +9264,7 @@ class GeometryGenerator {
             }
         }
     }
-    generateRestArea(length) {
+    generateRestArea(length, lastRest = false) {
         for (let i = 1; i <= length; i++) {
             this.addTopTile([this.currentPos[0] + i, this.currentPos[1] - 1], true);
             this.terrain.setTileAt([this.currentPos[0] + i, this.currentPos[1] - 1]);
@@ -9254,10 +9274,18 @@ class GeometryGenerator {
         this.terrain.setColumnAt([this.currentPos[0] + length, this.currentPos[1] - 2]);
         this.currentPos[0] += length;
         this.currentPos[1] -= 1;
-        new _scene_Checkpoint__WEBPACK_IMPORTED_MODULE_5__["default"]([
-            Math.floor(this.currentPos[0] - length / 2),
-            this.currentPos[1] + 1
-        ]);
+        if (lastRest) {
+            new _scene_Gem__WEBPACK_IMPORTED_MODULE_6__["default"]([
+                Math.floor(this.currentPos[0] - length / 2),
+                this.currentPos[1] + 1
+            ]);
+        }
+        else {
+            new _scene_Checkpoint__WEBPACK_IMPORTED_MODULE_5__["default"]([
+                Math.floor(this.currentPos[0] - length / 2),
+                this.currentPos[1] + 2
+            ]);
+        }
     }
     generateStartArea() {
         for (let i = -4; i <= 4; i++) {
@@ -9745,6 +9773,49 @@ class Checkpoint extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["defaul
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Gem; });
+/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(30);
+/* harmony import */ var _engine_GameEngine__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(15);
+/* harmony import */ var _Particle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(32);
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(18);
+
+
+
+
+
+class Gem extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] {
+    constructor(pos) {
+        super(false, false, true);
+        this.setPosition(pos);
+    }
+    getSpriteUv() {
+        return _constants__WEBPACK_IMPORTED_MODULE_4__["spriteCoordinates"].SPRITE_GEM;
+    }
+    onUpdate(delta) {
+        if (Math.random() < 0.02) {
+            let sparkle = new _Particle__WEBPACK_IMPORTED_MODULE_3__["default"](_constants__WEBPACK_IMPORTED_MODULE_4__["spriteCoordinates"].SPRITE_SPARKLE, gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(this.getPosition()[0] + Math.random() - 0.5, this.getPosition()[1] + Math.random() - 0.5), 0.5);
+            sparkle.setMovement((time) => {
+                sparkle.setSize(time * (0.5 - time) * 8);
+                return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+            });
+        }
+    }
+    onCollision(other) {
+        if (other.constructor.name === "Player") {
+            _engine_GameEngine__WEBPACK_IMPORTED_MODULE_2__["default"].getEngine().onWin();
+            this.destroy();
+        }
+    }
+}
+
+
+/***/ }),
+/* 35 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _engine_GameObject__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30);
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(18);
 
@@ -9783,43 +9854,43 @@ class Baddie extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_0__["default"] 
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "4e288a859436ac22b00d72180a91d454.png";
+module.exports = __webpack_require__.p + "e587b3e60139101eee5ff6d25a56bd70.png";
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "ee6dced03346586918eef24f9eab9290.png";
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports) {
 
 module.exports = "#version 300 es\nprecision highp float;\n\nuniform mat4 u_ViewProj;\nuniform mat4 u_Model;\n\nin vec2 vs_Pos;\nin vec2 vs_Offset;\nin vec2 vs_UV;\nin float vs_Scale;\nin int vs_MirrorUv;\nout vec2 fs_Pos;\nout vec2 fs_UV;\n\nvoid main() {\n    fs_Pos = vs_Pos;\n    bool mirrorUv = vs_MirrorUv == 1;\n    fs_UV = vs_UV + vec2(mirrorUv ? 1.0 - vs_Pos.x : vs_Pos.x, 1.0 - vs_Pos.y);\n\n    vec2 actualPos = (vs_Pos - vec2(0.5, 0.5)) * vs_Scale + vs_Offset + vec2(0.0, 0.0);\n    gl_Position = u_ViewProj * u_Model * vec4(actualPos, 0.5, 1);\n}\n"
 
 /***/ }),
-/* 38 */
-/***/ (function(module, exports) {
-
-module.exports = "#version 300 es\nprecision highp float;\n\nuniform sampler2D u_SpriteTex;\n\nin vec2 fs_Pos;\nin vec2 fs_UV;\n\nout vec4 out_Col;\n\nvoid main() {\n    vec4 color = texture(u_SpriteTex, fs_UV / 8.0);\n    if (color.a < 0.5) {\n        discard;\n    }\n    out_Col = color;\n}\n"
-
-/***/ }),
 /* 39 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\nprecision highp float;\n\nuniform vec2 u_CameraPos;\n\nin vec2 vs_Pos;\nin vec2 vs_UV;\nout vec2 fs_Pos;\nout vec2 fs_UV1;\nout vec2 fs_UV2;\n\nvoid main() {\n    fs_Pos = vs_Pos;\n    const float squish1 = 1.8;\n    fs_UV1 = vec2(\n        vs_UV[0] / 1.5 - u_CameraPos[0] / 150.0,\n        (vs_UV[1] / 4.0) * squish1 - (squish1 / 4.0 - 0.25) + (u_CameraPos[1] + 2.0) / 100.0\n    );\n\n    const float squish2 = 1.0;\n    fs_UV2 = vec2(\n        vs_UV[0] / 2.0 - u_CameraPos[0] / 300.0,\n        (vs_UV[1] / 4.0 + 0.25) * squish2 - (squish2 / 4.0 - 0.25) + (u_CameraPos[1] + 2.0) / 200.0\n    );\n\n    gl_Position = vec4(vs_Pos, 0, 1);\n}\n"
+module.exports = "#version 300 es\nprecision highp float;\n\nuniform sampler2D u_SpriteTex;\nuniform int u_Win;\nuniform float u_Time;\n\nin vec2 fs_Pos;\nin vec2 fs_UV;\n\nout vec4 out_Col;\n\n\nvoid main() {\n    vec4 color = texture(u_SpriteTex, fs_UV / 8.0);\n    if (color.a < 0.5) {\n        discard;\n    }\n    if (u_Win == 1) {\n        color = vec4(0, 0, 0, 1);\n    }\n    out_Col = color;\n}\n"
 
 /***/ }),
 /* 40 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\nprecision highp float;\n\nuniform sampler2D u_SpriteTex;\nuniform vec2 u_CameraPos;\nuniform float u_Time;\n\nin vec2 fs_Pos;\nin vec2 fs_UV1;\nin vec2 fs_UV2;\n\nout vec4 out_Col;\n\nconst vec2 SEED2 = vec2(0.31415, 0.6456);\n\nfloat random1(vec2 p) {\n    return fract(sin(dot(p + SEED2, vec2(127.1, 311.7))) * 43758.5453);\n}\n\nvec2 random2( vec2 p , vec2 seed) {\n    return fract(sin(vec2(dot(p + seed, vec2(311.7, 127.1)), dot(p + seed, vec2(269.5, 183.3)))) * 85734.3545);\n}\n\nfloat worley(vec2 noisePos, float frequency) {\n    vec2 point = noisePos * frequency;\n    vec2 cell = floor(point);\n\n    // Check the neighboring cells for the closest cell point\n    float closestDistance = 2.0;\n    for (int i = 0; i < 9; i++) {\n        vec2 curCell = cell + vec2(i % 3 - 1, floor(float(i / 3) - 1.0));\n        vec2 cellPoint = vec2(curCell) + random2(vec2(curCell), SEED2);\n        closestDistance = min(closestDistance, distance(cellPoint, point));\n    }\n    return clamp(0.0, 1.0, closestDistance);\n}\n\nvoid main() {\n    vec2 uv1 = vec2(fs_UV1.x, clamp(fs_UV1.y, 0.000, 0.249));\n    vec2 uv2 = vec2(fs_UV2.x, clamp(fs_UV2.y, 0.251, 0.499));\n    float starRadius = 0.01 + abs(sin(u_Time * 0.01 + random1(fs_Pos) * 100.0)) * 0.01;\n    vec3 stars = worley(fs_Pos, 10.0) < starRadius ? vec3(1) : vec3(0);\n    vec4 sky = mix(vec4(0.3, 0.3, 0.25, 1.0), vec4(stars, 1), pow((fs_Pos[1] + 1.0) / 2.0, 0.5));\n\n    vec4 layer1 = texture(u_SpriteTex, uv1);\n    vec4 layer2 = texture(u_SpriteTex, uv2);\n\n    vec4 color = \n        layer1.a > 0.5 ? layer1 :\n        layer2.a > 0.5 ? layer2 :\n        sky;\n\n    out_Col = vec4(color.rgb, 1);\n}\n"
+module.exports = "#version 300 es\nprecision highp float;\n\nuniform vec2 u_CameraPos;\n\nin vec2 vs_Pos;\nin vec2 vs_UV;\nout vec2 fs_Pos;\nout vec2 fs_UV1;\nout vec2 fs_UV2;\n\nvoid main() {\n    fs_Pos = vs_Pos;\n    const float squish1 = 1.8;\n    fs_UV1 = vec2(\n        vs_UV[0] / 1.5 - u_CameraPos[0] / 150.0,\n        (vs_UV[1] / 4.0) * squish1 - (squish1 / 4.0 - 0.25) + (u_CameraPos[1] + 2.0) / 100.0\n    );\n\n    const float squish2 = 1.0;\n    fs_UV2 = vec2(\n        vs_UV[0] / 2.0 - u_CameraPos[0] / 300.0,\n        (vs_UV[1] / 4.0 + 0.25) * squish2 - (squish2 / 4.0 - 0.25) + (u_CameraPos[1] + 2.0) / 200.0\n    );\n\n    gl_Position = vec4(vs_Pos, 0, 1);\n}\n"
 
 /***/ }),
 /* 41 */
+/***/ (function(module, exports) {
+
+module.exports = "#version 300 es\nprecision highp float;\n\nuniform sampler2D u_SpriteTex;\nuniform vec2 u_CameraPos;\nuniform float u_Time;\nuniform int u_Win;\n\nin vec2 fs_Pos;\nin vec2 fs_UV1;\nin vec2 fs_UV2;\n\nout vec4 out_Col;\n\nconst vec2 SEED2 = vec2(0.31415, 0.6456);\n\nvec3 palette(in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d){\n    return a + b*cos( 6.28318*(c*t+d) );\n}\n\nfloat random1(vec2 p) {\n    return fract(sin(dot(p + SEED2, vec2(127.1, 311.7))) * 43758.5453);\n}\n\nvec2 random2( vec2 p , vec2 seed) {\n    return fract(sin(vec2(dot(p + seed, vec2(311.7, 127.1)), dot(p + seed, vec2(269.5, 183.3)))) * 85734.3545);\n}\n\nfloat worley(vec2 noisePos, float frequency) {\n    vec2 point = noisePos * frequency;\n    vec2 cell = floor(point);\n\n    // Check the neighboring cells for the closest cell point\n    float closestDistance = 2.0;\n    for (int i = 0; i < 9; i++) {\n        vec2 curCell = cell + vec2(i % 3 - 1, floor(float(i / 3) - 1.0));\n        vec2 cellPoint = vec2(curCell) + random2(vec2(curCell), SEED2);\n        closestDistance = min(closestDistance, distance(cellPoint, point));\n    }\n    return clamp(0.0, 1.0, closestDistance);\n}\n\nfloat brownianNoise(vec2 noisePos, vec2 seed) {\n    vec2 boxPos = vec2(floor(noisePos.x), floor(noisePos.y));\n\n    // Get the noise at the corners of the cells\n    float corner0 = random1(boxPos + vec2(0.0, 0.0));\n    float corner1 = random1(boxPos + vec2(1.0, 0.0));\n    float corner2 = random1(boxPos + vec2(0.0, 1.0));\n    float corner3 = random1(boxPos + vec2(1.0, 1.0));\n\n    // Get cubic interpolation factors\n    float tx = smoothstep(0.0, 1.0, fract(noisePos.x));\n    float ty = smoothstep(0.0, 1.0, fract(noisePos.y));\n\n    // Perform bicubic interpolation\n    return mix(mix(corner0, corner1, tx), mix(corner2, corner3, tx), ty);\n}\n\nfloat fbm(vec2 noisePos, int numOctaves, float startFrequency) {\n    float totalNoise = 0.0;\n    float normalizer = 0.0;\n    const float PERSISTENCE = 0.5;\n\n    float frequency = startFrequency;\n    float amplitude = PERSISTENCE;\n\n    for (int i = 0; i < numOctaves; i++) {\n        normalizer += amplitude;\n        totalNoise += brownianNoise(noisePos * frequency, SEED2) * amplitude;\n        frequency *= 2.0;\n        amplitude *= PERSISTENCE;\n    }\n    return totalNoise / normalizer;\n}\n\nvoid main() {\n    vec2 uv1 = vec2(fs_UV1.x, clamp(fs_UV1.y, 0.000, 0.249));\n    vec2 uv2 = vec2(fs_UV2.x, clamp(fs_UV2.y, 0.251, 0.499));\n    float starRadius = 0.01 + abs(sin(u_Time * 0.01 + random1(fs_Pos) * 100.0)) * 0.01;\n    vec3 stars = worley(fs_Pos, 10.0) < starRadius ? vec3(1) : vec3(0);\n    vec4 sky = mix(vec4(0.3, 0.3, 0.25, 1.0), vec4(stars, 1), pow((fs_Pos[1] + 1.0) / 2.0, 0.5));\n\n    vec4 layer1 = texture(u_SpriteTex, uv1);\n    vec4 layer2 = texture(u_SpriteTex, uv2);\n\n    if (u_Win == 1) {\n        float t1 = cos(fs_Pos[0] + fs_Pos[1] + u_Time * 0.01);\n        float t2 = (sin(-2.0 * fs_Pos[1] + u_Time * 0.01) * cos(2.0 * fs_Pos[0] + u_Time * 0.01));\n\n        float t3 = pow(fbm(fs_Pos - vec2(u_Time * 0.005) + vec2(\n            fbm(fs_Pos + vec2(u_Time * 0.001), 2, 2.5),\n            worley(fs_Pos, 10.0)\n        ), \n        3, 5.0), 2.0);\n\n        layer1.rgb = palette(t1, vec3(0.5), vec3(0.5), vec3(1), vec3(0, 0.33, 0.67)) * 0.2;\n        layer2.rgb = palette(t2, vec3(0.5), vec3(0.5), vec3(1), vec3(0, 0.33, 0.67)) * 0.4;\n        vec3 skyColor = palette(t3, vec3(0.5), vec3(0.5), vec3(1), vec3(0, 0.33, 0.67)) * 0.8;\n        sky.rgb = worley(fs_Pos, 10.0) < starRadius ? vec3(1) - skyColor : skyColor;\n    }\n\n    vec4 color = \n        layer1.a > 0.5 ? layer1 :\n        layer2.a > 0.5 ? layer2 :\n        sky;\n\n    out_Col = vec4(color.rgb, 1);\n}\n"
+
+/***/ }),
+/* 42 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9853,8 +9924,12 @@ class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] 
         this.zTime = 0;
         this.dead = false;
         this.deathTimer = 0;
+        this.win = false;
     }
     onUpdate(delta) {
+        if (this.win) {
+            return;
+        }
         if (this.dead) {
             this.dynamic = false;
             this.grounded = true;
@@ -9946,7 +10021,7 @@ class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] 
         }
     }
     onKeyPress(key) {
-        if (this.dead) {
+        if (this.dead || this.win) {
             return;
         }
         let playerMovement = this.isGrounded ? _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed : _SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed;
@@ -9962,7 +10037,7 @@ class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] 
         }
     }
     onKeyDown(key) {
-        if (this.dead) {
+        if (this.dead || this.win) {
             return;
         }
         if ((key === 'w' || key === " " || key === "ArrowUp") && this.isGrounded) {
@@ -10013,6 +10088,9 @@ class Player extends _engine_GameObject__WEBPACK_IMPORTED_MODULE_1__["default"] 
         }
         else if (other.constructor.name === "Checkpoint") {
             gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(this.startPos, other.getPosition());
+        }
+        else if (other.constructor.name === "Gem") {
+            this.win = true;
         }
     }
     onDeath() {
