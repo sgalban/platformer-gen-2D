@@ -285,13 +285,13 @@ export default class GeometryGenerator {
         if (lastRest) {
             new Gem([
                 Math.floor(this.currentPos[0] - length / 2),
-                this.currentPos[1] + 1
+                this.currentPos[1] + 2
             ]);
         }
         else {
             new Checkpoint([
                 Math.floor(this.currentPos[0] - length / 2),
-                this.currentPos[1] + 2
+                this.currentPos[1] + 1
             ]);
         }  
     }

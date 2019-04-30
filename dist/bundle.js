@@ -9277,13 +9277,13 @@ class GeometryGenerator {
         if (lastRest) {
             new _scene_Gem__WEBPACK_IMPORTED_MODULE_6__["default"]([
                 Math.floor(this.currentPos[0] - length / 2),
-                this.currentPos[1] + 1
+                this.currentPos[1] + 2
             ]);
         }
         else {
             new _scene_Checkpoint__WEBPACK_IMPORTED_MODULE_5__["default"]([
                 Math.floor(this.currentPos[0] - length / 2),
-                this.currentPos[1] + 2
+                this.currentPos[1] + 1
             ]);
         }
     }
