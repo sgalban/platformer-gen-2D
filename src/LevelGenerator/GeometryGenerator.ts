@@ -5,6 +5,7 @@ import sceneAttributes from '../scene/SceneAttributes';
 import Terrain from '../scene/Terrain';
 import Spike from '../scene/Spike';
 import Coin from '../scene/Coin';
+import Checkpoint from '../scene/Checkpoint';
 import Platform from '../scene/Platform';
 import {spriteCoordinates} from '../constants';
 
@@ -234,6 +235,11 @@ export default class GeometryGenerator {
 
         this.currentPos[0] += length;
         this.currentPos[1] -= 1;
+
+        new Checkpoint([
+            Math.floor(this.currentPos[0] - length / 2),
+            this.currentPos[1] + 1
+        ]);
     }
 
     generateStartArea() {
@@ -261,6 +267,5 @@ export default class GeometryGenerator {
                 1 - Math.cos(time)
             );
         }
-
     }
 }

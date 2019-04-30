@@ -11,10 +11,10 @@ abstract class GameObject {
     public size: number;
     protected inputVelocity: vec2;
     protected prevInputVelocty: vec2;
-    private passive: boolean;
+    protected passive: boolean;
     protected collidable: boolean;
-    private dynamic: boolean;
-    private grounded: boolean;
+    protected dynamic: boolean;
+    protected grounded: boolean;
     protected direction: number;
     protected goCollide: boolean;
     get isGrounded() : boolean {

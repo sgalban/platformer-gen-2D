@@ -36,13 +36,14 @@ export const spriteCoordinates = {
     SPRITE_PLAYER_CROUCH: vec2.fromValues(4, 7),
     SPRITE_PLAYER_IDLE1:  vec2.fromValues(5, 7),
     SPRITE_PLAYER_IDLE2:  vec2.fromValues(6, 7),
+    SPRITE_PLAYER_DEATH:  vec2.fromValues(7, 7),
 
     // Coin
     SPRITE_COIN_1: vec2.fromValues(0, 3),
     SPRITE_COIN_2: vec2.fromValues(1, 3),
     SPRITE_COIN_3: vec2.fromValues(2, 3),
-    SPRITE_COIN_4: vec2.fromValues(3, 3),
-    SPRITE_COIN_5: vec2.fromValues(4, 3),
+    SPRITE_COIN_4: vec2.fromValues(0, 4),
+    SPRITE_COIN_5: vec2.fromValues(1, 4),
 
     // Particles
     SPRITE_Z:       vec2.fromValues(6, 6),
@@ -52,4 +53,12 @@ export const spriteCoordinates = {
     // Enemy
     SPRITE_BADDIE_1: vec2.fromValues(0, 5),
     SPRITE_BADDIE_2: vec2.fromValues(1, 5),
+
+    // Checkpoint
+    SPRITE_FLAG_1: vec2.fromValues(2, 4),
+    SPRITE_FLAG_2: vec2.fromValues(3, 4),
+    SPRITE_FLAG_3: vec2.fromValues(4, 4),
+    SPRITE_CHECK_1: vec2.fromValues(2, 5),
+    SPRITE_CHECK_2: vec2.fromValues(3, 5),
+    SPRITE_CHECK_3: vec2.fromValues(4, 5),
 }

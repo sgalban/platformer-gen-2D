@@ -31,9 +31,11 @@ class Player extends GameObject {
     sPressed: boolean;
 
     private startPos: vec2;
-
+    private dead: boolean;
     private idleTime: number;
     private zTime: number;
+    private deathTimer: number;
+
 
     constructor(_startPos: vec2 | number[]) {
         super(true, false, true);
@@ -50,9 +52,23 @@ class Player extends GameObject {
         this.setPosition(this.startPos);
         this.idleTime = 0;
         this.zTime = 0;
+        this.dead = false;
+        this.deathTimer = 0;
     }
 
     onUpdate(delta: number) {
+        if (this.dead) {
+            this.dynamic = false;
+            this.grounded = true;
+            this.deathTimer++;
+            this.direction = this.deathTimer % 20 < 10 ? 1 : -1;
+            if (this.deathTimer > 40 && this.deathTimer < 70) {
+                this.translate([0, (70 - this.deathTimer) * 0.025 - 15.0 / 60]);
+            }
+            if (this.deathTimer > 70) {
+                this.translate([0, -15.0 / 60])
+            }
+        }
         if (this.jumping) {
             // I have decided to perform this operation in units of frames instead of seconds to ensure
             // that the jump height is consistent. It makes geometry generator calculations easier too
@@ -158,6 +174,9 @@ class Player extends GameObject {
     }
 
     onKeyPress(key: string) {
+        if (this.dead) {
+            return;
+        }
         let playerMovement = this.isGrounded ? sceneAttributes.playerSpeed : sceneAttributes.playerSpeed;
         if (key === "a" || key === "ArrowLeft") {
             vec2.add(this.inputVelocity, this.inputVelocity, vec2.fromValues(-playerMovement, 0));
@@ -172,6 +191,9 @@ class Player extends GameObject {
     }
 
     onKeyDown(key: string) {
+        if (this.dead) {
+            return;
+        }
         if ((key === 'w' || key === " " || key === "ArrowUp") && this.isGrounded) {
             this.jumping = true;
             this.jumpTime = sceneAttributes.maxJumpHold;
@@ -222,15 +244,24 @@ class Player extends GameObject {
             other.destroy();
         }
         else if (other.constructor.name === "Spike" || other.constructor.name === "Baddie") {
-            this.onDeath();
+            this.dead = true;
+        }
+        else if (other.constructor.name === "Checkpoint") {
+            vec2.copy(this.startPos, other.getPosition());
         }
     }
 
     onDeath() {
         this.setPosition(this.startPos);
+        this.dead = false;
+        this.dynamic = true;
+        this.deathTimer = 0;
     }
 
     getSpriteUv() {
+        if (this.dead) {
+            return spriteCoordinates.SPRITE_PLAYER_DEATH;
+        }
         if (!this.isGrounded) {
             return spriteCoordinates.SPRITE_PLAYER_JUMP;
         }

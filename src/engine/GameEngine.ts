@@ -203,7 +203,7 @@ class GameEngine {
                 continue;
             }
             for (let go2 of this.gameObjects) {
-                if (!go2.isCollidable) {
+                if (!go2.isCollidable || go1 === go2) {
                     continue;
                 }
                 go1.checkObjectCollisions(go2);
