@@ -130,7 +130,7 @@ export default class GeometryGenerator {
         let height = this.jumpHeights.get(jumpType);
         let minHeight = Math.max(-4, sceneAttributes.deathHeight + 5 - this.currentPos[1]);
         let endHeight = Math.floor(Math.random() * (height.height - minHeight) + minHeight);
-        let totalFrames = height.time * 60 + Math.sqrt((height.height - endHeight) / sceneAttributes.gravity);
+        let totalFrames = height.time * 60 + Math.sqrt((height.height - endHeight) / (sceneAttributes.gravity / 60));
         let totalDistance = Math.floor(sceneAttributes.playerSpeed * totalFrames / 60);
 
         if (totalDistance === 2 && endHeight === 0){
@@ -146,7 +146,7 @@ export default class GeometryGenerator {
     private generateSpikeJump(jumpType: JumpType) {
         let height = this.jumpHeights.get(jumpType);
         let peakDistance = Math.floor(sceneAttributes.playerSpeed * height.time);
-        let totalFrames = height.time * 60 + Math.sqrt(height.height / sceneAttributes.gravity);
+        let totalFrames = height.time * 60 + Math.sqrt(height.height / (sceneAttributes.gravity / 60));
         let totalDistance = Math.floor(sceneAttributes.playerSpeed * totalFrames / 60) + 2;
         
         for (let i = 0; i <= totalDistance; i++) {
@@ -184,11 +184,48 @@ export default class GeometryGenerator {
         this.currentPos[0] += totalDistance;
     }
 
+    generateSpikeGap (jumpType: JumpType) {
+        let height = this.jumpHeights.get(jumpType);
+        let totalFrames = height.time * 60 + Math.sqrt((height.height) / (sceneAttributes.gravity / 60));
+        let totalDistance = Math.floor(sceneAttributes.playerSpeed * totalFrames / 60);
+        let peakDistance = Math.floor(sceneAttributes.playerSpeed * height.time);
+
+        for (let jump of this.jumpHeights.keys()) {
+            if (jumpType != jump) {
+                new Spike([
+                    this.currentPos[0] + peakDistance,
+                    this.currentPos[1] + this.jumpHeights.get(jump).height
+                ])
+            }
+            else {
+                new Coin([
+                    this.currentPos[0] + peakDistance,
+                    this.currentPos[1] + this.jumpHeights.get(jump).height
+                ])
+            }
+        }
+
+        this.currentPos[0] += totalDistance;
+        this.terrain.setTileAt(this.currentPos);
+        this.addTopTile(this.currentPos);
+    }
+
     private generateStraightPath(length: number) {
         for (let i = 0; i < Math.round(length); i++) {
             this.terrain.setColumnAt(this.currentPos);
             this.addTopTile(this.currentPos);
             this.currentPos[0] += 1;
+        }
+    }
+
+    private gentleDecline(length: number, decline: number) {
+        let currentHeight = this.currentPos[1];
+        for (let i = 0; i < Math.round(length); i++) {
+            this.terrain.setColumnAt(this.currentPos);
+            this.addTopTile(this.currentPos);
+            currentHeight -= decline / length;
+            this.currentPos[0] += 1;
+            this.currentPos[1] = Math.round(currentHeight);
         }
     }
 
@@ -207,17 +244,25 @@ export default class GeometryGenerator {
 
             let prevX = this.currentPos[0];
             let obstacleType = Math.random();
-            if (obstacleType < 0.8) {
-                this.generateSimpleJump(jump.jumpHold);
+            if (obstacleType < 0.2) {
+                this.generateSpikeGap(jump.jumpHold);
+            }
+            else if (obstacleType < 0.4) {
+                this.generateSpikeJump(jump.jumpHold);
             }
             else {
-                this.generateSpikeJump(jump.jumpHold);
+                this.generateSimpleJump(jump.jumpHold);
             }
             let jumpTime = (this.currentPos[0] - prevX) / playerSpeed;
             let remainingTime = beatDuration - jumpTime;
             if (remainingTime > 0) {
                 let remainingLength = remainingTime * playerSpeed;
-                this.generateStraightPath(remainingLength);
+                if (Math.random() < 0.25) {
+                    this.gentleDecline(remainingLength, Math.random() < 0.5 ? 1 : 2);
+                }
+                else {
+                    this.generateStraightPath(remainingLength);
+                }
             }
         }
     }

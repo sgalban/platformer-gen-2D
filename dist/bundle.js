@@ -9124,7 +9124,7 @@ class GeometryGenerator {
         let height = this.jumpHeights.get(jumpType);
         let minHeight = Math.max(-4, _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].deathHeight + 5 - this.currentPos[1]);
         let endHeight = Math.floor(Math.random() * (height.height - minHeight) + minHeight);
-        let totalFrames = height.time * 60 + Math.sqrt((height.height - endHeight) / _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].gravity);
+        let totalFrames = height.time * 60 + Math.sqrt((height.height - endHeight) / (_scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].gravity / 60));
         let totalDistance = Math.floor(_scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed * totalFrames / 60);
         if (totalDistance === 2 && endHeight === 0) {
             endHeight = 1;
@@ -9137,7 +9137,7 @@ class GeometryGenerator {
     generateSpikeJump(jumpType) {
         let height = this.jumpHeights.get(jumpType);
         let peakDistance = Math.floor(_scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed * height.time);
-        let totalFrames = height.time * 60 + Math.sqrt(height.height / _scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].gravity);
+        let totalFrames = height.time * 60 + Math.sqrt(height.height / (_scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].gravity / 60));
         let totalDistance = Math.floor(_scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed * totalFrames / 60) + 2;
         for (let i = 0; i <= totalDistance; i++) {
             if (i === peakDistance) {
@@ -9170,11 +9170,44 @@ class GeometryGenerator {
         }
         this.currentPos[0] += totalDistance;
     }
+    generateSpikeGap(jumpType) {
+        let height = this.jumpHeights.get(jumpType);
+        let totalFrames = height.time * 60 + Math.sqrt((height.height) / (_scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].gravity / 60));
+        let totalDistance = Math.floor(_scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed * totalFrames / 60);
+        let peakDistance = Math.floor(_scene_SceneAttributes__WEBPACK_IMPORTED_MODULE_2__["default"].playerSpeed * height.time);
+        for (let jump of this.jumpHeights.keys()) {
+            if (jumpType != jump) {
+                new _scene_Spike__WEBPACK_IMPORTED_MODULE_3__["default"]([
+                    this.currentPos[0] + peakDistance,
+                    this.currentPos[1] + this.jumpHeights.get(jump).height
+                ]);
+            }
+            else {
+                new _scene_Coin__WEBPACK_IMPORTED_MODULE_4__["default"]([
+                    this.currentPos[0] + peakDistance,
+                    this.currentPos[1] + this.jumpHeights.get(jump).height
+                ]);
+            }
+        }
+        this.currentPos[0] += totalDistance;
+        this.terrain.setTileAt(this.currentPos);
+        this.addTopTile(this.currentPos);
+    }
     generateStraightPath(length) {
         for (let i = 0; i < Math.round(length); i++) {
             this.terrain.setColumnAt(this.currentPos);
             this.addTopTile(this.currentPos);
             this.currentPos[0] += 1;
+        }
+    }
+    gentleDecline(length, decline) {
+        let currentHeight = this.currentPos[1];
+        for (let i = 0; i < Math.round(length); i++) {
+            this.terrain.setColumnAt(this.currentPos);
+            this.addTopTile(this.currentPos);
+            currentHeight -= decline / length;
+            this.currentPos[0] += 1;
+            this.currentPos[1] = Math.round(currentHeight);
         }
     }
     generateGroupGeometry(rhythm) {
@@ -9189,17 +9222,25 @@ class GeometryGenerator {
             }
             let prevX = this.currentPos[0];
             let obstacleType = Math.random();
-            if (obstacleType < 0.8) {
-                this.generateSimpleJump(jump.jumpHold);
+            if (obstacleType < 0.2) {
+                this.generateSpikeGap(jump.jumpHold);
+            }
+            else if (obstacleType < 0.4) {
+                this.generateSpikeJump(jump.jumpHold);
             }
             else {
-                this.generateSpikeJump(jump.jumpHold);
+                this.generateSimpleJump(jump.jumpHold);
             }
             let jumpTime = (this.currentPos[0] - prevX) / playerSpeed;
             let remainingTime = beatDuration - jumpTime;
             if (remainingTime > 0) {
                 let remainingLength = remainingTime * playerSpeed;
-                this.generateStraightPath(remainingLength);
+                if (Math.random() < 0.25) {
+                    this.gentleDecline(remainingLength, Math.random() < 0.5 ? 1 : 2);
+                }
+                else {
+                    this.generateStraightPath(remainingLength);
+                }
             }
         }
     }
