@@ -71,8 +71,8 @@ abstract class GameObject {
 
     abstract getSpriteUv(): vec2;
 
-    translate(amount: vec2|number[]): void {
-        vec2.add(this.position, this.position, amount);
+    translate(amount: vec2 | number[]): void {
+        vec2.add(this.position, this.position, vec2.fromValues(amount[0], amount[1]));
     }
 
     getVelocity(): vec2 {

@@ -44,7 +44,7 @@ class Camera {
     }
 
     translate(amount: vec2 | number[]) {
-        vec2.add(this.position, this.position, amount);
+        vec2.add(this.position, this.position, vec2.fromValues(amount[0], amount[1]));
         mat4.translate(this.viewMatrix, mat4.create(), [this.position[0], this.position[1], 0]);
     }
 

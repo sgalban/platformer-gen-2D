@@ -1,5 +1,4 @@
 import {vec2, vec3} from 'gl-matrix';
-import * as Stats from 'stats-js';
 
 import {setGL} from './globals';
 import OpenGLRenderer from './rendering/gl/OpenGLRenderer';
@@ -13,6 +12,8 @@ import Coin from './scene/Coin';
 import sceneAttributes from './scene/SceneAttributes';
 
 import RhythmGropuGenerator from './LevelGenerator/RhythmGroupGenerator';
+
+let Stats = require("stats-js")
 
 let time: number = 0.0;
 let gameStart: boolean = false;

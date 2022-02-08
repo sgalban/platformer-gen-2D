@@ -48,7 +48,7 @@ class Player extends GameObject {
         this.dPressed = false;
         this.sPressed = false;
         this.startPos = vec2.create();
-        vec2.copy(this.startPos, _startPos);
+        vec2.copy(this.startPos, vec2.fromValues(_startPos[0], _startPos[1]));
         this.setPosition(this.startPos);
         this.idleTime = 0;
         this.zTime = 0;

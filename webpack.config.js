@@ -20,9 +20,7 @@ module.exports = {
       },
       {
         test: /\.(png|svg|jpg|gif)$/,
-        use: [
-          'file-loader'
-        ]
+        type: 'asset/resource'
       }
     ]
   },
@@ -32,7 +30,7 @@ module.exports = {
   devtool: 'source-map',
   devServer: {
     port: 5660,
-    overlay: true,
+    static: path.resolve(__dirname),
   },
   mode: "none",
 };
